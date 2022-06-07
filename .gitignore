@@ -103,3 +103,7 @@ generated/
 # but just ignore it for now
 packages/subgraphs/contracts/
 docs/api
+
+# Supabase
+**/supabase/.branches
+**/supabase/.temp

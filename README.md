@@ -7,9 +7,18 @@ This is a semi-autonomous grant application designed to help ENS DAO distribute 
 ## Setup
 
 Running the project:
+
+1. Install [Docker](https://www.docker.com/products/docker-desktop/)
+2. Install [supabase cli](https://github.com/supabase/cli#install-the-cli)
 ```
 > yarn install
 > yarn dev
+```
+
+and in another tab:
+
+```
+> supabase functions serve rpc
 ```
 
 ## Architecture
@@ -22,7 +31,7 @@ For the initial implementation, the focus is on speed of deployment, while retai
 ```mermaid
 sequenceDiagram
     participant user as Web Client
-    participant function as Cloudflare Worker
+    participant function as Supabase
     participant arweave as Bundlr Network
     participant snapshot as Snapshot
 

@@ -3519,6 +3519,65 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@supabase/functions-js@npm:^1.3.3":
+  version: 1.3.3
+  resolution: "@supabase/functions-js@npm:1.3.3"
+  dependencies:
+    cross-fetch: ^3.1.5
+  checksum: dd46a70e434ebac345ea41cd7ba86f1cdde02b80212c46913e93880dfe60a9ce52bcc35758d7c3c93685f535f5ca6a8be446f7d800232402e2056630ebff37fc
+  languageName: node
+  linkType: hard
+
+"@supabase/gotrue-js@npm:^1.22.14":
+  version: 1.22.16
+  resolution: "@supabase/gotrue-js@npm:1.22.16"
+  dependencies:
+    cross-fetch: ^3.0.6
+  checksum: 834123bf2c2e1ae3aaa5a9793b77c7b19c3bf80b5904841acb2e7fe345238d3f07b4241b868e84d45f13c3da24796439209830aec41f2f4535531b023add1832
+  languageName: node
+  linkType: hard
+
+"@supabase/postgrest-js@npm:^0.37.2":
+  version: 0.37.3
+  resolution: "@supabase/postgrest-js@npm:0.37.3"
+  dependencies:
+    cross-fetch: ^3.1.5
+  checksum: 40a33d09a9bca9246e4af4d2530a342c3c4cd3d0ff660481d9df884dce70f6bdfc6c008a4ef79dd3798f80afe5d90af65df54c685889b23e572b282ac75ea6d3
+  languageName: node
+  linkType: hard
+
+"@supabase/realtime-js@npm:^1.7.2":
+  version: 1.7.2
+  resolution: "@supabase/realtime-js@npm:1.7.2"
+  dependencies:
+    "@types/phoenix": ^1.5.4
+    websocket: ^1.0.34
+  checksum: 355d0bb073691ce015f529b55bc23880b3ca7b481c0c0c4af8e287778a201a7d0fdbbe5bbcd65950fad9dc6229616dc2340558a2c71f26bfb67279b19dc1885f
+  languageName: node
+  linkType: hard
+
+"@supabase/storage-js@npm:^1.7.0":
+  version: 1.7.0
+  resolution: "@supabase/storage-js@npm:1.7.0"
+  dependencies:
+    cross-fetch: ^3.1.0
+  checksum: bd02b43c288381b4fdc5dc9233122d5a687fb0d3c60927e79b4517856d6497c7f205464c333bc5ece2a2910a021430f442d165d7893b012232445fd0f2afbfe1
+  languageName: node
+  linkType: hard
+
+"@supabase/supabase-js@npm:^1.35.3":
+  version: 1.35.3
+  resolution: "@supabase/supabase-js@npm:1.35.3"
+  dependencies:
+    "@supabase/functions-js": ^1.3.3
+    "@supabase/gotrue-js": ^1.22.14
+    "@supabase/postgrest-js": ^0.37.2
+    "@supabase/realtime-js": ^1.7.2
+    "@supabase/storage-js": ^1.7.0
+  checksum: 2715ae245211c83fc25fa2f5f00d0af8097a96a0c834ea768d576914e155284510565e2f1245ef9713821353efb16002fdf380a38c12860fc7de92969f408503
+  languageName: node
+  linkType: hard
+
 "@supercharge/promise-pool@npm:^2.1.0":
   version: 2.2.0
   resolution: "@supercharge/promise-pool@npm:2.2.0"
@@ -3791,6 +3850,13 @@ __metadata:
   dependencies:
     "@types/node": "*"
   checksum: d15024b1957c21cf3b8887329d9bd8dfde754cf13a09d76ae25f1391cfc62bb8b8d7b760773c5dbaa748172fba8b3e0c3dbe962af6ccbd69b76df12a48dfba40
+  languageName: node
+  linkType: hard
+
+"@types/phoenix@npm:^1.5.4":
+  version: 1.5.4
+  resolution: "@types/phoenix@npm:1.5.4"
+  checksum: be6635e3dd63b9ae80e375c3918075cb1d63264f46039665c62390d2a5249335c32c7f0d154da27724a7859c0eaef1476fb61f7fa40541b4013e0bc1d5a47fd5
   languageName: node
   linkType: hard
 
@@ -5843,7 +5909,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cross-fetch@npm:^3.1.4":
+"cross-fetch@npm:^3.0.6, cross-fetch@npm:^3.1.0, cross-fetch@npm:^3.1.4, cross-fetch@npm:^3.1.5":
   version: 3.1.5
   resolution: "cross-fetch@npm:3.1.5"
   dependencies:
@@ -5976,6 +6042,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"d@npm:1, d@npm:^1.0.1":
+  version: 1.0.1
+  resolution: "d@npm:1.0.1"
+  dependencies:
+    es5-ext: ^0.10.50
+    type: ^1.0.1
+  checksum: 49ca0639c7b822db670de93d4fbce44b4aa072cd848c76292c9978a8cd0fff1028763020ff4b0f147bd77bfe29b4c7f82e0f71ade76b2a06100543cdfd948d19
+  languageName: node
+  linkType: hard
+
 "damerau-levenshtein@npm:^1.0.7":
   version: 1.0.8
   resolution: "damerau-levenshtein@npm:1.0.8"
@@ -6006,7 +6082,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"debug@npm:^2.6.9":
+"debug@npm:^2.2.0, debug@npm:^2.6.9":
   version: 2.6.9
   resolution: "debug@npm:2.6.9"
   dependencies:
@@ -6397,6 +6473,28 @@ __metadata:
   languageName: node
   linkType: hard
 
+"es5-ext@npm:^0.10.35, es5-ext@npm:^0.10.50":
+  version: 0.10.61
+  resolution: "es5-ext@npm:0.10.61"
+  dependencies:
+    es6-iterator: ^2.0.3
+    es6-symbol: ^3.1.3
+    next-tick: ^1.1.0
+  checksum: 2f2034e91e77fe247d94f0fd13a94bcf113273b7cc4650794d6795e377267ffb2425d3a891bd8c4d9c8b990e16e17dd7c28f12dbd3fa4b0909d0874892f491bf
+  languageName: node
+  linkType: hard
+
+"es6-iterator@npm:^2.0.3":
+  version: 2.0.3
+  resolution: "es6-iterator@npm:2.0.3"
+  dependencies:
+    d: 1
+    es5-ext: ^0.10.35
+    es6-symbol: ^3.1.1
+  checksum: 6e48b1c2d962c21dee604b3d9f0bc3889f11ed5a8b33689155a2065d20e3107e2a69cc63a71bd125aeee3a589182f8bbcb5c8a05b6a8f38fa4205671b6d09697
+  languageName: node
+  linkType: hard
+
 "es6-promise@npm:^4.0.3":
   version: 4.2.8
   resolution: "es6-promise@npm:4.2.8"
@@ -6410,6 +6508,16 @@ __metadata:
   dependencies:
     es6-promise: ^4.0.3
   checksum: fbed9d791598831413be84a5374eca8c24800ec71a16c1c528c43a98e2dadfb99331483d83ae6094ddb9b87e6f799a15d1553cebf756047e0865c753bc346b92
+  languageName: node
+  linkType: hard
+
+"es6-symbol@npm:^3.1.1, es6-symbol@npm:^3.1.3":
+  version: 3.1.3
+  resolution: "es6-symbol@npm:3.1.3"
+  dependencies:
+    d: ^1.0.1
+    ext: ^1.1.2
+  checksum: cd49722c2a70f011eb02143ef1c8c70658d2660dead6641e160b94619f408b9cf66425515787ffe338affdf0285ad54f4eae30ea5bd510e33f8659ec53bcaa70
   languageName: node
   linkType: hard
 
@@ -7549,6 +7657,15 @@ __metadata:
   version: 3.1.0
   resolution: "exponential-backoff@npm:3.1.0"
   checksum: 9367d2848044d3738b27e00f20ee2b605aecea6b3397b0c08bdf4bd48af34379ea7019c157e729101d2a7363dd6ee1ffc6d2305c4b6f80fc215da1eb73ac3f84
+  languageName: node
+  linkType: hard
+
+"ext@npm:^1.1.2":
+  version: 1.6.0
+  resolution: "ext@npm:1.6.0"
+  dependencies:
+    type: ^2.5.0
+  checksum: ca3ef4619e838f441a92238a98b77ac873da2175ace746c64303ffe2c3208e79a3acf3bf7004e40b720f3c2a83bf0143e6dd4a7cdfae6e73f54a3bfc7a14b5c2
   languageName: node
   linkType: hard
 
@@ -9642,6 +9759,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"next-tick@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "next-tick@npm:1.1.0"
+  checksum: 83b5cf36027a53ee6d8b7f9c0782f2ba87f4858d977342bfc3c20c21629290a2111f8374d13a81221179603ffc4364f38374b5655d17b6a8f8a8c77bdea4fe8b
+  languageName: node
+  linkType: hard
+
 "noble-ed25519@npm:^1.2.6":
   version: 1.2.6
   resolution: "noble-ed25519@npm:1.2.6"
@@ -10093,6 +10217,16 @@ __metadata:
   version: 1.0.7
   resolution: "path-parse@npm:1.0.7"
   checksum: 49abf3d81115642938a8700ec580da6e830dde670be21893c62f4e10bd7dd4c3742ddc603fe24f898cba7eb0c6bc1777f8d9ac14185d34540c6d4d80cd9cae8a
+  languageName: node
+  linkType: hard
+
+"path-parser@npm:^6.1.0":
+  version: 6.1.0
+  resolution: "path-parser@npm:6.1.0"
+  dependencies:
+    search-params: 3.0.0
+    tslib: ^1.10.0
+  checksum: fd3a2a07280002f064b53d4c90cb2d0dec1bb53c4d779aeb68b676f70e0a7bb124a3320a570c7405ceb90fd95dc696bd29d8cf8bca66146de8931a0e74a76bf3
   languageName: node
   linkType: hard
 
@@ -11073,6 +11207,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"search-params@npm:3.0.0":
+  version: 3.0.0
+  resolution: "search-params@npm:3.0.0"
+  checksum: 12bae077947eb4f80f3ab4561ee41be07a863d870f6bf2368f4ee93c6b0f874250808a2a23063883b025dc9a12e8ba344281225f6668d395685beba6fd847ce8
+  languageName: node
+  linkType: hard
+
 "secp256k1@npm:^4.0.1, secp256k1@npm:^4.0.2":
   version: 4.0.3
   resolution: "secp256k1@npm:4.0.3"
@@ -11407,6 +11548,7 @@ __metadata:
     "@emotion/react": ^11
     "@emotion/styled": ^11
     "@rainbow-me/rainbowkit": ^0.2
+    "@supabase/supabase-js": ^1.35.3
     "@testing-library/jest-dom": ^5.16.4
     "@testing-library/react": ^13.2.0
     "@testing-library/react-hooks": ^8.0.0
@@ -11436,6 +11578,7 @@ __metadata:
     husky: ^8.0.1
     jsdom: ^19.0.0
     lint-staged: ^12.5.0
+    path-parser: ^6.1.0
     prettier: ^2.6.1
     react: ^18.0.0
     react-dom: ^18.0.0
@@ -11953,7 +12096,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tslib@npm:^1.0.0, tslib@npm:^1.8.1, tslib@npm:^1.9.0":
+"tslib@npm:^1.0.0, tslib@npm:^1.10.0, tslib@npm:^1.8.1, tslib@npm:^1.9.0":
   version: 1.14.1
   resolution: "tslib@npm:1.14.1"
   checksum: dbe628ef87f66691d5d2959b3e41b9ca0045c3ee3c7c7b906cc1e328b39f199bb1ad9e671c39025bd56122ac57dfbf7385a94843b1cc07c60a4db74795829acd
@@ -12038,7 +12181,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typedarray-to-buffer@npm:3.1.5":
+"type@npm:^1.0.1":
+  version: 1.2.0
+  resolution: "type@npm:1.2.0"
+  checksum: dae8c64f82c648b985caf321e9dd6e8b7f4f2e2d4f846fc6fd2c8e9dc7769382d8a52369ddbaccd59aeeceb0df7f52fb339c465be5f2e543e81e810e413451ee
+  languageName: node
+  linkType: hard
+
+"type@npm:^2.5.0":
+  version: 2.6.0
+  resolution: "type@npm:2.6.0"
+  checksum: 80da01fcc0f6ed5a253dc326530e134000a8f66ea44b6d9687cde2f894f0d0b2486595b0cd040a64f7f79dc3120784236f8c9ef667a8aef03984e049b447cfb4
+  languageName: node
+  linkType: hard
+
+"typedarray-to-buffer@npm:3.1.5, typedarray-to-buffer@npm:^3.1.5":
   version: 3.1.5
   resolution: "typedarray-to-buffer@npm:3.1.5"
   dependencies:
@@ -12400,6 +12557,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"websocket@npm:^1.0.34":
+  version: 1.0.34
+  resolution: "websocket@npm:1.0.34"
+  dependencies:
+    bufferutil: ^4.0.1
+    debug: ^2.2.0
+    es5-ext: ^0.10.50
+    typedarray-to-buffer: ^3.1.5
+    utf-8-validate: ^5.0.2
+    yaeti: ^0.0.6
+  checksum: 8a0ce6d79cc1334bb6ea0d607f0092f3d32700b4dd19e4d5540f2a85f3b50e1f8110da0e4716737056584dde70bbebcb40bbd94bbb437d7468c71abfbfa077d8
+  languageName: node
+  linkType: hard
+
 "whatwg-encoding@npm:^2.0.0":
   version: 2.0.0
   resolution: "whatwg-encoding@npm:2.0.0"
@@ -12664,6 +12835,13 @@ __metadata:
   version: 4.0.3
   resolution: "y18n@npm:4.0.3"
   checksum: 014dfcd9b5f4105c3bb397c1c8c6429a9df004aa560964fb36732bfb999bfe83d45ae40aeda5b55d21b1ee53d8291580a32a756a443e064317953f08025b1aa4
+  languageName: node
+  linkType: hard
+
+"yaeti@npm:^0.0.6":
+  version: 0.0.6
+  resolution: "yaeti@npm:0.0.6"
+  checksum: 6db12c152f7c363b80071086a3ebf5032e03332604eeda988872be50d6c8469e1f13316175544fa320f72edad696c2d83843ad0ff370659045c1a68bcecfcfea
   languageName: node
   linkType: hard
 
