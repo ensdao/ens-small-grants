@@ -1,3 +1,4 @@
+import { BigNumber } from 'https://cdn.skypack.dev/@ethersproject/bignumber?dts';
 import { verifyTypedData } from 'https://cdn.skypack.dev/@ethersproject/wallet?dts';
 import { serve } from 'https://deno.land/std@0.131.0/http/server.ts';
 
@@ -28,9 +29,20 @@ serve(async req => {
   const { method, ...body } = await req.json();
 
   if (method === 'create_round') {
-    const { name, description } = body;
-
-    const { data, error } = await supabaseClient.from('rounds').insert([{ name, description }]);
+    const { data, error } = await supabaseClient.from('rounds').insert([
+      {
+        title: body.title,
+        description: body.description,
+        creator: body.creator,
+        allocation_token_amount: body.allocationTokenAmount,
+        allocation_token_address: body.allocationTokenAddress,
+        max_winner_count: body.maxWinnerCount,
+        proposal_start: BigNumber.from(body.proposalStart).toNumber(),
+        proposal_end: BigNumber.from(body.proposalEnd).toNumber(),
+        voting_start: BigNumber.from(body.votingStart).toNumber(),
+        voting_end: BigNumber.from(body.votingEnd).toNumber(),
+      },
+    ]);
 
     if (error) {
       return new Response(JSON.stringify(error), {

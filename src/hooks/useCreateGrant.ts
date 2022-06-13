@@ -19,20 +19,27 @@ const types = {
   ],
 };
 
+export type CreateGrantArgs = {
+  roundId: number;
+  title: string;
+  description: string;
+  fullText: string;
+};
+
 export function useCreateGrant() {
   const { data: signer } = useSigner();
   const { data: account } = useAccount();
   const [loading, setLoading] = useState(false);
 
   const createGrant = useCallback(
-    async (roundId: number, title: string, description: string, fullText: string) => {
+    async (args: CreateGrantArgs) => {
       if (signer && account) {
         const grantData = {
-          roundId,
+          roundId: args.roundId,
           address: account.address,
-          title,
-          description,
-          fullText,
+          title: args.title,
+          description: args.description,
+          fullText: args.fullText,
         };
 
         try {
