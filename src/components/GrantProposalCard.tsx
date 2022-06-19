@@ -1,35 +1,25 @@
 import { Image, Box, Text, Button, Flex } from '@chakra-ui/react';
+import moment from 'moment';
 import { useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useEnsName, useEnsAvatar } from 'wagmi';
 
 import boltSrc from '../assets/bolt.svg';
-
-// TODO: replace with proposal props from hook
-export type ProposalProps = {
-  id: string;
-  roundId: string;
-
-  title: string;
-  description: string | null;
-  fullText: string | null;
-
-  proposerAddr: string;
-  voteCount: number | null;
-  voteStatus: number | null;
-
-  createdAt: number;
-};
+import { Grant } from '../hooks';
 
 export type GrantProposalCardProps = {
-  proposal: ProposalProps;
+  proposal: Grant;
   inProgress?: boolean;
 };
 
 function GrantProposalCard({ proposal, inProgress }: GrantProposalCardProps) {
-  const ensName = 'gail.eth'; // TODO: update to use ethers to get the ENS name from proposal.proposerAddr
-  const timeSinceSubmission = '2 days ago'; // TODO: update to calculate time
+  const navigate = useNavigate();
+  const { data: ensName } = useEnsName({ address: proposal.proposer, chainId: 1 });
+  const { data: ensAvatar } = useEnsAvatar({ addressOrName: proposal.proposer, chainId: 1 });
+  const timeSinceSubmission = moment(proposal.created_at).fromNow();
   const onPressGrantProposal = useCallback(() => {
-    // TODO: navigate to proposal
-  }, []);
+    navigate(`/proposals/${proposal.id}`);
+  }, [proposal, navigate]);
 
   return (
     <Flex
@@ -55,7 +45,11 @@ function GrantProposalCard({ proposal, inProgress }: GrantProposalCardProps) {
               background="primary-purple"
               borderRadius={40}
             >
-              <Image height="20px" src={boltSrc} />
+              {ensAvatar ? (
+                <Image width="34px" height="34px" borderRadius="40px" src={ensAvatar} />
+              ) : (
+                <Image height="20px" src={boltSrc} />
+              )}
             </Box>
 
             <Flex alignItems="flex-start" flexDirection="column">
@@ -65,7 +59,7 @@ function GrantProposalCard({ proposal, inProgress }: GrantProposalCardProps) {
               <Text fontSize="sm">{timeSinceSubmission}</Text>
             </Flex>
           </Flex>
-          {proposal.voteStatus && (
+          {proposal.vote_status && (
             <Box
               alignItems="center"
               justifyContent="center"
@@ -91,7 +85,7 @@ function GrantProposalCard({ proposal, inProgress }: GrantProposalCardProps) {
 
       <Flex justifyContent="space-between" width="100%">
         <Box>
-          {!inProgress && !!proposal.voteCount ? <Text fontWeight="bold">Votes {proposal.voteCount}</Text> : null}
+          {!inProgress && !!proposal.vote_count ? <Text fontWeight="bold">Votes {proposal.vote_count}</Text> : null}
         </Box>
         <Button onClick={onPressGrantProposal} variant="link">
           View proposal

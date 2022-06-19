@@ -33,12 +33,20 @@ const Button: ComponentStyleConfig = {
   },
 };
 
+const Link: ComponentStyleConfig = {
+  baseStyle: {
+    color: '#6496F8',
+    fontSize: '14px',
+    fontWeight: 'bold',
+  },
+};
+
 export const theme = extendTheme(
   {
     config: {
       initialColorMode: 'system',
     },
-    components: { Button },
+    components: { Button, Link },
     colors: {
       'primary-purple': '#8D6EFF',
       'purple-medium': '#EEEEF7',

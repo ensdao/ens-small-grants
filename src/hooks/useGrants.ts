@@ -4,9 +4,15 @@ import { client } from '../supabase';
 
 export type Grant = {
   id: number;
+  proposer: string;
+  round_id: number;
   title: string;
   description: string;
   full_text: string;
+  created_at: string;
+  updated_at: string;
+  vote_count?: number | null;
+  vote_status?: boolean | null;
 };
 
 export function useGrants(roundId: number) {
@@ -17,7 +23,7 @@ export function useGrants(roundId: number) {
     (async () => {
       setLoading(true);
       try {
-        const { data, error } = await client.from('grants').select().eq('round_id', roundId);
+        const { data, error } = await client.from('grants').select().eq('round_id', roundId).eq('deleted', false);
 
         if (error) {
           console.error(error);

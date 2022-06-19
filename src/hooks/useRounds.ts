@@ -4,8 +4,18 @@ import { client } from '../supabase';
 
 export type Round = {
   id: string;
-  name: string;
+  creator: string;
+  title: string;
   description?: string | null;
+  proposal_start: string;
+  proposal_end: string;
+  voting_start: string;
+  voting_end: string;
+  allocation_token_amount: string;
+  allocation_token_address: string;
+  max_winner_count: number;
+  created_at: string;
+  updated_at: string;
 };
 
 export function useRounds() {

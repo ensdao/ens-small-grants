@@ -36,7 +36,7 @@ export function useCreateGrant() {
       if (signer && account) {
         const grantData = {
           roundId: args.roundId,
-          address: account.address,
+          address: account.address?.toLowerCase(),
           title: args.title,
           description: args.description,
           fullText: args.fullText,

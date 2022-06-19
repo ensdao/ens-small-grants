@@ -1,68 +1,58 @@
-import { Image, Text, Box, Button, Flex, Collapse } from '@chakra-ui/react';
+import { Image, Text, Box, Button, Flex, Collapse, Spinner, Center } from '@chakra-ui/react';
 import { ethers } from 'ethers';
 import { useCallback, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import boltSrc from '../assets/bolt.svg';
 import checkmarkWhiteSrc from '../assets/checkmark_white.svg';
 import proposalSrc from '../assets/proposal.svg';
+import { useGrants } from '../hooks';
+import { Round } from '../hooks';
 import GrantProposalCard from './GrantProposalCard';
 import ProgressBar from './ProgressBar';
 
-const mockProposal = {
-  id: '123',
-  roundId: '1',
-  title: 'ENS Marketplace on Zora',
-  description: 'Create the Zora frontend for ENS to allow for better selling and buying of ENS names.',
-  fullText: null,
-  proposerAddr: '0xEE599e7c078cAdBB7f81531322d6534F22749136',
-  voteCount: 338,
-  voteStatus: null,
-  createdAt: 1_636_984_800,
-};
-
-// TODO: replace with proposal props from hook
-export type RoundProps = {
-  id: string;
-  snapshotId: string | null;
-  granteeAddr: string;
-
-  title: string;
-  description: string | null;
-
-  proposalStart: number;
-  proposalEnd: number;
-
-  voteStart: number;
-  voteEnd: number;
-
-  allocationTokenAmount: bigint | null;
-  allocationTokenAddr: string;
-  maxWinnerCount: number;
-};
-
 export type GrantRoundSectionProps = {
-  round: RoundProps;
+  round: Round;
   inProgress?: boolean;
 };
 
 function GrantRoundSection({ round, inProgress }: GrantRoundSectionProps) {
   const [expandProposals, setExpandProposals] = useState(false);
-  const allocationAmount = round.allocationTokenAmount ? ethers.utils.formatEther(round.allocationTokenAmount) : 0;
-  // TODO: get proposals from rounds, for now stub it
-  const proposals = [
-    mockProposal,
-    { ...mockProposal, id: '2', voteStatus: inProgress ? null : 2 },
-    { ...mockProposal, id: '3' },
-    { ...mockProposal, id: '4' },
-  ];
+  const allocationAmount = round.allocation_token_amount
+    ? ethers.utils.formatEther(round.allocation_token_amount)
+    : '0';
+  const { grants, loading } = useGrants(1);
+  const navigate = useNavigate();
 
   const onPressSubmitProposal = useCallback(() => {
-    // TODO: add interaction for submitting a new proposal
-  }, []);
+    navigate('/create_proposal');
+  }, [navigate]);
 
   const onToggleExpandProposals = useCallback(() => {
     setExpandProposals(!expandProposals);
   }, [expandProposals]);
+
+  const proposalsSection = loading ? (
+    <Center minHeight="250px">
+      <Spinner />
+    </Center>
+  ) : (
+    <>
+      <Collapse in={inProgress || expandProposals}>
+        <Flex flexWrap="wrap" gap="24px" paddingTop="42px">
+          {grants && grants.map(g => <GrantProposalCard key={g.id} proposal={g} inProgress={inProgress} />)}
+        </Flex>
+      </Collapse>
+
+      {inProgress && (!grants || grants.length === 0) && (
+        <Flex alignItems="center" flexDirection="column" gap="24px">
+          <Image height="161px" src={proposalSrc} />
+          <Text>Be the first to add a proposal</Text>
+          <Button onClick={onPressSubmitProposal}>Submit Proposal</Button>
+        </Flex>
+      )}
+    </>
+  );
 
   return (
     <Box width="100%" padding="60px" background={inProgress ? 'purple-medium' : 'purple-light'} borderRadius="20px">
@@ -89,7 +79,7 @@ function GrantRoundSection({ round, inProgress }: GrantRoundSectionProps) {
           <Text marginEnd="6px" fontSize="sm" fontWeight="bold">
             {allocationAmount}Ξ
           </Text>
-          <Text fontSize="sm"> for a max of {round.maxWinnerCount} voted projects</Text>
+          <Text fontSize="sm"> for the top {round.max_winner_count} voted projects</Text>
         </Flex>
 
         {inProgress ? (
@@ -115,21 +105,7 @@ function GrantRoundSection({ round, inProgress }: GrantRoundSectionProps) {
         </Flex>
       )}
 
-      <Collapse in={inProgress || expandProposals}>
-        <Flex flexWrap="wrap" gap="24px" paddingTop="42px">
-          {proposals.map(p => (
-            <GrantProposalCard key={p.id} proposal={p} inProgress={inProgress} />
-          ))}
-        </Flex>
-      </Collapse>
-
-      {inProgress && proposals.length === 0 && (
-        <Flex alignItems="center" flexDirection="column" gap="24px">
-          <Image height="161px" src={proposalSrc} />
-          <Text>Be the first to add a proposal</Text>
-          <Button onClick={onPressSubmitProposal}>Submit Proposal</Button>
-        </Flex>
-      )}
+      {proposalsSection}
     </Box>
   );
 }

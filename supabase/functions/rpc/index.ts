@@ -60,7 +60,9 @@ serve(async req => {
 
     const recoveredAddress = verifyTypedData(domain, types, grantData, signature);
 
-    if (recoveredAddress !== grantData.address) {
+    const address = recoveredAddress.toLowerCase();
+
+    if (address !== grantData.address) {
       return new Response(JSON.stringify({ message: 'invalid signature ' }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
@@ -82,9 +84,12 @@ serve(async req => {
       });
     }
 
+    await supabaseClient.from('grants').update({ deleted: true }).eq('proposer', address);
+
     const { data, error: grantError } = await supabaseClient.from('grants').insert([
       {
         round_id: grantData.roundId,
+        proposer: address,
         title: grantData.title,
         description: grantData.description,
         full_text: grantData.fullText,
