@@ -1,4 +1,4 @@
-import { Box, FormControl, FormLabel, FormErrorMessage, Input, Textarea, Button } from '@chakra-ui/react';
+import { Box, FormControl, FormLabel, FormErrorMessage, Input, Textarea, Button, Flex } from '@chakra-ui/react';
 import { useCallback } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
@@ -37,6 +37,10 @@ export function CreateProposal() {
     [createGrant, navigate]
   );
 
+  const onCancel = useCallback(() => {
+    navigate('/');
+  }, [navigate]);
+
   return (
     <Box alignItems="center" flexDirection="column" display="flex">
       <Box flexDirection="column" gap="42px" display="flex" width="100%" maxWidth="936px">
@@ -55,9 +59,12 @@ export function CreateProposal() {
           <Textarea id="fullText" {...register('fullText', { required: true })} />
           {errors.fullText && <FormErrorMessage>Full Proposal Text is required</FormErrorMessage>}
         </FormControl>
-        <Box>
-          <Button onClick={handleSubmit(onSubmit)}>Submit</Button>
-        </Box>
+        <Flex justifyContent="flex-end" gap="12px">
+          <Button onClick={onCancel} variant="secondary">
+            Cancel
+          </Button>
+          <Button onClick={handleSubmit(onSubmit)}>Publish</Button>
+        </Flex>
       </Box>
     </Box>
   );

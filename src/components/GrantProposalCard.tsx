@@ -35,7 +35,6 @@ function GrantProposalCard({ proposal, inProgress }: GrantProposalCardProps) {
       <Flex flexDirection="column" gap="24px" width="100%" height="100%">
         <Flex alignItems="center" justifyContent="space-between">
           <Flex alignItems="center" gap="16px">
-            {/* TODO: add davatar, stub image for now */}
             <Box
               alignItems="center"
               justifyContent="center"
@@ -51,7 +50,6 @@ function GrantProposalCard({ proposal, inProgress }: GrantProposalCardProps) {
                 <Image height="20px" src={boltSrc} />
               )}
             </Box>
-
             <Flex alignItems="flex-start" flexDirection="column">
               <Text fontSize="sm" fontWeight={600}>
                 {ensName}

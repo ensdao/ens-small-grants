@@ -3,7 +3,9 @@ import { Box, Center, Image, Spinner, Text, Link } from '@chakra-ui/react';
 import { useParams, Link as ReactRouterLink } from 'react-router-dom';
 import { useEnsAvatar, useEnsName } from 'wagmi';
 
+import boltSrc from '../assets/bolt.svg';
 import { useGrant } from '../hooks';
+import VoteSection from './VoteSection';
 
 export function Proposal() {
   const { id } = useParams<{ id: string }>();
@@ -21,13 +23,28 @@ export function Proposal() {
 
   return (
     <Box alignItems="center" flexDirection="column" display="flex">
-      <Box flexDirection="row" display="flex" width="100%" maxWidth="936px">
+      <Box flexWrap="wrap" flexDirection="row" gap="32px" display="flex" width="100%" maxWidth="936px">
         <Box flex={2}>
           <Link as={ReactRouterLink} to="/">
             <ArrowLeftOutlined /> Back to all proposals
           </Link>
           <Box alignItems="center" gap="16px" display="flex" marginTop="32px">
-            {ensAvatar && <Image width="60px" height="60px" borderRadius="60px" src={ensAvatar} />}
+            <Box
+              alignItems="center"
+              justifyContent="center"
+              display="flex"
+              overflow="hidden"
+              width="40px"
+              height="40px"
+              background="primary-purple"
+              borderRadius={40}
+            >
+              <Image
+                width={ensAvatar ? '40px' : '24px'}
+                height={ensAvatar ? '40px' : '24px'}
+                src={ensAvatar || boltSrc}
+              />
+            </Box>
             <Text fontSize="14px" fontWeight="bold">
               {ensName || grant.proposer}
             </Text>
@@ -44,7 +61,9 @@ export function Proposal() {
             </Text>
           </Box>
         </Box>
-        <Box flex={1}></Box>
+        <Box flex={1}>
+          <VoteSection proposal={grant} />
+        </Box>
       </Box>
     </Box>
   );

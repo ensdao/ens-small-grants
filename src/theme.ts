@@ -23,6 +23,12 @@ const Button: ComponentStyleConfig = {
     },
   },
   variants: {
+    secondary: {
+      background: '#E8E8EA',
+      bgGradient: 'none',
+      color: '#515152',
+      _hover: { background: '#C3C3C3' },
+    },
     link: {
       background: 'none',
       bgGradient: 'none',
