@@ -48,5 +48,16 @@ sequenceDiagram
     Note over user,snapshot: Voting period ends
 ```
 
+## TODO
+
+MVP
+- [ ] Function to upload proposal data and create Snapshot proposal
+- [ ] UI to vote on active proposal round
+
+Feature complete v0
+- [ ] UI to create proposal round
+- [ ] Make design style line up properly with mockups
+
+
 ## License
 This project is licensed under both MIT and Apache 2.0

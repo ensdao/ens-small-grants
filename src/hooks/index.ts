@@ -3,3 +3,4 @@ export * from './useRounds';
 export * from './useGrants';
 export * from './useCreateGrant';
 export * from './useGrant';
+export * from './useCreateSnapshot';

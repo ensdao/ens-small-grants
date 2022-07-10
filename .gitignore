@@ -98,6 +98,7 @@ cypress.env.json
 book/
 generated/
 .env
+.env.local
 
 # note(carlos): Not entirely sure why this is generated from the `graph build` command,
 # but just ignore it for now

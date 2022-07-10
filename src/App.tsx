@@ -7,10 +7,10 @@ import GrantRoundSection from './components/GrantRoundSection';
 import { Proposal } from './components/Proposal';
 import { useRounds } from './hooks';
 import { CreateProposal } from './screens/CreateProposal';
+import { CreateSnapshot } from './screens/CreateSnapshot';
 
 function Home() {
   const { rounds, loading } = useRounds();
-
   if (loading || !rounds || rounds.length === 0) {
     return (
       <Center>
@@ -71,6 +71,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/create_proposal" element={<CreateProposal />} />
         <Route path="/proposals/:id" element={<Proposal />} />
+        <Route path="/rounds/:id/snapshot" element={<CreateSnapshot />} />
       </Routes>
     </Box>
   );
