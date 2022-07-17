@@ -1,6 +1,5 @@
-import { BigNumber } from 'https://cdn.skypack.dev/@ethersproject/bignumber?dts';
 import { verifyTypedData } from 'https://cdn.skypack.dev/@ethersproject/wallet?dts';
-import Arweave from 'https://cdn.skypack.dev/arweave@1.11.4?dts';
+import moment from 'https://cdn.skypack.dev/moment?dts';
 import { serve } from 'https://deno.land/std@0.131.0/http/server.ts';
 
 import { corsHeaders } from '../_shared/corsHeaders.ts';
@@ -21,18 +20,31 @@ const types = {
     { name: 'fullText', type: 'string' },
   ],
 };
+
+const roundTypes = {
+  Round: [
+    { name: 'address', type: 'address' },
+    { name: 'title', type: 'string' },
+    { name: 'description', type: 'string' },
+    { name: 'allocation_token_address', type: 'address' },
+    { name: 'allocation_token_amount', type: 'uint256' },
+    { name: 'max_winner_count', type: 'uint64' },
+    { name: 'proposal_start', type: 'string' },
+    { name: 'proposal_end', type: 'string' },
+    { name: 'voting_start', type: 'string' },
+    { name: 'voting_end', type: 'string' },
+  ],
+};
+
 const snapshotTypes = {
-  CreateSnapshotRequest: [{ name: 'roundId', type: 'uint256' }],
+  Snapshot: [
+    { name: 'roundId', type: 'uint256' },
+    { name: 'snapshotProposalId', type: 'string' },
+  ],
 };
 
 // temporary, hardcoded "admins" for web2 service
 const adminAddresses = new Set(['0x9B6568d72A6f6269049Fac3998d1fadf1E6263cc'].map(x => x.toLowerCase()));
-
-const arweave = Arweave.init({
-  host: 'arweave.net',
-  port: 443,
-  protocol: 'https',
-});
 
 serve(async req => {
   if (req.method === 'OPTIONS') {
@@ -43,18 +55,38 @@ serve(async req => {
 
   switch (method) {
     case 'create_round': {
+      const { roundData, signature } = body;
+
+      const recoveredAddress = verifyTypedData(domain, roundTypes, roundData, signature);
+
+      const address = recoveredAddress.toLowerCase();
+
+      if (address !== roundData.address) {
+        return new Response(JSON.stringify({ message: 'invalid signature' }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 401,
+        });
+      }
+
+      if (!adminAddresses.has(address)) {
+        return new Response(JSON.stringify({ message: 'not an admin' }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 401,
+        });
+      }
+
       const { data, error } = await supabaseClient.from('rounds').insert([
         {
-          title: body.title,
-          description: body.description,
-          creator: body.creator,
-          allocation_token_amount: body.allocationTokenAmount,
-          allocation_token_address: body.allocationTokenAddress,
-          max_winner_count: body.maxWinnerCount,
-          proposal_start: BigNumber.from(body.proposalStart).toNumber(),
-          proposal_end: BigNumber.from(body.proposalEnd).toNumber(),
-          voting_start: BigNumber.from(body.votingStart).toNumber(),
-          voting_end: BigNumber.from(body.votingEnd).toNumber(),
+          title: roundData.title,
+          description: roundData.description,
+          creator: roundData.address,
+          allocation_token_address: roundData.allocation_token_address,
+          allocation_token_amount: roundData.allocation_token_amount,
+          max_winner_count: roundData.max_winner_count,
+          proposal_start: Number.parseInt(roundData.proposal_start),
+          proposal_end: Number.parseInt(roundData.proposal_end),
+          voting_start: Number.parseInt(roundData.voting_start),
+          voting_end: Number.parseInt(roundData.voting_end),
         },
       ]);
 
@@ -78,8 +110,9 @@ serve(async req => {
       const address = recoveredAddress.toLowerCase();
 
       if (address !== grantData.address) {
-        return new Response(JSON.stringify({ message: 'invalid signature ' }), {
+        return new Response(JSON.stringify({ message: 'invalid signature' }), {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 401,
         });
       }
 
@@ -94,6 +127,24 @@ serve(async req => {
 
       if (rounds.length !== 1) {
         return new Response(JSON.stringify({ message: 'could not find round' }), {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+
+      const round = rounds[0];
+
+      const now = moment();
+
+      if (now < moment(round.proposal_start)) {
+        return new Response(JSON.stringify({ message: 'proposal period not started' }), {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+
+      if (now > moment(round.proposal_end)) {
+        return new Response(JSON.stringify({ message: 'proposal period ended' }), {
           status: 400,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
@@ -123,16 +174,21 @@ serve(async req => {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
-    case 'create_snapshot': {
-      const { data, signature } = body;
+    case 'attach_snapshot': {
+      const { snapshotData, signature } = body;
 
-      const recoveredAddress = verifyTypedData(domain, snapshotTypes, data, signature);
+      const recoveredAddress = verifyTypedData(domain, snapshotTypes, snapshotData, signature);
 
-      if (!adminAddresses.has(recoveredAddress.toLowerCase())) {
-        return new Response('not authorized', { status: 401, headers: { ...corsHeaders } });
+      const address = recoveredAddress.toLowerCase();
+
+      if (!adminAddresses.has(address)) {
+        return new Response(JSON.stringify({ message: 'not an admin' }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 401,
+        });
       }
 
-      const { data: grants, error } = await supabaseClient.from('grants').select().eq('round_id', data.roundId);
+      const { data: rounds, error } = await supabaseClient.from('rounds').select().eq('id', snapshotData.roundId);
 
       if (error) {
         return new Response(JSON.stringify(error), {
@@ -141,35 +197,29 @@ serve(async req => {
         });
       }
 
-      const grantsData = grants.map(grant => ({
-        proposer: grant.proposer,
-        title: grant.title,
-        description: grant.description,
-        fullText: grant.full_text,
-      }));
-
-      const arweaveKeyData = Deno.env.get('ARWEAVE_KEY');
-
-      if (!arweaveKeyData) {
-        return new Response('no arweave key set', { status: 400, headers: { ...corsHeaders } });
+      if (rounds.length !== 1) {
+        return new Response(JSON.stringify({ message: 'could not find round' }), {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
       }
 
-      const arweaveKey = JSON.parse(atob(arweaveKeyData));
+      const round = rounds[0];
 
-      const transaction = await arweave.createTransaction({ data: JSON.stringify(grantsData) }, arweaveKey);
-      transaction.addTag('Content-Type', 'application/json');
-      transaction.addTag('App-Name', 'ENS-Small-Grants-v1');
-
-      await arweave.transactions.sign(transaction, arweaveKey);
-
-      const uploader = await arweave.transactions.getUploader(transaction);
-
-      while (!uploader.isComplete) {
-        await uploader.uploadChunk();
+      if (round.snapshot_proposal_id) {
+        return new Response(JSON.stringify({ message: 'round already has a snapshot attached' }), {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
       }
 
-      return new Response(JSON.stringify({ arweaveId: transaction.id }), {
-        status: 201,
+      await supabaseClient
+        .from('rounds')
+        .update({ snapshot_proposal_id: snapshotData.snapshotProposalId })
+        .eq('id', snapshotData.roundId);
+
+      return new Response(JSON.stringify({ message: 'done' }), {
+        status: 200,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }

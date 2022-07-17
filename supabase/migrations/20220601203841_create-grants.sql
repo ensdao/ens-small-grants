@@ -9,3 +9,15 @@ create table grants (
   created_at timestamptz default now(),
   updated_at timestamptz default now()
 );
+
+-- Enable Row-Level Security
+alter table grants
+  enable row level security;
+
+-- Anyone can read
+create policy "Grants are viewable by everyone."
+  on grants for select using (true);
+
+-- Only authenticated can write, which is just edge function
+create policy "Grants are updatable by auth"
+  ON grants for insert to authenticated with check (true);

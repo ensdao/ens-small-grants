@@ -4,7 +4,20 @@ import { ethers } from 'ethers';
 import { useCallback, useState } from 'react';
 import { useSigner, useAccount, useBlockNumber } from 'wagmi';
 
-import { client } from '../supabase';
+import { client, functionRequest } from '../supabase';
+
+const domain = {
+  name: 'ENS Grants',
+  version: '1',
+  chainId: 1,
+};
+
+const types = {
+  Snapshot: [
+    { name: 'roundId', type: 'uint256' },
+    { name: 'snapshotProposalId', type: 'string' },
+  ],
+};
 
 const snapshotClient = new snapshot.Client712('https://hub.snapshot.org');
 
@@ -75,11 +88,11 @@ export function useCreateSnapshot() {
             signer as unknown as ethers.providers.Web3Provider,
             account.address || '',
             {
-              space: 'test.small-grants.eth',
+              space: round.snapshot_space_id,
               type: 'single-choice',
               title: round.title,
               body: `https://arweave.net/${transaction.id}`,
-              choices: grants.map((g, i) => `${i} - ${g.title}`),
+              choices: grants.map(g => `${g.id} - ${g.title}`),
               // todo(carlos): insert link to round
               discussion: '',
               start: Math.floor(new Date(round.voting_start).getTime() / 1000),
@@ -89,7 +102,18 @@ export function useCreateSnapshot() {
             }
           )) as { id: string };
 
-          return receipt.id;
+          const snapshotData = {
+            roundId: args.roundId,
+            snapshotProposalId: receipt.id,
+          };
+
+          // @ts-ignore
+          const signature = await signer._signTypedData(domain, types, snapshotData);
+
+          return functionRequest('attach_snapshot', {
+            snapshotData,
+            signature,
+          });
         } finally {
           setLoading(false);
         }

@@ -51,8 +51,11 @@ sequenceDiagram
 ## TODO
 
 MVP
-- [ ] Function to upload proposal data and create Snapshot proposal
+- [x] Function to upload proposal data and create Snapshot proposal
+- [x] Make everything react correctly to proposal/voting start/end dates
 - [ ] UI to vote on active proposal round
+- [x] Add RLS to supabase
+- [ ] Make sure timeline is enforced in functions
 
 Feature complete v0
 - [ ] UI to create proposal round

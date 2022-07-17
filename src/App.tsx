@@ -11,10 +11,18 @@ import { CreateSnapshot } from './screens/CreateSnapshot';
 
 function Home() {
   const { rounds, loading } = useRounds();
-  if (loading || !rounds || rounds.length === 0) {
+  if (loading || !rounds) {
     return (
       <Center>
         <Spinner />
+      </Center>
+    );
+  }
+
+  if (rounds.length === 0) {
+    return (
+      <Center>
+        <Text>No rounds created yet...</Text>
       </Center>
     );
   }
@@ -32,7 +40,7 @@ function Home() {
             </Text>
           </Flex>
 
-          <GrantRoundSection round={rounds[0]} inProgress />
+          <GrantRoundSection round={rounds[0]} />
 
           {rounds && rounds.length > 1 && (
             <>
@@ -70,8 +78,8 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/create_proposal" element={<CreateProposal />} />
-        <Route path="/proposals/:id" element={<Proposal />} />
-        <Route path="/rounds/:id/snapshot" element={<CreateSnapshot />} />
+        <Route path="/rounds/:roundId/proposals/:id" element={<Proposal />} />
+        <Route path="/rounds/:roundId/snapshot" element={<CreateSnapshot />} />
       </Routes>
     </Box>
   );

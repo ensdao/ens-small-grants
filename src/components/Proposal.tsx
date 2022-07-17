@@ -4,16 +4,17 @@ import { useParams, Link as ReactRouterLink } from 'react-router-dom';
 import { useEnsAvatar, useEnsName } from 'wagmi';
 
 import boltSrc from '../assets/bolt.svg';
-import { useGrant } from '../hooks';
+import { useGrant, useRound } from '../hooks';
 import VoteSection from './VoteSection';
 
 export function Proposal() {
-  const { id } = useParams<{ id: string }>();
-  const { grant, loading } = useGrant(id || '');
+  const { id, roundId } = useParams<{ id: string; roundId: string }>();
+  const { grant, loading, votesAvailable } = useGrant(id!);
+  const { round, loading: roundLoading } = useRound(roundId!);
   const { data: ensName } = useEnsName({ address: grant?.proposer, chainId: 1 });
   const { data: ensAvatar } = useEnsAvatar({ addressOrName: grant?.proposer, chainId: 1 });
 
-  if (loading || !grant) {
+  if (loading || roundLoading || !grant || !round) {
     return (
       <Center>
         <Spinner />
@@ -62,7 +63,7 @@ export function Proposal() {
           </Box>
         </Box>
         <Box flex={1}>
-          <VoteSection proposal={grant} />
+          <VoteSection round={round} proposal={grant} votesAvailable={votesAvailable} />
         </Box>
       </Box>
     </Box>
