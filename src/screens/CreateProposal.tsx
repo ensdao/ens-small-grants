@@ -68,8 +68,11 @@ export function CreateProposal() {
         <FormControl isInvalid={!!errors.fullText} isRequired={true}>
           <FormLabel htmlFor="fullText">Full Proposal Text</FormLabel>
           <FormHelperText>
-            You can use <Link href="https://www.markdownguide.org/basic-syntax/">markdown syntax</Link> to format your
-            proposal
+            You can use{' '}
+            <Link href="https://www.markdownguide.org/basic-syntax/" target="_blank">
+              markdown syntax
+            </Link>{' '}
+            to format your proposal
           </FormHelperText>
           <Textarea id="fullText" {...register('fullText', { required: true })} />
           {errors.fullText && <FormErrorMessage>Full Proposal Text is required</FormErrorMessage>}
