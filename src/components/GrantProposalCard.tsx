@@ -52,7 +52,7 @@ function GrantProposalCard({ roundId, proposal, inProgress }: GrantProposalCardP
             </Box>
             <Flex alignItems="flex-start" flexDirection="column">
               <Text fontSize="sm" fontWeight={600}>
-                {ensName}
+                {ensName || `${proposal.proposer.slice(0, 6)}..${proposal.proposer.slice(36, 40)}`}
               </Text>
               <Text fontSize="sm">{timeSinceSubmission}</Text>
             </Flex>

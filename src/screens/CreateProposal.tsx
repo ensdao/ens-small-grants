@@ -1,4 +1,15 @@
-import { Box, FormControl, FormLabel, FormErrorMessage, Input, Textarea, Button, Flex } from '@chakra-ui/react';
+import {
+  Box,
+  FormControl,
+  FormLabel,
+  FormErrorMessage,
+  Input,
+  Textarea,
+  Button,
+  Flex,
+  FormHelperText,
+  Link,
+} from '@chakra-ui/react';
 import { useCallback } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
@@ -56,6 +67,10 @@ export function CreateProposal() {
         </FormControl>
         <FormControl isInvalid={!!errors.fullText} isRequired={true}>
           <FormLabel htmlFor="fullText">Full Proposal Text</FormLabel>
+          <FormHelperText>
+            You can use <Link href="https://www.markdownguide.org/basic-syntax/">markdown syntax</Link> to format your
+            proposal
+          </FormHelperText>
           <Textarea id="fullText" {...register('fullText', { required: true })} />
           {errors.fullText && <FormErrorMessage>Full Proposal Text is required</FormErrorMessage>}
         </FormControl>

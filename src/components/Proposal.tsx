@@ -1,5 +1,6 @@
 import { ArrowLeftOutlined } from '@ant-design/icons';
 import { Box, Center, Image, Spinner, Text, Link } from '@chakra-ui/react';
+import ReactMarkdown from 'react-markdown';
 import { useParams, Link as ReactRouterLink } from 'react-router-dom';
 import { useEnsAvatar, useEnsName } from 'wagmi';
 
@@ -57,9 +58,24 @@ export function Proposal() {
             <Text fontSize="24px" fontWeight="bold">
               {grant.description}
             </Text>
-            <Text fontSize="18px" fontWeight="400">
-              {grant.full_text}
-            </Text>
+            <Box
+              sx={{
+                '& > h1': {
+                  fontSize: '24px',
+                },
+                '& > h2': {
+                  fontSize: '20px',
+                },
+                '& > h3': {
+                  fontSize: '18px',
+                },
+                '& > strong': {
+                  fontWeight: 'bold',
+                },
+              }}
+            >
+              <ReactMarkdown>{grant.full_text}</ReactMarkdown>
+            </Box>
           </Box>
         </Box>
         <Box flex={1}>

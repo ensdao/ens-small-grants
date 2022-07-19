@@ -57,7 +57,7 @@ function VoteSection({ round, proposal, votesAvailable }: GrantProposalCardProps
   const [openVoteModal, setOpenVoteModal] = useState(false);
   const { data } = useAccount();
 
-  const preVoting = moment() < round.voting_start && !!proposal.vote_status;
+  const preVoting = moment() < round.voting_start || !!proposal.vote_status;
   const roundIsClosed = !!proposal.vote_status;
 
   // TODO: replace with getting the voter via data.address
