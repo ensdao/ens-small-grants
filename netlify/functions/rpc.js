@@ -69,7 +69,7 @@ exports.handler = async event => {
         return {
           body: JSON.stringify({ message: 'invalid signature' }),
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          status: 401,
+          statusCode: 401,
         };
       }
 
@@ -77,7 +77,7 @@ exports.handler = async event => {
         return {
           body: JSON.stringify({ message: 'not an admin' }),
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          status: 401,
+          statusCode: 401,
         };
       }
 
@@ -99,14 +99,14 @@ exports.handler = async event => {
       if (error) {
         return {
           body: JSON.stringify(error),
-          status: 500,
+          statusCode: 500,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         };
       }
 
       return new {
         body: JSON.stringify(data),
-        status: 201,
+        statusCode: 201,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       }();
     }
@@ -121,7 +121,7 @@ exports.handler = async event => {
         return {
           body: JSON.stringify({ message: 'invalid signature' }),
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          status: 401,
+          statusCode: 401,
         };
       }
 
@@ -130,7 +130,7 @@ exports.handler = async event => {
       if (error) {
         return {
           body: JSON.stringify(error),
-          status: 500,
+          statusCode: 500,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         };
       }
@@ -138,7 +138,7 @@ exports.handler = async event => {
       if (rounds.length !== 1) {
         return {
           body: JSON.stringify({ message: 'could not find round' }),
-          status: 400,
+          statusCode: 400,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         };
       }
@@ -150,7 +150,7 @@ exports.handler = async event => {
       if (now < moment(round.proposal_start)) {
         return {
           body: JSON.stringify({ message: 'proposal period not started' }),
-          status: 400,
+          statusCode: 400,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         };
       }
@@ -158,7 +158,7 @@ exports.handler = async event => {
       if (now > moment(round.proposal_end)) {
         return {
           body: JSON.stringify({ message: 'proposal period ended' }),
-          status: 400,
+          statusCode: 400,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         };
       }
@@ -178,14 +178,14 @@ exports.handler = async event => {
       if (grantError) {
         return {
           body: JSON.stringify(grantError),
-          status: 500,
+          statusCode: 500,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         };
       }
 
       return {
         body: JSON.stringify(data),
-        status: 201,
+        statusCode: 201,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       };
     }
@@ -200,7 +200,7 @@ exports.handler = async event => {
         return {
           body: JSON.stringify({ message: 'not an admin' }),
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          status: 401,
+          statusCode: 401,
         };
       }
 
@@ -209,7 +209,7 @@ exports.handler = async event => {
       if (error) {
         return {
           body: JSON.stringify(error),
-          status: 500,
+          statusCode: 500,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         };
       }
@@ -217,7 +217,7 @@ exports.handler = async event => {
       if (rounds.length !== 1) {
         return {
           body: JSON.stringify({ message: 'could not find round' }),
-          status: 400,
+          statusCode: 400,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         };
       }
@@ -227,7 +227,7 @@ exports.handler = async event => {
       if (round.snapshot_proposal_id) {
         return {
           body: JSON.stringify({ message: 'round already has a snapshot attached' }),
-          status: 400,
+          statusCode: 400,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         };
       }
@@ -239,12 +239,12 @@ exports.handler = async event => {
 
       return {
         body: JSON.stringify({ message: 'done' }),
-        status: 200,
+        statusCode: 200,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       };
     }
     default: {
-      return { body: 'not found', status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } };
+      return { body: 'not found', statusCode: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } };
     }
   }
 };
