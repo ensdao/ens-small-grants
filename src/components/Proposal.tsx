@@ -1,10 +1,9 @@
 import { ArrowLeftOutlined } from '@ant-design/icons';
-import { Box, Center, Image, Spinner, Text, Link } from '@chakra-ui/react';
+import { Box, Center, Spinner, Text, Link, Avatar } from '@chakra-ui/react';
 import ReactMarkdown from 'react-markdown';
 import { useParams, Link as ReactRouterLink } from 'react-router-dom';
 import { useEnsAvatar, useEnsName } from 'wagmi';
 
-import boltSrc from '../assets/bolt.svg';
 import { useGrant, useRound } from '../hooks';
 import VoteSection from './VoteSection';
 
@@ -41,11 +40,7 @@ export function Proposal() {
               background="primary-purple"
               borderRadius={40}
             >
-              <Image
-                width={ensAvatar ? '40px' : '24px'}
-                height={ensAvatar ? '40px' : '24px'}
-                src={ensAvatar || boltSrc}
-              />
+              <Avatar width={'40px'} height={'40px'} src={ensAvatar as string} />
             </Box>
             <Text fontSize="14px" fontWeight="bold">
               {ensName || grant.proposer}

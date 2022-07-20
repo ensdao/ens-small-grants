@@ -36,7 +36,7 @@ export function useGrant(grantId: string) {
 
   useEffect(() => {
     setGrant(currentGrant => {
-      if (currentGrant && snapshotProposal) {
+      if (currentGrant && snapshotProposal && snapshotProposal.choices) {
         // determine choice id for grant
         const choiceId = snapshotProposal.choices.findIndex(choice => {
           const split = choice.split(' - ');

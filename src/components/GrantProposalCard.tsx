@@ -1,9 +1,8 @@
-import { Image, Box, Text, Button, Flex } from '@chakra-ui/react';
+import { Box, Text, Button, Flex, Avatar } from '@chakra-ui/react';
 import { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useEnsName, useEnsAvatar } from 'wagmi';
 
-import boltSrc from '../assets/bolt.svg';
 import { Grant } from '../hooks';
 
 export type GrantProposalCardProps = {
@@ -44,11 +43,7 @@ function GrantProposalCard({ roundId, proposal, inProgress }: GrantProposalCardP
               background="primary-purple"
               borderRadius={40}
             >
-              {ensAvatar ? (
-                <Image width="34px" height="34px" borderRadius="40px" src={ensAvatar} />
-              ) : (
-                <Image height="20px" src={boltSrc} />
-              )}
+              <Avatar width={'34px'} height="34px" src={ensAvatar as string} />
             </Box>
             <Flex alignItems="flex-start" flexDirection="column">
               <Text fontSize="sm" fontWeight={600}>

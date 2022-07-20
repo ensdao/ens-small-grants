@@ -50,14 +50,26 @@ const Link: ComponentStyleConfig = {
 export const theme = extendTheme(
   {
     config: {
-      initialColorMode: 'system',
+      initialColorMode: 'light',
     },
     components: { Button, Link },
-    colors: {
-      'primary-purple': '#8D6EFF',
-      'purple-medium': '#EEEEF7',
-      'purple-light': '#F8F7FC',
-      'secondary-green': '#67B195',
+    semanticTokens: {
+      colors: {
+        white: {
+          default: '#FFFFFF',
+          _dark: '#000000',
+        },
+        'primary-purple': '#8D6EFF',
+        'purple-medium': {
+          default: '#EEEEF7',
+          _dark: '#140C14',
+        },
+        'purple-light': {
+          default: '#F8F7FC',
+          _dark: '#140C14',
+        },
+        'secondary-green': '#67B195',
+      },
     },
   },
   withDefaultColorScheme({ colorScheme: 'blue' })
