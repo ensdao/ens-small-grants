@@ -59,7 +59,7 @@ function GrantRoundSection({ round }: GrantRoundSectionProps) {
   ) : (
     <>
       <Collapse in={inProgress || expandProposals}>
-        <Flex flexWrap="wrap" gap="24px" paddingTop="42px">
+        <Flex justifyContent="center" flexWrap="wrap" gap="24px" paddingTop="42px">
           {grants &&
             grants.map(g => <GrantProposalCard key={g.id} roundId={round.id} proposal={g} inProgress={inProgress} />)}
         </Flex>
@@ -114,7 +114,13 @@ function GrantRoundSection({ round }: GrantRoundSectionProps) {
         </Flex>
 
         {inProgress ? (
-          <>{proposalsOpen && <Button onClick={onPressSubmitProposal}>Submit Proposal</Button>}</>
+          <>
+            {proposalsOpen && (
+              <Button fontSize={['8px', '14px', '16px']} onClick={onPressSubmitProposal}>
+                Submit Proposal
+              </Button>
+            )}
+          </>
         ) : (
           !beforeStart && (
             <Button onClick={onToggleExpandProposals} variant="link">

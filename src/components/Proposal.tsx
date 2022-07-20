@@ -60,12 +60,16 @@ export function Proposal() {
                 },
                 '& > h2': {
                   fontSize: '20px',
+                  marginBottom: '16px',
                 },
                 '& > h3': {
                   fontSize: '18px',
                 },
                 '& > strong': {
                   fontWeight: 'bold',
+                },
+                '& > p': {
+                  marginBottom: '16px',
                 },
               }}
             >

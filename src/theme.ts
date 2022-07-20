@@ -53,6 +53,10 @@ export const theme = extendTheme(
       initialColorMode: 'light',
     },
     components: { Button, Link },
+    fonts: {
+      heading: "'Satoshi-Variable', sans-sarif",
+      body: "'Satoshi-Variable', sans-sarif",
+    },
     semanticTokens: {
       colors: {
         white: {
