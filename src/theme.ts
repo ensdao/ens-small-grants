@@ -36,6 +36,41 @@ const Button: ComponentStyleConfig = {
       borderRadius: 0,
       fontWeight: 600,
     },
+    connectWallet: {
+      color: '#FFF',
+      background: 'primary-purple',
+      bgGradient: 'none',
+      borderRadius: '12px',
+      boxShadow: 'rgb(232 232 235) 0px 2px 12px',
+      '&:hover': {
+        transform: 'translateY(-1px)',
+        filter: 'brightness(1.05)',
+      },
+      '&:active': {
+        transform: 'translateY(0px)',
+        filter: 'brightness(1)',
+      },
+      '&:focus': {
+        boxShadow: 'rgb(232 232 235) 0px 2px 12px',
+      },
+    },
+    accountButton: {
+      background: '#FFF',
+      bgGradient: 'none',
+      borderRadius: '12px',
+      boxShadow: 'rgb(232 232 235) 0px 2px 12px',
+      '&:hover': {
+        transform: 'translateY(-1px)',
+        filter: 'brightness(1.05)',
+      },
+      '&:active': {
+        transform: 'translateY(0px)',
+        filter: 'brightness(1)',
+      },
+      '&:focus': {
+        boxShadow: 'rgb(232 232 235) 0px 2px 12px',
+      },
+    },
   },
 };
 

@@ -1,8 +1,8 @@
 import { Box, Text, Image, Flex, Center, Spinner } from '@chakra-ui/react';
-import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { Routes, Route } from 'react-router-dom';
 
 import daoLogoSrc from './assets/dao_purple.svg';
+import { ConnectButton } from './components/ConnectButton';
 import GrantRoundSection from './components/GrantRoundSection';
 import { Proposal } from './components/Proposal';
 import { useRounds } from './hooks';
