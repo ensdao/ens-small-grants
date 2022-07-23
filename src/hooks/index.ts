@@ -7,3 +7,4 @@ export * from './useGrant';
 export * from './useCreateSnapshot';
 export * from './useSnapshotSpace';
 export * from './useSnapshotProposal';
+export * from './useSnapshotGrant';

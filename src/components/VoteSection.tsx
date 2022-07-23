@@ -4,7 +4,7 @@ import { useCallback, useState } from 'react';
 import { useEnsName, useEnsAvatar, useAccount } from 'wagmi';
 
 import boltSrc from '../assets/bolt.svg';
-import type { Grant, Round } from '../hooks';
+import { Grant, Round, useSnapshotGrant } from '../hooks';
 import VoteModal from './VoteModal';
 
 function clipAddress(address: string) {
@@ -50,27 +50,18 @@ function ENSAvatarAndName({ address }: ENSAvatarAndNameProps) {
 export type GrantProposalCardProps = {
   round: Round;
   proposal: Grant;
-  votesAvailable?: number | null;
 };
 
-function VoteSection({ round, proposal, votesAvailable }: GrantProposalCardProps) {
+export type VoteInProgressSectionProps = {
+  round: Round;
+  snapshotProposalId: string;
+  proposal: Grant;
+};
+
+function VoteInProgressSection({ round, snapshotProposalId, proposal }: VoteInProgressSectionProps) {
   const [openVoteModal, setOpenVoteModal] = useState(false);
   const { data } = useAccount();
-
-  const preVoting = moment() < round.voting_start || !!proposal.vote_status;
-  const roundIsClosed = !!proposal.vote_status;
-
-  // TODO: replace with getting the voter via data.address
-  const currentVoter = {
-    voterAddr: data?.address,
-    grantProposalId: 123,
-    voteCountForGrantProposal: 0, // this will be > 0 if they voted for this proposal
-    votingPower: 123,
-    remainingVotingPower: 123, // this will be 0 if they voted on another proposal
-  };
-  const userHasVotingPower = data?.address && currentVoter?.votingPower > 0;
-  const userVotedOnAProposal = userHasVotingPower && currentVoter.votingPower - currentVoter.remainingVotingPower > 0;
-  const userVotedForCurrentProposal = userHasVotingPower && currentVoter.voteCountForGrantProposal > 0;
+  const { snapshotGrant, loading } = useSnapshotGrant(snapshotProposalId, proposal.id.toString());
 
   const onOpenVoteModal = useCallback(() => {
     setOpenVoteModal(true);
@@ -78,6 +69,86 @@ function VoteSection({ round, proposal, votesAvailable }: GrantProposalCardProps
   const onCloseVoteModal = useCallback(() => {
     setOpenVoteModal(false);
   }, []);
+
+  if (loading) {
+    return <Spinner />;
+  }
+
+  let innerContent = null;
+
+  if (snapshotGrant) {
+    const preVoting = moment() < round.voting_start || !!snapshotGrant.voteStatus;
+    const roundIsClosed = !!snapshotGrant.voteStatus;
+
+    // TODO: replace with getting the voter via data.address
+    const currentVoter = {
+      voterAddr: data?.address,
+      grantProposalId: 123,
+      voteCountForGrantProposal: 0, // this will be > 0 if they voted for this proposal
+      votingPower: 123,
+      remainingVotingPower: 123, // this will be 0 if they voted on another proposal
+    };
+    const userHasVotingPower = data?.address && currentVoter?.votingPower > 0;
+    const userVotedOnAProposal = userHasVotingPower && currentVoter.votingPower - currentVoter.remainingVotingPower > 0;
+    const userVotedForCurrentProposal = userHasVotingPower && currentVoter.voteCountForGrantProposal > 0;
+
+    innerContent = (
+      <>
+        <Text fontSize="sm" fontWeight={600}>
+          Votes
+        </Text>
+        <Text fontSize="34px" fontWeight={600}>
+          {snapshotGrant.voteCount}
+        </Text>
+
+        <Flex
+          alignItems="center"
+          flexDirection="column"
+          alignSelf="center"
+          gap="14px"
+          width="100%"
+          marginTop="28px"
+          marginBottom="34px"
+        >
+          {preVoting && <Text fontSize="sm">Voting has not started.</Text>}
+          {!preVoting && roundIsClosed && <Text fontSize="sm">Voting is closed.</Text>}
+          {!preVoting && !roundIsClosed && !data?.address && <Text fontSize="sm">Connect wallet to vote.</Text>}
+
+          {!preVoting && !roundIsClosed && userHasVotingPower && (
+            <>
+              {userVotedForCurrentProposal && <Text>🎉 You voted for this proposal</Text>}
+              <Button width="100%" disabled={!!userVotedOnAProposal} onClick={onOpenVoteModal}>
+                {userVotedOnAProposal
+                  ? 'Already Voted'
+                  : `Vote${snapshotGrant.votesAvailable ? ' (' + snapshotGrant.votesAvailable + ')' : ''}`}
+              </Button>
+              <VoteModal onClose={onCloseVoteModal} open={openVoteModal} proposal={proposal} />
+            </>
+          )}
+        </Flex>
+
+        <Flex flexDirection="column" gap="16px">
+          {snapshotGrant.voteSamples.map(voter => (
+            <ENSAvatarAndName key={voter.id} address={voter.id} />
+          ))}
+        </Flex>
+      </>
+    );
+  } else {
+    innerContent = (
+      <Flex
+        alignItems="center"
+        flexDirection="column"
+        alignSelf="center"
+        gap="14px"
+        width="100%"
+        marginTop="28px"
+        marginBottom="34px"
+      >
+        <Text fontSize="sm">Voting has not started.</Text>
+      </Flex>
+    );
+  }
 
   return (
     <Flex
@@ -91,42 +162,49 @@ function VoteSection({ round, proposal, votesAvailable }: GrantProposalCardProps
       borderRadius="20px"
       paddingBottom="40px"
     >
-      <Text fontSize="sm" fontWeight={600}>
-        Votes
-      </Text>
-      <Text fontSize="34px" fontWeight={600}>
-        {proposal.vote_count}
-      </Text>
+      {innerContent}
+    </Flex>
+  );
+}
 
-      <Flex
-        alignItems="center"
-        flexDirection="column"
-        alignSelf="center"
-        gap="14px"
-        width="100%"
-        marginTop="28px"
-        marginBottom="34px"
-      >
-        {preVoting && <Text fontSize="sm">Voting has not started.</Text>}
-        {!preVoting && roundIsClosed && <Text fontSize="sm">Voting is closed.</Text>}
-        {!preVoting && !roundIsClosed && !data?.address && <Text fontSize="sm">Connect wallet to vote.</Text>}
+function VotePendingSection() {
+  return (
+    <Flex
+      alignItems="center"
+      flexDirection="column"
+      alignSelf="center"
+      gap="14px"
+      width="100%"
+      marginTop="28px"
+      marginBottom="34px"
+    >
+      <Text fontSize="sm">Voting has not started.</Text>
+    </Flex>
+  );
+}
 
-        {!preVoting && !roundIsClosed && userHasVotingPower && (
-          <>
-            {userVotedForCurrentProposal && <Text>🎉 You voted for this proposal</Text>}
-            <Button width="100%" disabled={!!userVotedOnAProposal} onClick={onOpenVoteModal}>
-              {userVotedOnAProposal ? 'Already Voted' : `Vote${votesAvailable ? ' (' + votesAvailable + ')' : ''}`}
-            </Button>
-            <VoteModal onClose={onCloseVoteModal} open={openVoteModal} proposal={proposal} />
-          </>
-        )}
-      </Flex>
+function VoteSection({ round, proposal }: GrantProposalCardProps) {
+  let innerContent = null;
 
-      <Flex flexDirection="column" gap="16px">
-        {proposal.vote_samples?.map(voter => (
-          <ENSAvatarAndName key={voter.id} address={voter.id} />
-        ))}
-      </Flex>
+  innerContent = round.snapshot_proposal_id ? (
+    <VoteInProgressSection round={round} snapshotProposalId={round.snapshot_proposal_id} proposal={proposal} />
+  ) : (
+    <VotePendingSection />
+  );
+
+  return (
+    <Flex
+      flexDirection="column"
+      width="100%"
+      maxWidth="326px"
+      paddingTop="40px"
+      paddingRight="24px"
+      paddingLeft="24px"
+      background="purple-medium"
+      borderRadius="20px"
+      paddingBottom="40px"
+    >
+      {innerContent}
     </Flex>
   );
 }

@@ -9,7 +9,7 @@ import VoteSection from './VoteSection';
 
 export function Proposal() {
   const { id, roundId } = useParams<{ id: string; roundId: string }>();
-  const { grant, loading, votesAvailable } = useGrant(id!);
+  const { grant, loading } = useGrant(id!);
   const { round, loading: roundLoading } = useRound(roundId!);
   const { data: ensName } = useEnsName({ address: grant?.proposer, chainId: 1 });
   const { data: ensAvatar } = useEnsAvatar({ addressOrName: grant?.proposer, chainId: 1 });
@@ -78,7 +78,7 @@ export function Proposal() {
           </Box>
         </Box>
         <Box flex={1}>
-          <VoteSection round={round} proposal={grant} votesAvailable={votesAvailable} />
+          <VoteSection round={round} proposal={grant} />
         </Box>
       </Box>
     </Box>
