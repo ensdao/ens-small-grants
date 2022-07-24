@@ -5,7 +5,7 @@ import { useParams, Link as ReactRouterLink } from 'react-router-dom';
 import { useEnsAvatar, useEnsName } from 'wagmi';
 
 import { useGrant, useRound } from '../hooks';
-import VoteSection from './VoteSection';
+import VoteSection, { clipAddress } from './VoteSection';
 
 export function Proposal() {
   const { id, roundId } = useParams<{ id: string; roundId: string }>();
@@ -24,7 +24,14 @@ export function Proposal() {
 
   return (
     <Box alignItems="center" flexDirection="column" display="flex">
-      <Box flexWrap="wrap" flexDirection="row" gap="32px" display="flex" width="100%" maxWidth="936px">
+      <Box
+        flexWrap="wrap"
+        flexDirection={{ base: 'column', md: 'row' }}
+        gap="32px"
+        display="flex"
+        width="100%"
+        maxWidth="936px"
+      >
         <Box flex={2}>
           <Link as={ReactRouterLink} to="/">
             <ArrowLeftOutlined /> Back to all proposals
@@ -43,7 +50,7 @@ export function Proposal() {
               <Avatar width={'40px'} height={'40px'} src={ensAvatar as string} />
             </Box>
             <Text fontSize="14px" fontWeight="bold">
-              {ensName || grant.proposer}
+              {ensName || clipAddress(grant.proposer)}
             </Text>
           </Box>
           <Box flexDirection="column" gap="22px" display="flex" marginTop="34px">

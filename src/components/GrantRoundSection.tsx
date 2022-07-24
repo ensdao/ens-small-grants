@@ -59,7 +59,7 @@ function GrantRoundSection({ round }: GrantRoundSectionProps) {
   ) : (
     <>
       <Collapse in={inProgress || expandProposals}>
-        <Flex justifyContent="center" flexWrap="wrap" gap="24px" paddingTop="42px">
+        <Flex justifyContent="center" flexWrap="wrap" gap="24px" paddingTop="48px">
           {grants &&
             grants.map(g => <GrantProposalCard key={g.id} roundId={round.id} proposal={g} inProgress={inProgress} />)}
         </Flex>
@@ -82,10 +82,21 @@ function GrantRoundSection({ round }: GrantRoundSectionProps) {
   );
 
   return (
-    <Box width="100%" padding="60px" background={inProgress ? 'purple-medium' : 'purple-light'} borderRadius="20px">
-      <Flex alignItems="center" justifyContent="space-between" width="100%">
-        <Flex flexWrap="wrap">
-          <Text fontSize="sm" fontWeight="bold">
+    <Box
+      width="100%"
+      padding={{ base: '32px 18px', sm: '40px', md: '60px' }}
+      background={inProgress ? 'purple-medium' : 'purple-light'}
+      borderRadius="20px"
+    >
+      <Flex
+        alignItems="center"
+        justifyContent="space-between"
+        flexDirection={{ base: 'column', sm: 'row' }}
+        gap="1rem"
+        width="100%"
+      >
+        <Flex alignItems="center" justifyContent={{ base: 'center', sm: 'unset' }} flexWrap="wrap">
+          <Text fontSize="md" fontWeight="bold">
             {round.title}
           </Text>
 
@@ -107,7 +118,7 @@ function GrantRoundSection({ round }: GrantRoundSectionProps) {
             </Box>
           )}
 
-          <Text marginEnd="6px" fontSize="sm" fontWeight="bold">
+          <Text marginEnd="6px" fontSize="md" fontWeight="bold">
             {allocationAmount}Ξ
           </Text>
           <Text fontSize="sm"> for each of the top {round.max_winner_count} voted projects</Text>
@@ -116,7 +127,7 @@ function GrantRoundSection({ round }: GrantRoundSectionProps) {
         {inProgress ? (
           <>
             {proposalsOpen && (
-              <Button fontSize={['8px', '14px', '16px']} onClick={onPressSubmitProposal}>
+              <Button fontSize="16px" onClick={onPressSubmitProposal}>
                 Submit Proposal
               </Button>
             )}
@@ -133,7 +144,7 @@ function GrantRoundSection({ round }: GrantRoundSectionProps) {
       {inProgress ? (
         <Box width="100%" paddingTop="42px">
           <ProgressBar progressNumber={roundProgress(round)} totalNumber={100} />
-          <Box justifyContent="space-between" flexDirection="row" display="flex">
+          <Box justifyContent="space-between" flexDirection="row" gap="0.75rem" display="flex" fontSize={['sm', 'md']}>
             <Box>
               <Text>Proposals Open</Text>
             </Box>

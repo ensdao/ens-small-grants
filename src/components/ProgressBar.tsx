@@ -12,7 +12,7 @@ function ProgressBar({ progressNumber = 0, totalNumber }: ProgressBarProps) {
   // TODO: add markers!
 
   return (
-    <Box position="relative" width="100%">
+    <Box position="relative" overflow="hidden" width="100%" marginBottom="0.25rem" borderRadius="1rem">
       <Box width="100%" height="14px" background="white" />
       <Box
         position="absolute"

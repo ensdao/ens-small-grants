@@ -64,9 +64,11 @@ function App() {
     <Box flexDirection="column" display="flex" width="100%" paddingRight="16px" paddingLeft="16px">
       <Box justifyContent="center" display="flex" width="100%" paddingTop="36px" paddingBottom="36px">
         <Box alignItems="center" flexDirection="row" display="flex" width="100%" maxWidth="936px">
-          <Flex alignItems="center" gap="8px">
-            <Image height="48px" src={daoLogoSrc} />
-            <Text paddingTop="8px" fontWeight="bold" size="2xl">
+          <Flex alignItems={{ base: 'left', sm: 'center' }} flexDirection={{ base: 'column', sm: 'row' }} gap="8px">
+            <a href="/">
+              <Image height="48px" src={daoLogoSrc} />
+            </a>
+            <Text fontWeight="bold" size="2xl">
               Small Grants
             </Text>
           </Flex>

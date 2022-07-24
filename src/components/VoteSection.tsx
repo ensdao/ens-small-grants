@@ -7,7 +7,7 @@ import boltSrc from '../assets/bolt.svg';
 import { Grant, Round, useSnapshotGrant } from '../hooks';
 import VoteModal from './VoteModal';
 
-function clipAddress(address: string) {
+export function clipAddress(address: string) {
   if (!address || address.length < 8) return address;
   return `${address.slice(0, 5)}...${address.slice(-3)}`;
 }
