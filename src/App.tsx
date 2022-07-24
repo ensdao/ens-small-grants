@@ -1,4 +1,5 @@
 import { Box, Text, Image, Flex, Center, Spinner } from '@chakra-ui/react';
+import moment from 'moment';
 import { Routes, Route } from 'react-router-dom';
 
 import daoLogoSrc from './assets/dao_purple.svg';
@@ -27,6 +28,9 @@ function Home() {
     );
   }
 
+  // Check if round[0] is active (in proposals or voting stage)
+  const isActiveRound = moment(rounds[0].voting_end).isAfter(moment());
+
   return (
     <Box alignItems="center" flexDirection="column" display="flex">
       <Box width="100%" maxWidth="936px" paddingBottom="100px">
@@ -38,6 +42,13 @@ function Home() {
               $ENS token holders can vote for the best proposals. At the end of the voting period, the top voted
               projects each get a share of the rounds funding pool.
             </Text>
+            {isActiveRound && (
+              <Text>
+                Proposals are open through <strong>{moment(rounds[0].proposal_end).format('MMMM Do LT')}</strong>.
+                Voting starts immediately after and is open until{' '}
+                <strong>{moment(rounds[0].voting_end).format('MMMM Do LT')}</strong>.
+              </Text>
+            )}
           </Flex>
 
           <GrantRoundSection round={rounds[0]} />
