@@ -80,13 +80,12 @@ function VoteInProgressSection({ round, snapshotProposalId, proposal }: VoteInPr
     const preVoting = moment() < round.voting_start || !!snapshotGrant.voteStatus;
     const roundIsClosed = !!snapshotGrant.voteStatus;
 
-    // TODO: replace with getting the voter via data.address
     const currentVoter = {
       voterAddr: data?.address,
-      grantProposalId: 123,
-      voteCountForGrantProposal: 0, // this will be > 0 if they voted for this proposal
-      votingPower: 123,
-      remainingVotingPower: 123, // this will be 0 if they voted on another proposal
+      grantProposalId: proposal.id,
+      voteCountForGrantProposal: snapshotGrant.currentVotes, // this will be > 0 if they voted for this proposal
+      votingPower: snapshotGrant.votesAvailable ?? 0,
+      remainingVotingPower: snapshotGrant.votesAvailable ?? 0, // this will be 0 if they voted on another proposal
     };
     const userHasVotingPower = data?.address && currentVoter?.votingPower > 0;
     const userVotedOnAProposal = userHasVotingPower && currentVoter.votingPower - currentVoter.remainingVotingPower > 0;

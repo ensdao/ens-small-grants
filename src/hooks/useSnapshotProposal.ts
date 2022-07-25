@@ -19,10 +19,11 @@ export type SnapshotProposal = {
   scores_state: string;
   votes: SnapshotVote[];
   votes_available?: number | null;
+  current_vote?: SnapshotVote | null;
 };
 
 const QUERY = `
-    query GetSnapshotProposal($proposalId: String!) {
+    query GetSnapshotProposal($proposalId: String!, $currentUser: String!) {
       proposal(id: $proposalId) {
         id
         title
@@ -41,6 +42,13 @@ const QUERY = `
       }
 
       votes(first: 100, where: { proposal: $proposalId }) {
+        id
+        voter
+        vp
+        choice
+      }
+
+      currentVote: votes(first: 1, where: { proposal: $proposalId, voter: $currentUser }) {
         id
         voter
         vp
@@ -85,7 +93,12 @@ export function useSnapshotProposal(proposalId: string) {
           votes_available = Math.floor(scores[0][account.address] ?? 0);
         }
 
-        setProposal({ ...body.data.proposal, votes: body.data.votes, votes_available });
+        setProposal({
+          ...body.data.proposal,
+          votes: body.data.votes,
+          votes_available,
+          current_vote: body.data.currentVote,
+        });
       } finally {
         setLoading(false);
       }
