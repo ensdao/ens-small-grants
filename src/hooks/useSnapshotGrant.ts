@@ -29,7 +29,7 @@ export function useSnapshotGrant(snapshotProposalId: string, grantId: string) {
           return grantId === split[0];
         }) + 1;
       // get score for the grant
-      const score = snapshotProposal.scores[choiceId];
+      const score = snapshotProposal.scores[choiceId - 1];
 
       const votes = snapshotProposal.votes.filter(v => v.choice === choiceId);
 
