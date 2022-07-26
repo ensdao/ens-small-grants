@@ -73,8 +73,9 @@ function VoteInProgressSection({ round, snapshotProposalId, proposal }: VoteInPr
   const executeVote = useCallback(async () => {
     if (snapshotGrant) {
       await vote(snapshotGrant.choiceId);
+      onCloseVoteModal();
     }
-  }, [vote, snapshotGrant]);
+  }, [vote, snapshotGrant, onCloseVoteModal]);
 
   if (loading) {
     return <Spinner />;
