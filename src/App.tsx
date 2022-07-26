@@ -10,6 +10,8 @@ import { useRounds } from './hooks';
 import { CreateProposal } from './screens/CreateProposal';
 import { CreateSnapshot } from './screens/CreateSnapshot';
 
+const MAX_WIDTH = '1200px';
+
 function Home() {
   const { rounds, loading } = useRounds();
   if (loading || !rounds) {
@@ -33,7 +35,7 @@ function Home() {
 
   return (
     <Box alignItems="center" flexDirection="column" display="flex">
-      <Box width="100%" maxWidth="936px" paddingBottom="100px">
+      <Box width="100%" maxWidth={MAX_WIDTH} paddingBottom="100px">
         <Flex flexDirection="column" gap="42px">
           <Flex flexDirection="column" gap="24px">
             <Text>
@@ -74,7 +76,7 @@ function App() {
   return (
     <Box flexDirection="column" display="flex" width="100%" paddingRight="16px" paddingLeft="16px">
       <Box justifyContent="center" display="flex" width="100%" paddingTop="36px" paddingBottom="36px">
-        <Box alignItems="center" flexDirection="row" display="flex" width="100%" maxWidth="936px">
+        <Box alignItems="center" flexDirection="row" display="flex" width="100%" maxWidth={MAX_WIDTH}>
           <Flex alignItems={{ base: 'left', sm: 'center' }} flexDirection={{ base: 'column', sm: 'row' }} gap="8px">
             <a href="/">
               <Image height="48px" src={daoLogoSrc} />

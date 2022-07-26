@@ -97,7 +97,7 @@ export function useSnapshotProposal(proposalId: string) {
           ...body.data.proposal,
           votes: body.data.votes,
           votes_available,
-          current_vote: body.data.currentVote,
+          current_vote: body.data.currentVote.length > 0 ? body.data.currentVote[0] : null,
         });
       } finally {
         setLoading(false);
