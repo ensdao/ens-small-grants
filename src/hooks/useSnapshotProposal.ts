@@ -23,7 +23,7 @@ export type SnapshotProposal = {
 };
 
 const QUERY = `
-    query GetSnapshotProposal($proposalId: String!, $currentUser: String!) {
+    query GetSnapshotProposal($proposalId: String!, $currentUser: String) {
       proposal(id: $proposalId) {
         id
         title
@@ -71,7 +71,7 @@ export function useSnapshotProposal(proposalId: string) {
         setLoading(true);
         const res = await fetch('https://hub.snapshot.org/graphql', {
           method: 'POST',
-          body: JSON.stringify({ query: QUERY, variables: { proposalId } }),
+          body: JSON.stringify({ query: QUERY, variables: { proposalId, currentUser: account?.address } }),
           headers: {
             'content-type': 'application/json',
           },

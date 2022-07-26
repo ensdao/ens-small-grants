@@ -4,7 +4,7 @@ import { useCallback, useState } from 'react';
 import { useEnsName, useEnsAvatar, useAccount } from 'wagmi';
 
 import boltSrc from '../assets/bolt.svg';
-import { Grant, Round, useSnapshotGrant } from '../hooks';
+import { Grant, Round, useSnapshotGrant, useSnapshotProposal } from '../hooks';
 import VoteModal from './VoteModal';
 
 export function clipAddress(address: string) {
@@ -61,6 +61,7 @@ export type VoteInProgressSectionProps = {
 function VoteInProgressSection({ round, snapshotProposalId, proposal }: VoteInProgressSectionProps) {
   const [openVoteModal, setOpenVoteModal] = useState(false);
   const { data } = useAccount();
+  const { vote } = useSnapshotProposal(snapshotProposalId);
   const { snapshotGrant, loading } = useSnapshotGrant(snapshotProposalId, proposal.id.toString());
 
   const onOpenVoteModal = useCallback(() => {
@@ -69,6 +70,11 @@ function VoteInProgressSection({ round, snapshotProposalId, proposal }: VoteInPr
   const onCloseVoteModal = useCallback(() => {
     setOpenVoteModal(false);
   }, []);
+  const executeVote = useCallback(async () => {
+    if (snapshotGrant) {
+      await vote(snapshotGrant.choiceId);
+    }
+  }, [vote, snapshotGrant]);
 
   if (loading) {
     return <Spinner />;
@@ -121,7 +127,13 @@ function VoteInProgressSection({ round, snapshotProposalId, proposal }: VoteInPr
                   ? 'Already Voted'
                   : `Vote${snapshotGrant.votesAvailable ? ' (' + snapshotGrant.votesAvailable + ')' : ''}`}
               </Button>
-              <VoteModal onClose={onCloseVoteModal} open={openVoteModal} proposal={proposal} />
+              <VoteModal
+                onClose={onCloseVoteModal}
+                open={openVoteModal}
+                proposal={proposal}
+                onVote={executeVote}
+                votingPower={currentVoter.votingPower}
+              />
             </>
           )}
         </Flex>

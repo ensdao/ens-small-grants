@@ -10,8 +10,7 @@ import {
   ModalCloseButton,
   Flex,
 } from '@chakra-ui/react';
-import { useCallback } from 'react';
-import { useAccount } from 'wagmi';
+import { useCallback, useState } from 'react';
 
 import { Grant } from '../hooks';
 
@@ -19,23 +18,21 @@ export type VoteModalProps = {
   open: boolean;
   onClose: () => void;
   proposal: Grant;
+  onVote: () => Promise<void>;
+  votingPower: number;
 };
 
-function VoteModal({ open, onClose, proposal }: VoteModalProps) {
-  const { data } = useAccount();
+function VoteModal({ open, onClose, proposal, onVote, votingPower }: VoteModalProps) {
+  const [waiting, setWaiting] = useState(false);
 
-  // TODO: replace with getting the voter via data.address
-  const currentVoter = {
-    voterAddr: data?.address,
-    grantProposalId: 123,
-    voteCountForGrantProposal: 0, // this will be > 0 if they voted for this proposal
-    votingPower: 123,
-    remainingVotingPower: 123, // this will be 0 if they voted on another proposal
-  };
-
-  const onPressAddVote = useCallback(() => {
-    // TODO: Fill in
-  }, []);
+  const onPressAddVote = useCallback(async () => {
+    try {
+      setWaiting(true);
+      await onVote();
+    } finally {
+      setWaiting(false);
+    }
+  }, [onVote]);
 
   return (
     <Modal isOpen={open} onClose={onClose}>
@@ -47,10 +44,10 @@ function VoteModal({ open, onClose, proposal }: VoteModalProps) {
           <ModalBody>
             <Flex flexDirection="column" gap="8px">
               <Text>
-                Voting power: <span style={{ fontWeight: 600 }}>{currentVoter.votingPower}</span>
+                Voting power: <span style={{ fontWeight: 600 }}>{votingPower}</span>
               </Text>
               <Text>
-                You are about to allocate <span style={{ fontWeight: 600 }}>{currentVoter.votingPower}</span> votes for{' '}
+                You are about to allocate <span style={{ fontWeight: 600 }}>{votingPower}</span> votes for{' '}
                 <span style={{ fontWeight: 600 }}>{proposal.title}</span>.
               </Text>
             </Flex>
@@ -62,7 +59,9 @@ function VoteModal({ open, onClose, proposal }: VoteModalProps) {
                 Cancel
               </Button>
 
-              <Button onClick={onPressAddVote}>Allocate votes</Button>
+              <Button isLoading={waiting} onClick={onPressAddVote}>
+                Vote
+              </Button>
             </Flex>
           </ModalFooter>
         </ModalContent>

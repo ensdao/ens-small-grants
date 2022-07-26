@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { SnapshotVote, useSnapshotProposal } from './useSnapshotProposal';
 
 export type SnapshotGrant = {
+  choiceId: number;
   voteCount: number;
   voteStatus: boolean;
   voteSamples: SnapshotVote[];
@@ -32,6 +33,7 @@ export function useSnapshotGrant(snapshotProposalId: string, grantId: string) {
       const votes = snapshotProposal.votes.filter(v => v.choice === choiceId);
 
       setSnapshotGrant({
+        choiceId,
         voteCount: score,
         voteStatus: snapshotProposal.scores_state === 'final',
         voteSamples: votes,
