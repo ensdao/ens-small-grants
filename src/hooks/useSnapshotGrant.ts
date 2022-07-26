@@ -18,15 +18,16 @@ export function useSnapshotGrant(snapshotProposalId: string, grantId: string) {
   useEffect(() => {
     if (snapshotProposal && snapshotProposal.choices) {
       // determine choice id for grant
-      const choiceId = snapshotProposal.choices.findIndex(choice => {
-        const split = choice.split(' - ');
+      const choiceId =
+        snapshotProposal.choices.findIndex(choice => {
+          const split = choice.split(' - ');
 
-        if (split.length < 2) {
-          return false;
-        }
+          if (split.length < 2) {
+            return false;
+          }
 
-        return grantId === split[0];
-      });
+          return grantId === split[0];
+        }) + 1;
       // get score for the grant
       const score = snapshotProposal.scores[choiceId];
 

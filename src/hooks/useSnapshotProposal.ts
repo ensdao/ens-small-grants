@@ -13,7 +13,7 @@ export type SnapshotVote = {
 export type SnapshotProposal = {
   id: string;
   title: string;
-  space: string;
+  space: { id: string };
   choices: string[];
   scores: number[];
   scores_state: string;
@@ -110,7 +110,7 @@ export function useSnapshotProposal(proposalId: string) {
       if (proposal && account?.address) {
         await snapshotClient.vote(signer as unknown as ethers.providers.Web3Provider, account.address, {
           type: 'single-choice',
-          space: proposal?.space,
+          space: proposal?.space.id,
           proposal: proposalId,
           choice: choiceId,
         });
