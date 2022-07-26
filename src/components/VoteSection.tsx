@@ -64,6 +64,11 @@ function VoteInProgressSection({ round, snapshotProposalId, proposal }: VoteInPr
   const { vote } = useSnapshotProposal(snapshotProposalId);
   const { snapshotGrant, loading } = useSnapshotGrant(snapshotProposalId, proposal.id.toString());
 
+  const votenumberFormat = new Intl.NumberFormat('en', {
+    notation: 'compact',
+    maximumFractionDigits: 1,
+  });
+
   const onOpenVoteModal = useCallback(() => {
     setOpenVoteModal(true);
   }, []);
@@ -126,7 +131,11 @@ function VoteInProgressSection({ round, snapshotProposalId, proposal }: VoteInPr
               <Button width="100%" disabled={!!userVotedForCurrentProposal} onClick={onOpenVoteModal}>
                 {userVotedForCurrentProposal
                   ? 'Already Voted'
-                  : `Vote${snapshotGrant.votesAvailable ? ' (' + snapshotGrant.votesAvailable + ')' : ''}`}
+                  : `Vote${
+                      snapshotGrant.votesAvailable
+                        ? ' (' + votenumberFormat.format(snapshotGrant.votesAvailable) + ')'
+                        : ''
+                    }`}
               </Button>
               <VoteModal
                 onClose={onCloseVoteModal}
