@@ -74,8 +74,8 @@ function Home() {
 
 function App() {
   return (
-    <Box flexDirection="column" display="flex" width="100%" paddingRight="16px" paddingLeft="16px">
-      <Box justifyContent="center" display="flex" width="100%" paddingTop="36px" paddingBottom="36px">
+    <Box flexDirection="column" display="flex" width="100%" padding="36px">
+      <Box justifyContent="center" display="flex" width="100%" paddingBottom="36px">
         <Box alignItems="center" flexDirection="row" display="flex" width="100%" maxWidth={MAX_WIDTH}>
           <Flex alignItems={{ base: 'left', sm: 'center' }} flexDirection={{ base: 'column', sm: 'row' }} gap="8px">
             <a href="/">

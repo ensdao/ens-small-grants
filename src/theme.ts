@@ -82,12 +82,63 @@ const Link: ComponentStyleConfig = {
   },
 };
 
+const markdownComponents = {
+  Heading: {
+    variants: {
+      'md-h1': {
+        fontSize: '24px',
+        paddingBottom: '14px',
+        paddingTop: '16px',
+      },
+      'md-h2': {
+        fontSize: '18px',
+        paddingBottom: '12px',
+        paddingTop: '14px',
+      },
+      'md-h3': {
+        fontSize: '14px',
+        paddingBottom: '10px',
+        paddingTop: '12px',
+      },
+      'md-h4': {
+        fontSize: '12px',
+        paddingBottom: '10px',
+        paddingTop: '12px',
+      },
+      'md-h5': {
+        fontSize: '12px',
+        paddingBottom: '10px',
+        paddingTop: '12px',
+      },
+      'md-h6': {
+        fontSize: '12px',
+        paddingBottom: '10px',
+        paddingTop: '12px',
+      },
+    },
+  },
+  Text: {
+    variants: {
+      'md-p': {
+        paddingBottom: '10px',
+      },
+    },
+  },
+  Link: {
+    variants: {
+      'md-a': {
+        textDecoration: 'underline',
+      },
+    },
+  },
+};
+
 export const theme = extendTheme(
   {
     config: {
       initialColorMode: 'light',
     },
-    components: { Button, Link },
+    components: { Button, ...markdownComponents, ...Link, ...markdownComponents.Link },
     fonts: {
       heading: "'Satoshi-Variable', sans-sarif",
       body: "'Satoshi-Variable', sans-sarif",
