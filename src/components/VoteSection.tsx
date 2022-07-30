@@ -5,6 +5,7 @@ import { useEnsName, useEnsAvatar, useAccount } from 'wagmi';
 
 import boltSrc from '../assets/bolt.svg';
 import { Grant, Round, useSnapshotGrant, useSnapshotProposal } from '../hooks';
+import { voteCountFormatter } from '../utils';
 import VoteModal from './VoteModal';
 
 export function clipAddress(address: string) {
@@ -63,11 +64,6 @@ function VoteInProgressSection({ round, snapshotProposalId, proposal }: VoteInPr
   const { data } = useAccount();
   const { vote } = useSnapshotProposal(snapshotProposalId);
   const { snapshotGrant, loading } = useSnapshotGrant(snapshotProposalId, proposal.id.toString());
-
-  const votenumberFormat = new Intl.NumberFormat('en', {
-    notation: 'compact',
-    maximumFractionDigits: 1,
-  });
 
   const onOpenVoteModal = useCallback(() => {
     setOpenVoteModal(true);
@@ -133,7 +129,7 @@ function VoteInProgressSection({ round, snapshotProposalId, proposal }: VoteInPr
                   ? 'Already Voted'
                   : `Vote${
                       snapshotGrant.votesAvailable
-                        ? ' (' + votenumberFormat.format(snapshotGrant.votesAvailable) + ')'
+                        ? ' (' + voteCountFormatter.format(snapshotGrant.votesAvailable) + ')'
                         : ''
                     }`}
               </Button>

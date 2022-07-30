@@ -13,6 +13,7 @@ import {
 import { useCallback, useState } from 'react';
 
 import { Grant } from '../hooks';
+import { voteCountFormatter } from '../utils';
 
 export type VoteModalProps = {
   open: boolean;
@@ -24,10 +25,6 @@ export type VoteModalProps = {
 
 function VoteModal({ open, onClose, proposal, onVote, votingPower }: VoteModalProps) {
   const [waiting, setWaiting] = useState(false);
-  const votenumberFormat = new Intl.NumberFormat('en', {
-    notation: 'compact',
-    maximumFractionDigits: 1,
-  });
 
   const onPressAddVote = useCallback(async () => {
     try {
@@ -48,11 +45,11 @@ function VoteModal({ open, onClose, proposal, onVote, votingPower }: VoteModalPr
           <ModalBody>
             <Flex flexDirection="column" gap="8px">
               <Text>
-                Voting power: <span style={{ fontWeight: 600 }}>{votenumberFormat.format(votingPower)}</span>
+                Voting power: <span style={{ fontWeight: 600 }}>{voteCountFormatter.format(votingPower)}</span>
               </Text>
               <Text>
                 You are about to allocate{' '}
-                <span style={{ fontWeight: 600 }}>{votenumberFormat.format(votingPower)}</span> votes for{' '}
+                <span style={{ fontWeight: 600 }}>{voteCountFormatter.format(votingPower)}</span> votes for{' '}
                 <span style={{ fontWeight: 600 }}>{proposal.title}</span>.
               </Text>
             </Flex>

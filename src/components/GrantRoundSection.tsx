@@ -36,7 +36,7 @@ function GrantRoundSection({ round }: GrantRoundSectionProps) {
   const allocationAmount = round.allocation_token_amount
     ? ethers.utils.formatEther(round.allocation_token_amount.div(round.max_winner_count))
     : '0';
-  const { grants, loading } = useGrants(1);
+  const { grants, loading } = useGrants(round);
   const navigate = useNavigate();
 
   const onPressSubmitProposal = useCallback(() => {

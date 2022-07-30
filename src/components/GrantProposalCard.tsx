@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useEnsName, useEnsAvatar } from 'wagmi';
 
 import { Grant } from '../hooks';
+import { voteCountFormatter } from '../utils';
 
 export type GrantProposalCardProps = {
   roundId: string;
@@ -11,7 +12,7 @@ export type GrantProposalCardProps = {
   inProgress?: boolean;
 };
 
-function GrantProposalCard({ roundId, proposal, inProgress }: GrantProposalCardProps) {
+function GrantProposalCard({ roundId, proposal }: GrantProposalCardProps) {
   const navigate = useNavigate();
   const { data: ensName } = useEnsName({ address: proposal.proposer, chainId: 1 });
   const { data: ensAvatar } = useEnsAvatar({ addressOrName: proposal.proposer, chainId: 1 });
@@ -78,7 +79,9 @@ function GrantProposalCard({ roundId, proposal, inProgress }: GrantProposalCardP
 
       <Flex justifyContent="space-between" width="100%">
         <Box>
-          {!inProgress && !!proposal.vote_count ? <Text fontWeight="bold">Votes {proposal.vote_count}</Text> : null}
+          {proposal.vote_count !== undefined && proposal.vote_count !== null ? (
+            <Text fontWeight="bold">Votes: {voteCountFormatter.format(proposal.vote_count)}</Text>
+          ) : null}
         </Box>
         <Button onClick={onPressGrantProposal} variant="link">
           View proposal
