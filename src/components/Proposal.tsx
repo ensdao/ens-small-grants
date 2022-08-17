@@ -7,6 +7,8 @@ import { useEnsAvatar, useEnsName } from 'wagmi';
 import { useGrant, useRound } from '../hooks';
 import VoteSection, { clipAddress } from './VoteSection';
 
+const MAX_WIDTH = '1200px';
+
 export function Proposal() {
   const { id, roundId } = useParams<{ id: string; roundId: string }>();
   const { grant, loading } = useGrant(id!);
@@ -30,7 +32,7 @@ export function Proposal() {
         gap="32px"
         display="flex"
         width="100%"
-        maxWidth="936px"
+        maxWidth={MAX_WIDTH}
       >
         <Box flex={2}>
           <Link as={ReactRouterLink} to="/">
@@ -104,7 +106,7 @@ export function Proposal() {
             </ReactMarkdown>
           </Box>
         </Box>
-        <Box flex={1}>
+        <Box alignItems="flex-start" justifyContent="flex-end" flex={1} display="flex">
           <VoteSection round={round} proposal={grant} />
         </Box>
       </Box>

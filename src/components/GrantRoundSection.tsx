@@ -83,10 +83,11 @@ function GrantRoundSection({ round }: GrantRoundSectionProps) {
 
   return (
     <Box
-      width="100%"
+      marginRight={{ base: '-40px', sm: '-40px', md: '-60px' }}
+      marginLeft={{ base: '-40px', sm: '-40px', md: '-60px' }}
       padding={{ base: '32px 18px', sm: '40px', md: '60px' }}
       background={inProgress ? 'purple-medium' : 'purple-light'}
-      borderRadius="20px"
+      borderRadius={{ base: '0px', sm: '20px' }}
     >
       <Flex
         alignItems="center"

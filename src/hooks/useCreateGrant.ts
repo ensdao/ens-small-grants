@@ -55,6 +55,8 @@ export function useCreateGrant() {
         } finally {
           setLoading(false);
         }
+      } else {
+        throw new Error('Your wallet must connected to propose a grant.');
       }
     },
     [account, signer]
