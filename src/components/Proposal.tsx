@@ -1,5 +1,5 @@
 import { ArrowLeftOutlined } from '@ant-design/icons';
-import { Box, Center, Spinner, Text, Link, Avatar, Heading } from '@chakra-ui/react';
+import { Box, Center, Spinner, Text, Link, Avatar, Heading, Button } from '@chakra-ui/react';
 import ReactMarkdown from 'react-markdown';
 import { useParams, Link as ReactRouterLink } from 'react-router-dom';
 import { useEnsAvatar, useEnsName } from 'wagmi';
@@ -35,9 +35,9 @@ export function Proposal() {
         maxWidth={MAX_WIDTH}
       >
         <Box flex={2}>
-          <Link as={ReactRouterLink} to="/">
-            <ArrowLeftOutlined /> Back to all proposals
-          </Link>
+          <Button as={ReactRouterLink} leftIcon={<ArrowLeftOutlined />} to="/" variant="link">
+            Back to all proposals
+          </Button>
           <Box alignItems="center" gap="16px" display="flex" marginTop="32px">
             <Box
               alignItems="center"

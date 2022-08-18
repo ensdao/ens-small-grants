@@ -1,7 +1,7 @@
 import { Image, Text, Box, Button, Flex, Collapse, Spinner, Center } from '@chakra-ui/react';
 import { ethers } from 'ethers';
 import moment from 'moment';
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import boltSrc from '../assets/bolt.svg';
@@ -33,10 +33,13 @@ export type GrantRoundSectionProps = {
 
 function GrantRoundSection({ round }: GrantRoundSectionProps) {
   const [expandProposals, setExpandProposals] = useState(false);
+
   const allocationAmount = round.allocation_token_amount
     ? ethers.utils.formatEther(round.allocation_token_amount.div(round.max_winner_count))
     : '0';
   const { grants, loading } = useGrants(round);
+  const randomizedGrantsArray = useMemo(() => grants?.sort(() => Math.random() - 0.5) || null, [grants]);
+
   const navigate = useNavigate();
 
   const onPressSubmitProposal = useCallback(() => {
@@ -60,8 +63,10 @@ function GrantRoundSection({ round }: GrantRoundSectionProps) {
     <>
       <Collapse in={inProgress || expandProposals}>
         <Flex justifyContent="center" flexWrap="wrap" gap="24px" paddingTop="48px">
-          {grants &&
-            grants.map(g => <GrantProposalCard key={g.id} roundId={round.id} proposal={g} inProgress={inProgress} />)}
+          {randomizedGrantsArray &&
+            randomizedGrantsArray.map(g => (
+              <GrantProposalCard key={g.id} roundId={round.id} proposal={g} inProgress={inProgress} />
+            ))}
         </Flex>
       </Collapse>
 
@@ -87,7 +92,7 @@ function GrantRoundSection({ round }: GrantRoundSectionProps) {
       marginLeft={{ base: '-40px', sm: '-40px', md: '-60px' }}
       padding={{ base: '32px 18px', sm: '40px', md: '60px' }}
       background={inProgress ? 'purple-medium' : 'purple-light'}
-      borderRadius={{ base: '0px', sm: '20px' }}
+      borderRadius={{ base: '0px', md: '20px' }}
     >
       <Flex
         alignItems="center"

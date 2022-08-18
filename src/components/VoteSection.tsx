@@ -85,8 +85,8 @@ function VoteInProgressSection({ round, snapshotProposalId, proposal }: VoteInPr
   let innerContent = null;
 
   if (snapshotGrant) {
-    const preVoting = moment() < round.voting_start || !!snapshotGrant.voteStatus;
-    const roundIsClosed = !!snapshotGrant.voteStatus;
+    const preVoting = moment() < round.voting_start;
+    const roundIsClosed = !!snapshotGrant.voteStatus || moment() >= round.voting_end;
 
     const currentVoter = {
       voterAddr: data?.address,
