@@ -35,7 +35,7 @@ export function Proposal() {
         maxWidth={MAX_WIDTH}
       >
         <Box flex={2}>
-          <Button as={ReactRouterLink} leftIcon={<ArrowLeftOutlined />} to="/" variant="link">
+          <Button as={ReactRouterLink} leftIcon={<ArrowLeftOutlined />} to={`/rounds/${round.id}`} variant="link">
             Back to all proposals
           </Button>
           <Box alignItems="center" gap="16px" display="flex" marginTop="32px">

@@ -4,13 +4,16 @@ import { Routes, Route } from 'react-router-dom';
 
 import daoLogoSrc from './assets/dao_purple.svg';
 import { ConnectButton } from './components/ConnectButton';
-import GrantRoundSection from './components/GrantRoundSection';
 import { Proposal } from './components/Proposal';
-import { useRounds } from './hooks';
+import { RoundCards } from './components/RoundCards';
+import { useRounds, Round as RoundType } from './hooks';
 import { CreateProposal } from './screens/CreateProposal';
 import { CreateSnapshot } from './screens/CreateSnapshot';
+import { Round } from './screens/Round';
 
 const MAX_WIDTH = '1200px';
+
+const isActiveRound = (round: RoundType) => moment(round.voting_end).isAfter(moment());
 
 function Home() {
   const { rounds, loading } = useRounds();
@@ -30,8 +33,8 @@ function Home() {
     );
   }
 
-  // Check if round[0] is active (in proposals or voting stage)
-  const isActiveRound = moment(rounds[0].voting_end).isAfter(moment());
+  const activeRounds = rounds.filter(r => isActiveRound(r));
+  const fundedRounds = rounds.filter(r => !isActiveRound(r));
 
   return (
     <Box alignItems="center" flexDirection="column" display="flex">
@@ -44,28 +47,11 @@ function Home() {
               $ENS token holders can vote for the best proposals. At the end of the voting period, the top voted
               projects each get a share of the rounds funding pool.
             </Text>
-            {isActiveRound && (
-              <Text>
-                Proposals are open through <strong>{moment(rounds[0].proposal_end).format('MMMM Do LT')}</strong>.
-                Voting starts immediately after and is open until{' '}
-                <strong>{moment(rounds[0].voting_end).format('MMMM Do LT')}</strong>.
-              </Text>
-            )}
           </Flex>
 
-          <GrantRoundSection round={rounds[0]} />
+          {activeRounds && activeRounds.length > 0 && <RoundCards label="Active Rounds" rounds={activeRounds} />}
 
-          {rounds && rounds.length > 1 && (
-            <>
-              <Text paddingTop="8px" fontWeight="bold" size="2xl">
-                Funded rounds
-              </Text>
-
-              {rounds.splice(1, -1).map(r => (
-                <GrantRoundSection key={r.id} round={r} />
-              ))}
-            </>
-          )}
+          {fundedRounds && fundedRounds.length > 0 && <RoundCards label="Past Rounds" rounds={fundedRounds} />}
         </Flex>
       </Box>
     </Box>
@@ -93,6 +79,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/create_proposal" element={<CreateProposal />} />
+        <Route path="/rounds/:id" element={<Round />} />
         <Route path="/rounds/:roundId/proposals/:id" element={<Proposal />} />
         <Route path="/rounds/:roundId/snapshot" element={<CreateSnapshot />} />
       </Routes>
