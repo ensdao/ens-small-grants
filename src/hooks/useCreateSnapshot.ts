@@ -89,7 +89,7 @@ export function useCreateSnapshot() {
             account.address || '',
             {
               space: round.snapshot_space_id,
-              type: 'single-choice',
+              type: 'approval',
               title: round.title,
               body: `https://arweave.net/${transaction.id}`,
               choices: grants.map(g => `${g.id} - ${g.title}`),
