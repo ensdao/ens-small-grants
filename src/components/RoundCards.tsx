@@ -1,4 +1,6 @@
-import { Box, Link, Text } from '@chakra-ui/react';
+import { ArrowRightOutlined } from '@ant-design/icons';
+import { Badge, Box, Button, Link, Text } from '@chakra-ui/react';
+import moment from 'moment';
 import { Link as RouterLink } from 'react-router-dom';
 
 import type { Round } from '../hooks';
@@ -8,11 +10,37 @@ export type RoundCardProps = {
 };
 
 export const RoundCard = ({ round }: RoundCardProps) => {
+  const now = moment();
+  const roundStatus =
+    round.proposal_start > now ? (
+      <Badge colorScheme="purple">Upcoming</Badge>
+    ) : round.voting_end > now ? (
+      <Badge colorScheme="green">Active</Badge>
+    ) : (
+      <Badge colorScheme="blue">Ended</Badge>
+    );
+
   return (
-    <Box padding="24px" background="white" borderRadius="20px">
-      <Link as={RouterLink} fontSize="24px" to={`/rounds/${round.id}`}>
-        {round.title}
-      </Link>
+    <Box
+      justifyContent="space-between"
+      flexDirection="column"
+      display="flex"
+      minWidth="300px"
+      minHeight="300px"
+      padding="24px"
+      background="white"
+      borderRadius="20px"
+      boxShadow="rgb(232 232 235) 0px 2px 12px"
+    >
+      <Box flexDirection="column" display="flex">
+        <Link as={RouterLink} fontSize="24px" to={`/rounds/${round.id}`}>
+          {round.title}
+        </Link>
+        <Box>{roundStatus}</Box>
+      </Box>
+      <Box justifyContent="flex-end" display="flex">
+        <Button rightIcon={<ArrowRightOutlined />}>View Round</Button>
+      </Box>
     </Box>
   );
 };
@@ -24,13 +52,13 @@ export type RoundCardsProps = {
 
 export const RoundCards = ({ label, rounds }: RoundCardsProps) => {
   return (
-    <Box>
+    <Box flexDirection="column" gap="12px" display="flex">
       {label && (
         <Text paddingTop="8px" fontWeight="bold" size="2xl">
           {label}
         </Text>
       )}
-      <Box flexDirection="column" display="flex">
+      <Box flexWrap="wrap" gap="16px" display="flex">
         {rounds.map(r => (
           <RoundCard key={r.id} round={r} />
         ))}
