@@ -1,5 +1,5 @@
 import { ArrowRightOutlined } from '@ant-design/icons';
-import { Badge, Box, Button, Link, Text } from '@chakra-ui/react';
+import { Badge, Box, Button, Text } from '@chakra-ui/react';
 import moment from 'moment';
 import { Link as RouterLink } from 'react-router-dom';
 
@@ -33,13 +33,13 @@ export const RoundCard = ({ round }: RoundCardProps) => {
       boxShadow="rgb(232 232 235) 0px 2px 12px"
     >
       <Box flexDirection="column" display="flex">
-        <Link as={RouterLink} fontSize="24px" to={`/rounds/${round.id}`}>
-          {round.title}
-        </Link>
+        <Text fontSize="24px">{round.title}</Text>
         <Box>{roundStatus}</Box>
       </Box>
       <Box justifyContent="flex-end" display="flex">
-        <Button rightIcon={<ArrowRightOutlined />}>View Round</Button>
+        <Button as={RouterLink} rightIcon={<ArrowRightOutlined />} to={`/rounds/${round.id}`}>
+          View Round
+        </Button>
       </Box>
     </Box>
   );
