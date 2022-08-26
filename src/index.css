@@ -1,13 +1,94 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+@font-face {
+  font-family: "Satoshi-Variable";
+  src: url("/fonts/sans-serif/Satoshi-Variable.ttf") format("truetype"),
+    url("/fonts/sans-serif/Satoshi-Variable.woff2") format("woff2"),
+    url("/fonts/sans-serif/Satoshi-Variable.woff") format("woff");
+  font-weight: 300 900;
+  font-display: swap;
+  font-style: normal;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+@font-face {
+  font-family: "Satoshi";
+  src: url("/fonts/sans-serif/Satoshi-Medium.otf") format("opentype"),
+    url("/fonts/sans-serif/Satoshi-Medium.woff2") format("woff2"),
+    url("/fonts/sans-serif/Satoshi-Medium.woff") format("woff");
+  font-weight: 500;
+  font-display: swap;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Satoshi";
+  src: url("/fonts/sans-serif/Satoshi-Bold.otf") format("opentype"),
+    url("/fonts/sans-serif/Satoshi-Bold.woff2") format("woff2"),
+    url("/fonts/sans-serif/Satoshi-Bold.woff") format("woff");
+  font-weight: 700;
+  font-display: swap;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Satoshi";
+  src: url("/fonts/sans-serif/Satoshi-Variable.ttf") format("truetype"),
+    url("/fonts/sans-serif/Satoshi-Variable.woff2") format("woff2"),
+    url("/fonts/sans-serif/Satoshi-Variable.woff") format("woff");
+  font-weight: 800;
+  font-variation-settings: "wght" 800;
+  font-display: swap;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Satoshi";
+  src: url("/fonts/sans-serif/Satoshi-Black.otf") format("opentype"),
+    url("/fonts/sans-serif/Satoshi-Black.woff2") format("woff2"),
+    url("/fonts/sans-serif/Satoshi-Black.woff") format("woff");
+  font-weight: 900;
+  font-display: swap;
+  font-style: normal;
+}
+
+html,
+body {
+  padding: 0;
+  margin: 0;
+}
+
+*,
+::before,
+::after {
+  font-family: Satoshi, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto,
+    Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+}
+
+body {
+  background: radial-gradient(
+      50% 50% at 50% 50%,
+      rgba(183, 120, 255, 0.062) 0%,
+      rgba(183, 120, 255, 0) 100%
+    ),
+    #f6f6f6;
+}
+
+body,
+.min-safe {
+  min-height: 100vh;
+  /* stylelint-disable-next-line value-no-vendor-prefix */
+  @supports (-webkit-touch-callout: none) {
+    /* stylelint-disable-next-line value-no-vendor-prefix */
+    min-height: -webkit-fill-available;
+  }
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+* {
+  box-sizing: border-box;
+  font-feature-settings: "ss01" on, "ss03" on;
+  /* stylelint-disable-next-line property-no-vendor-prefix */
+  -moz-font-feature-settings: "ss01" on, "ss03" on;
 }

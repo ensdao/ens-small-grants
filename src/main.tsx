@@ -1,21 +1,22 @@
-import { ChakraProvider, ColorModeScript, GlobalStyle, useColorMode } from '@chakra-ui/react';
-import { lightTheme, midnightTheme, RainbowKitProvider } from '@rainbow-me/rainbowkit';
+import { ThorinGlobalStyles } from '@ensdomains/thorin';
+import { RainbowKitProvider } from '@rainbow-me/rainbowkit';
 import '@rainbow-me/rainbowkit/styles.css';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
+import { ThemeProvider } from 'styled-components';
 import { WagmiConfig } from 'wagmi';
 
 import App from './App';
 import './index.css';
-import { theme } from './theme';
+import { rainbowKitTheme, thorinTheme } from './theme';
 import { chains, wagmiClient } from './walletConfig';
 
 const ColoredRainbowKitProvider = ({ children }: React.PropsWithChildren<unknown>) => {
-  const { colorMode } = useColorMode();
+  // const { colorMode } = { colorMode: 'light' };
 
   return (
-    <RainbowKitProvider chains={chains} theme={colorMode === 'light' ? lightTheme() : midnightTheme()}>
+    <RainbowKitProvider chains={chains} theme={rainbowKitTheme}>
       {children}
     </RainbowKitProvider>
   );
@@ -23,18 +24,17 @@ const ColoredRainbowKitProvider = ({ children }: React.PropsWithChildren<unknown
 
 ReactDOM.createRoot(document.querySelector('#root')!).render(
   <>
-    <ColorModeScript initialColorMode={theme.config.initialColorMode} />
     <React.StrictMode>
-      <ChakraProvider theme={theme}>
-        <WagmiConfig client={wagmiClient}>
-          <ColoredRainbowKitProvider>
-            <GlobalStyle />
-            <BrowserRouter>
+      <WagmiConfig client={wagmiClient}>
+        <ColoredRainbowKitProvider>
+          <BrowserRouter>
+            <ThemeProvider theme={thorinTheme}>
+              <ThorinGlobalStyles />
               <App />
-            </BrowserRouter>
-          </ColoredRainbowKitProvider>
-        </WagmiConfig>
-      </ChakraProvider>
+            </ThemeProvider>
+          </BrowserRouter>
+        </ColoredRainbowKitProvider>
+      </WagmiConfig>
     </React.StrictMode>
   </>
 );

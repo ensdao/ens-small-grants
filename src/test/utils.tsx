@@ -1,12 +1,10 @@
 /* eslint-disable import/export */
-import { ChakraProvider } from '@chakra-ui/react';
 import { RainbowKitProvider } from '@rainbow-me/rainbowkit';
 import { cleanup, render } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { afterEach } from 'vitest';
 import { WagmiConfig } from 'wagmi';
 
-import { theme } from '../theme';
 import { chains, wagmiClient } from '../walletConfig';
 
 afterEach(() => {
@@ -18,13 +16,11 @@ const customRender = (ui: React.ReactElement, options = {}) =>
     // wrap provider(s) here if needed
     wrapper: ({ children }) => {
       return (
-        <ChakraProvider theme={theme}>
-          <WagmiConfig client={wagmiClient}>
-            <RainbowKitProvider chains={chains}>
-              <MemoryRouter>{children}</MemoryRouter>
-            </RainbowKitProvider>
-          </WagmiConfig>
-        </ChakraProvider>
+        <WagmiConfig client={wagmiClient}>
+          <RainbowKitProvider chains={chains}>
+            <MemoryRouter>{children}</MemoryRouter>
+          </RainbowKitProvider>
+        </WagmiConfig>
       );
     },
     ...options,

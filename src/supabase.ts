@@ -1,10 +1,11 @@
 import { createClient } from '@supabase/supabase-js';
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL ?? 'http://localhost:54321';
-const SUPABASE_FUNCTIONS_URL = import.meta.env.VITE_SUPABASE_FUNCTIONS_URL ?? 'http://localhost:54321/functions/v1';
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL ?? 'https://cqlyworkpgzhrdkmntoa.supabase.co';
+const SUPABASE_FUNCTIONS_URL =
+  import.meta.env.VITE_SUPABASE_FUNCTIONS_URL ?? 'https://cqlyworkpgzhrdkmntoa.supabase.co/rest/v1';
 const SUPABASE_ANON_KEY =
   import.meta.env.VITE_SUPABASE_ANON_KEY ??
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24ifQ.625_WdcF3KHqz5amU0x2X5WWHP-OEs_4qj0ssLNHzTs';
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNxbHl3b3JrcGd6aHJka21udG9hIiwicm9sZSI6ImFub24iLCJpYXQiOjE2NTgwODg0ODksImV4cCI6MTk3MzY2NDQ4OX0.EkRJCdKlAz_aIPLVxpn5UMj4PHy4hPkV4IAfzjak5Gc';
 
 export const client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 

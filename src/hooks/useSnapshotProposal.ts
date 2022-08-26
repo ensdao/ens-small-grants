@@ -1,29 +1,37 @@
 import snapshot from '@snapshot-labs/snapshot.js';
+import { useQueryClient } from '@tanstack/react-query';
 import { ethers } from 'ethers';
-import { useCallback, useEffect, useState } from 'react';
-import { useSigner, useAccount } from 'wagmi';
+import { useCallback } from 'react';
+import { useAccount, useQuery, useSigner } from 'wagmi';
 
-export type SnapshotVote = {
-  id: string;
-  voter: string;
-  vp: number;
-  choice: number;
-};
+import { SnapshotGrant, SnapshotProposal, SnapshotVote } from '../types';
+import { camelCaseToUpperCase, replaceKeysWithFunc } from '../utils';
 
-export type SnapshotProposal = {
-  id: string;
-  title: string;
-  space: { id: string };
-  choices: string[];
-  scores: number[];
-  scores_state: string;
-  votes: SnapshotVote[];
-  votes_available?: number | null;
-  current_vote?: SnapshotVote | null;
+type SnapshotResponse = {
+  data: {
+    proposal: {
+      id: string;
+      title: string;
+      choices: string[];
+      scores: number[];
+      scores_state: string;
+      snapshot: string;
+      space: {
+        id: string;
+      };
+      strategies: {
+        network: string;
+        name: string;
+        params: object;
+      }[];
+    };
+    votes: SnapshotVote[];
+    currentVote?: SnapshotVote[];
+  };
 };
 
 const QUERY = `
-    query GetSnapshotProposal($proposalId: String!, $currentUser: String) {
+    query GetSnapshotProposal($proposalId: String!, $currentUser: String, $hasUser: Boolean!) {
       proposal(id: $proposalId) {
         id
         title
@@ -41,14 +49,14 @@ const QUERY = `
         }
       }
 
-      votes(first: 100, where: { proposal: $proposalId }) {
+      votes(first: 1000, where: { proposal: $proposalId }) {
         id
         voter
         vp
         choice
       }
 
-      currentVote: votes(first: 1, where: { proposal: $proposalId, voter: $currentUser }) {
+      currentVote: votes(first: 1, where: { proposal: $proposalId, voter: $currentUser }) @include(if: $hasUser) {
         id
         voter
         vp
@@ -60,64 +68,80 @@ const QUERY = `
 const snapshotClient = new snapshot.Client712('https://hub.snapshot.org');
 
 export function useSnapshotProposal(proposalId: string) {
-  const [proposal, setProposal] = useState<SnapshotProposal | null>(null);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
+
   const { data: signer } = useSigner();
-  const { data: account } = useAccount();
+  const { address } = useAccount();
 
-  useEffect(() => {
-    (async () => {
-      try {
-        setLoading(true);
-        const res = await fetch('https://hub.snapshot.org/graphql', {
-          method: 'POST',
-          body: JSON.stringify({ query: QUERY, variables: { proposalId, currentUser: account?.address } }),
-          headers: {
-            'content-type': 'application/json',
-          },
-        });
+  const { data: proposal, isLoading } = useQuery(['proposal', proposalId, address], async () => {
+    const res = await fetch('https://hub.snapshot.org/graphql', {
+      method: 'POST',
+      body: JSON.stringify({
+        query: QUERY,
+        variables: { proposalId, currentUser: address, hasUser: !!address },
+      }),
+      headers: {
+        'content-type': 'application/json',
+      },
+    });
 
-        const body = await res.json();
+    const body: SnapshotResponse = await res.json();
 
-        let votes_available: number | null = null;
+    let votesAvailable: number | null = null;
 
-        if (account && account.address) {
-          const scores = await snapshot.utils.getScores(
-            body.data.proposal.space.id,
-            body.data.proposal.strategies,
-            '1',
-            [account.address],
-            body.data.proposal.snapshot
-          );
+    if (address) {
+      const scores = await snapshot.utils.getScores(
+        body.data.proposal.space.id,
+        body.data.proposal.strategies,
+        '1',
+        [address],
+        body.data.proposal.snapshot
+      );
 
-          votes_available = Math.floor(scores[0][account.address] ?? 0);
-        }
+      votesAvailable = Math.floor(scores[0][address] ?? 0);
 
-        setProposal({
-          ...body.data.proposal,
-          votes: body.data.votes,
-          votes_available,
-          current_vote: body.data.currentVote.length > 0 ? body.data.currentVote[0] : null,
-        });
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, [proposalId, account]);
+      if (body.data.currentVote?.length === 0) body.data.currentVote = undefined;
+    }
+
+    const grants: SnapshotGrant[] =
+      body.data.proposal.choices.map((choice, i) => ({
+        choiceId: i,
+        grantId: Number.parseInt(choice.split(' - ')[0]),
+        voteCount: body.data.proposal.scores[i],
+        voteStatus: body.data.proposal.scores_state === 'final',
+        voteSamples: body.data.votes
+          .filter(v => v.choice === i + 1)
+          .sort((a, b) => {
+            if (a.voter === address) return -1;
+            if (b.voter === address) return 1;
+            return b.vp - a.vp;
+          }),
+        currentVotes: body.data.currentVote?.[0].choice === i ? body.data.currentVote[0].vp : 0,
+      })) || [];
+
+    return {
+      ...replaceKeysWithFunc(body.data.proposal, camelCaseToUpperCase),
+      votes: body.data.votes,
+      votesAvailable,
+      currentVote: (body.data.currentVote && body.data.currentVote[0]) || null,
+      grants,
+    } as SnapshotProposal;
+  });
 
   const vote = useCallback(
     async (choiceId: number) => {
-      if (proposal && account?.address) {
-        await snapshotClient.vote(signer as unknown as ethers.providers.Web3Provider, account.address, {
+      if (address && proposal?.space.id) {
+        await snapshotClient.vote(signer as unknown as ethers.providers.Web3Provider, address, {
           type: 'single-choice',
           space: proposal?.space.id,
           proposal: proposalId,
           choice: choiceId,
         });
+        queryClient.invalidateQueries(['proposal', proposalId, address]);
       }
     },
-    [proposalId, account, proposal, signer]
+    [address, proposal?.space.id, signer, proposalId, queryClient]
   );
 
-  return { proposal, loading, vote };
+  return { proposal, isLoading, vote };
 }

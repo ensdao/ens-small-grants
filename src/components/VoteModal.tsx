@@ -1,29 +1,30 @@
-import {
-  Text,
-  Button,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  ModalCloseButton,
-  Flex,
-} from '@chakra-ui/react';
+import { Button, Dialog, Typography } from '@ensdomains/thorin';
 import { useCallback, useState } from 'react';
+import styled, { css } from 'styled-components';
 
-import { Grant } from '../hooks';
+import type { Grant } from '../types';
 import { voteCountFormatter } from '../utils';
+import DisplayItem from './DisplayItem';
+import { InnerModal, DisplayItems } from './atoms';
 
 export type VoteModalProps = {
   open: boolean;
-  onClose: () => void;
   proposal: Grant;
-  onVote: () => Promise<void>;
   votingPower: number;
+  address: string;
+  onVote: () => Promise<void>;
+  onClose: () => void;
 };
 
-function VoteModal({ open, onClose, proposal, onVote, votingPower }: VoteModalProps) {
+const Message = styled(Typography)(
+  ({ theme }) => css`
+    text-align: center;
+    color: ${theme.colors.textSecondary};
+    max-width: ${theme.space['112']};
+  `
+);
+
+function VoteModal({ open, onClose, proposal, onVote, address, votingPower }: VoteModalProps) {
   const [waiting, setWaiting] = useState(false);
 
   const onPressAddVote = useCallback(async () => {
@@ -36,39 +37,30 @@ function VoteModal({ open, onClose, proposal, onVote, votingPower }: VoteModalPr
   }, [onVote]);
 
   return (
-    <Modal isOpen={open} onClose={onClose}>
-      <ModalOverlay>
-        <ModalContent>
-          <ModalHeader>Allocate your vote</ModalHeader>
-          <ModalCloseButton />
-
-          <ModalBody>
-            <Flex flexDirection="column" gap="8px">
-              <Text>
-                Voting power: <span style={{ fontWeight: 600 }}>{voteCountFormatter.format(votingPower)}</span>
-              </Text>
-              <Text>
-                You are about to allocate{' '}
-                <span style={{ fontWeight: 600 }}>{voteCountFormatter.format(votingPower)}</span> votes for{' '}
-                <span style={{ fontWeight: 600 }}>{proposal.title}</span>.
-              </Text>
-            </Flex>
-          </ModalBody>
-
-          <ModalFooter>
-            <Flex gap="8px">
-              <Button onClick={onClose} variant="secondary">
-                Cancel
-              </Button>
-
-              <Button isLoading={waiting} onClick={onPressAddVote}>
-                Vote
-              </Button>
-            </Flex>
-          </ModalFooter>
-        </ModalContent>
-      </ModalOverlay>
-    </Modal>
+    <Dialog open={open} onDismiss={onClose} variant="blank">
+      <Dialog.CloseButton onClick={onClose} />
+      <Dialog.Heading title="Allocate your vote" />
+      <InnerModal>
+        <Message>You are about to vote for this proposal, please confirm the details below.</Message>
+        <DisplayItems>
+          <DisplayItem label="Connected address" address value={address} />
+          <DisplayItem label="Voting Power" value={`${voteCountFormatter.format(votingPower)} $ENS`} />
+          <DisplayItem label="Selected proposal" value={proposal.title} />
+        </DisplayItems>
+      </InnerModal>
+      <Dialog.Footer
+        leading={
+          <Button onClick={onClose} variant="secondary" shadowless>
+            Cancel
+          </Button>
+        }
+        trailing={
+          <Button shadowless disabled={waiting} onClick={onPressAddVote}>
+            Vote
+          </Button>
+        }
+      />
+    </Dialog>
   );
 }
 

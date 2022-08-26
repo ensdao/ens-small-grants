@@ -3,5 +3,6 @@ dist
 contracts
 generated
 data
+!.prettierrc.js
 !.storybook
 !.lint-staged.config.js

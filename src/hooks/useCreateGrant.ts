@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { useSigner, useAccount } from 'wagmi';
+import { useAccount, useSigner } from 'wagmi';
 
 import { functionRequest } from '../supabase';
 
@@ -28,15 +28,15 @@ export type CreateGrantArgs = {
 
 export function useCreateGrant() {
   const { data: signer } = useSigner();
-  const { data: account } = useAccount();
+  const { address } = useAccount();
   const [loading, setLoading] = useState(false);
 
   const createGrant = useCallback(
     async (args: CreateGrantArgs) => {
-      if (signer && account) {
+      if (signer && address) {
         const grantData = {
           roundId: args.roundId,
-          address: account.address?.toLowerCase(),
+          address: address?.toLowerCase(),
           title: args.title,
           description: args.description,
           fullText: args.fullText,
@@ -59,7 +59,7 @@ export function useCreateGrant() {
         throw new Error('Your wallet must connected to propose a grant.');
       }
     },
-    [account, signer]
+    [address, signer]
   );
 
   return { createGrant, loading };

@@ -2,7 +2,7 @@ import snapshot from '@snapshot-labs/snapshot.js';
 import Arweave from 'arweave';
 import { ethers } from 'ethers';
 import { useCallback, useState } from 'react';
-import { useSigner, useAccount, useBlockNumber } from 'wagmi';
+import { useAccount, useBlockNumber, useSigner } from 'wagmi';
 
 import { client, functionRequest } from '../supabase';
 
@@ -27,13 +27,13 @@ export type CreateSnapshotArgs = {
 
 export function useCreateSnapshot() {
   const { data: signer } = useSigner();
-  const { data: account } = useAccount();
+  const { address } = useAccount();
   const { data: blockNumber } = useBlockNumber();
   const [loading, setLoading] = useState(false);
 
   const createSnapshot = useCallback(
     async (args: CreateSnapshotArgs) => {
-      if (signer && account) {
+      if (signer && address) {
         try {
           setLoading(true);
 
@@ -72,7 +72,9 @@ export function useCreateSnapshot() {
             fullText: grant.full_text,
           }));
 
-          const transaction = await arweave.createTransaction({ data: JSON.stringify(grantsData) });
+          const transaction = await arweave.createTransaction({
+            data: JSON.stringify(grantsData),
+          });
           transaction.addTag('Content-Type', 'application/json');
           transaction.addTag('App-Name', 'ENS-Small-Grants-v1');
 
@@ -86,7 +88,7 @@ export function useCreateSnapshot() {
 
           const receipt = (await snapshotClient.proposal(
             signer as unknown as ethers.providers.Web3Provider,
-            account.address || '',
+            address || '',
             {
               space: round.snapshot_space_id,
               type: 'approval',
@@ -119,7 +121,7 @@ export function useCreateSnapshot() {
         }
       }
     },
-    [account, signer, blockNumber]
+    [address, signer, blockNumber]
   );
 
   return { createSnapshot, loading };

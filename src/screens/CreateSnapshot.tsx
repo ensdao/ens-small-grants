@@ -1,4 +1,3 @@
-import { Box, Button } from '@chakra-ui/react';
 import { useCallback, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
@@ -7,7 +6,7 @@ import { useCreateSnapshot } from '../hooks';
 export function CreateSnapshot() {
   const { roundId } = useParams<{ roundId: string }>();
   const { createSnapshot } = useCreateSnapshot();
-  const [loading, setLoading] = useState(false);
+  const [_, setLoading] = useState(false);
 
   const create = useCallback(() => {
     if (roundId) {
@@ -23,10 +22,8 @@ export function CreateSnapshot() {
   }, [createSnapshot, roundId]);
 
   return (
-    <Box>
-      <Button isLoading={loading} onClick={create}>
-        Create Snapshot
-      </Button>
-    </Box>
+    <div>
+      <button onClick={create}>Create Snapshot</button>
+    </div>
   );
 }

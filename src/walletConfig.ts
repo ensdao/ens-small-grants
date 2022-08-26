@@ -1,16 +1,26 @@
 import { getDefaultWallets } from '@rainbow-me/rainbowkit';
-import { chain, createClient, configureChains } from 'wagmi';
+import { QueryClient } from '@tanstack/react-query';
+import { chain, configureChains, createClient } from 'wagmi';
 import { publicProvider } from 'wagmi/providers/public';
 
 export const { chains, provider } = configureChains([chain.mainnet], [publicProvider()]);
 
 export const { connectors } = getDefaultWallets({
-  appName: 'My RainbowKit App',
+  appName: 'ENS DAO Small Grants',
   chains,
+});
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+    },
+  },
 });
 
 export const wagmiClient = createClient({
   autoConnect: true,
   connectors,
   provider,
+  queryClient,
 });

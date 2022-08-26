@@ -1,58 +1,117 @@
 import { BigNumber } from 'ethers';
-import moment from 'moment';
-import { useEffect, useState } from 'react';
+import { useQuery } from 'wagmi';
 
 import { client } from '../supabase';
+import type { Round } from '../types';
+import { camelCaseToUpperCase, replaceKeysWithFunc, roundTimestampsToDates } from '../utils';
 
-export type Round = {
-  id: string;
-  creator: string;
-  title: string;
-  description?: string | null;
-  proposal_start: moment.Moment;
-  proposal_end: moment.Moment;
-  voting_start: moment.Moment;
-  voting_end: moment.Moment;
-  allocation_token_amount: BigNumber;
-  allocation_token_address: string;
-  max_winner_count: number;
-  snapshot_space_id: string;
-  snapshot_proposal_id?: string | null;
-  created_at: string;
-  updated_at: string;
+type SnapshotProposalResponse = {
+  data: {
+    proposals: {
+      id: string;
+      choices: string[];
+      scores_total: number;
+      scores_state: string;
+      scores: number[];
+    }[];
+  };
 };
 
-export function useRounds() {
-  const [rounds, setRounds] = useState<Round[] | null>(null);
-  const [loading, setLoading] = useState(true);
+const QUERY = `
+    query GetAllSnapshotProposals($spaceId: String!) {
+      proposals(where: { space: $spaceId }) {
+        id
+        choices
+        scores_total
+        scores_state
+        scores
+      }
+    }
+`;
 
-  useEffect(() => {
-    (async () => {
-      try {
-        setLoading(true);
-        const { data, error } = await client.from('rounds').select();
+export function useRounds(selection: string): {
+  round: Round | undefined;
+  isLoading: boolean;
+  rounds: never;
+};
+export function useRounds(): {
+  rounds: Round[] | undefined;
+  isLoading: boolean;
+  round: never;
+};
+export function useRounds(selection?: string) {
+  const { data: rounds, isLoading } = useQuery(
+    ['rounds'],
+    async () => {
+      const { data, error } = await client.from('rounds').select();
+      if (error) {
+        throw error;
+      }
 
-        if (error) {
-          console.error(error);
-          setLoading(false);
+      if (!data) {
+        return;
+      }
+
+      const body = (await fetch('https://hub.snapshot.org/graphql', {
+        method: 'POST',
+        body: JSON.stringify({
+          query: QUERY,
+          variables: { spaceId: data[0].snapshot_space_id },
+        }),
+        headers: {
+          'content-type': 'application/json',
+        },
+      }).then(res => res.json())) as SnapshotProposalResponse;
+
+      for (const roundItem of body.data.proposals) {
+        const ref = data.find(r => r.snapshot_proposal_id === roundItem.id);
+        if (ref) {
+          const scores: number[] = [];
+
+          for (const i in roundItem.choices) {
+            const id = Number.parseInt(i.split('-')[0]);
+            scores[id] = roundItem.scores[id];
+          }
+
+          ref.snapshot = {
+            id: ref.snapshot_proposal_id,
+            title: ref.title,
+            space: { id: ref.snapshot_space_id },
+            choices: roundItem.choices,
+            scores,
+            scoresState: roundItem.scores_state,
+            scoresTotal: roundItem.scores_total,
+          };
+        }
+      }
+
+      return data.map(r => ({
+        ...replaceKeysWithFunc(r, camelCaseToUpperCase),
+        title: r.title.replace(/ Round.*/, ''),
+        round: Number.parseInt(r.title.replace(/.*Round /, '')),
+        proposalStart: new Date(r.proposal_start),
+        proposalEnd: new Date(r.proposal_end),
+        votingStart: new Date(r.voting_start),
+        votingEnd: new Date(r.voting_end),
+        createdAt: new Date(r.created_at),
+        updatedAt: new Date(r.updated_at),
+        allocationTokenAmount: BigNumber.from(r.allocation_token_amount),
+      })) as Round[];
+    },
+    {
+      select: data => {
+        if (!data) {
           return;
         }
+        const dataWithDates = data.map(r => roundTimestampsToDates(r));
+        if (selection) {
+          return dataWithDates.find(r => r.id === Number.parseInt(selection));
+        }
+        return dataWithDates;
+      },
+    }
+  );
 
-        setRounds(
-          data.map(r => ({
-            ...r,
-            proposal_start: moment(r.proposal_start),
-            proposal_end: moment(r.proposal_end),
-            voting_start: moment(r.voting_start),
-            voting_end: moment(r.voting_end),
-            allocation_token_amount: BigNumber.from(r.allocation_token_amount),
-          }))
-        );
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, []);
-
-  return { rounds, loading };
+  if (selection) return { round: rounds, isLoading };
+  return { rounds, isLoading };
 }

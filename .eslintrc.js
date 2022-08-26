@@ -17,8 +17,6 @@ module.exports = {
     'promise',
     'sonarjs',
     'prettier',
-    '@emotion',
-    'chakra-ui',
   ],
   extends: [
     'eslint:recommended',
@@ -30,7 +28,7 @@ module.exports = {
     'plugin:promise/recommended',
     'plugin:jsx-a11y/recommended',
     'plugin:sonarjs/recommended',
-    'plugin:prettier/recommended',
+    'prettier',
   ],
   settings: {
     react: {
@@ -135,9 +133,6 @@ module.exports = {
         importOrderSeparation: true,
       },
     ],
-    '@emotion/syntax-preference': ['error', 'object'],
     'import/no-cycle': ['error', { ignoreExternal: true }],
-    'chakra-ui/props-order': 'error',
-    'chakra-ui/props-shorthand': ['error', { noShorthand: true }],
   },
 };
