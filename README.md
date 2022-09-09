@@ -21,6 +21,19 @@ and in another tab:
 > supabase functions serve rpc
 ```
 
+## Creating a Round
+
+1. Go to [supabase](https://supabase.com) Studio UI
+2. Go to Tables -> `rounds`
+3. Create a new row in the `rounds` table
+4. Fill out the information needed, using integers in wei for token amounts and hex addresses for addresses (use 0x00 for `allocation_token_address` for ETH)
+5. Use the ENS name for the snapshot space as the `snapshot_space_id` (eg. small-grants.eth)
+6. Save the new row
+
+## Setting up Snapshot
+
+When the proposal period is done, you need to setup the Snapshot Space for voting. This can be done with one click in the UI by going to https://ensgrants.xyz/create_snapshot (or whatever domain you have the app deployed to) and clicking the button on that page. It will ask you to sign a message and that should create the compatible Snapshot space with all the proposals as options. (Note: you must be an admin, or otherwise able to create proposals on the snapshot space specified in `snapshot_space_id` during setup of the round)
+
 ## Architecture
 For the initial implementation, the focus is on speed of deployment, while retaining independent vote audit-ability.
 
@@ -53,13 +66,13 @@ sequenceDiagram
 MVP
 - [x] Function to upload proposal data and create Snapshot proposal
 - [x] Make everything react correctly to proposal/voting start/end dates
-- [ ] UI to vote on active proposal round
+- [x] UI to vote on active proposal round
 - [x] Add RLS to supabase
-- [ ] Make sure timeline is enforced in functions
+- [x] Make sure timeline is enforced in functions
 
 Feature complete v0
-- [ ] UI to create proposal round
-- [ ] Make design style line up properly with mockups
+- [x] UI to create proposal round
+- [x] Make design style line up properly with mockups
 
 
 ## License
