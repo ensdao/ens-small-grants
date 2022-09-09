@@ -32,7 +32,7 @@ and in another tab:
 
 ## Setting up Snapshot
 
-When the proposal period is done, you need to setup the Snapshot Space for voting. This can be done with one click in the UI by going to https://ensgrants.xyz/create_snapshot (or whatever domain you have the app deployed to) and clicking the button on that page. It will ask you to sign a message and that should create the compatible Snapshot space with all the proposals as options. (Note: you must be an admin, or otherwise able to create proposals on the snapshot space specified in `snapshot_space_id` during setup of the round)
+When the proposal period is done, you need to setup the Snapshot Space for voting. This can be done with one click in the UI by going to https://ensgrants.xyz/snapshot (or whatever domain you have the app deployed to) and clicking the button on that page. It will ask you to sign a message and that should create the compatible Snapshot space with all the proposals as options. (Note: you must be an admin, or otherwise able to create proposals on the snapshot space specified in `snapshot_space_id` during setup of the round)
 
 ## Architecture
 For the initial implementation, the focus is on speed of deployment, while retaining independent vote audit-ability.
