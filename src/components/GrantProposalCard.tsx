@@ -26,9 +26,7 @@ const StyledCard = styled('div')(
       'content content';
     gap: ${theme.space['4']};
     border: 1px solid ${theme.colors.borderSecondary};
-
     width: 100%;
-    height: 100%;
 
     transition: all 0.15s ease-in-out;
     &:hover {
