@@ -53,7 +53,7 @@ export type Round = {
 
 export type Grant = {
   id: number;
-  snapshotId?: number;
+  snapshotId: number;
   proposer: string;
   roundId: number;
   title: string;

@@ -93,7 +93,7 @@ export function useSnapshotProposal(proposalId: string) {
       const scores = await snapshot.utils.getScores(
         body.data.proposal.space.id,
         body.data.proposal.strategies,
-        '1',
+        body.data.proposal.strategies[0].network,
         [address],
         body.data.proposal.snapshot
       );
@@ -129,12 +129,12 @@ export function useSnapshotProposal(proposalId: string) {
   });
 
   const vote = useCallback(
-    async (choiceId: number) => {
+    async (choiceId: number[]) => {
       if (address && proposal?.space.id) {
         await snapshotClient.vote(signer as unknown as ethers.providers.Web3Provider, address, {
-          type: 'single-choice',
           space: proposal?.space.id,
           proposal: proposalId,
+          type: 'approval',
           choice: choiceId,
         });
         queryClient.invalidateQueries(['proposal', proposalId, address]);

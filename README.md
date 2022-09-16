@@ -1,4 +1,5 @@
 # ENS Small Grants
+
 This is a semi-autonomous grant application designed to help ENS DAO distribute small grants to a wider range of projects at a regular rate.
 
 - [ENS Public Goods Working Group grant proposal](https://discuss.ens.domains/t/pg-wg-proposal-ens-small-grants/12843)
@@ -10,6 +11,8 @@ Running the project:
 
 1. Install [Docker](https://www.docker.com/products/docker-desktop/)
 2. Install [supabase cli](https://github.com/supabase/cli#install-the-cli)
+3. Rename `.env.example` to `.env` and fill in the Supabase configuation
+
 ```
 > yarn install
 > yarn dev
@@ -35,6 +38,7 @@ and in another tab:
 When the proposal period is done, you need to setup the Snapshot Space for voting. This can be done with one click in the UI by going to https://ensgrants.xyz/rounds/{round ID}/snapshot (or whatever domain you have the app deployed to) and clicking the button on that page. It will ask you to sign a message and that should create the compatible Snapshot space with all the proposals as options. (Note: you must be an admin, or otherwise able to create proposals on the snapshot space specified in `snapshot_space_id` during setup of the round)
 
 ## Architecture
+
 For the initial implementation, the focus is on speed of deployment, while retaining independent vote audit-ability.
 
 - During the Proposal Stage, proposal text is stored in ARweave (via Bundlr) and indexed by a web2 Cloudflare Worker
@@ -64,6 +68,7 @@ sequenceDiagram
 ## TODO
 
 MVP
+
 - [x] Function to upload proposal data and create Snapshot proposal
 - [x] Make everything react correctly to proposal/voting start/end dates
 - [x] UI to vote on active proposal round
@@ -71,9 +76,10 @@ MVP
 - [x] Make sure timeline is enforced in functions
 
 Feature complete v0
+
 - [x] UI to create proposal round
 - [x] Make design style line up properly with mockups
 
-
 ## License
+
 This project is licensed under both MIT and Apache 2.0

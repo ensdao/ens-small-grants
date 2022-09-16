@@ -58,7 +58,7 @@ const RoundItemsOuter = styled.div(
   ({ theme }) => css`
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
     justify-content: center;
     gap: ${theme.space['2']};
   `
@@ -70,13 +70,13 @@ const SectionHeading = styled.div(
     flex-direction: row;
     align-items: center;
     justify-content: center;
-
     padding: ${theme.space['2']};
 
     ${mq.md.min(css`
       flex-direction: row;
       align-items: center;
       justify-content: space-between;
+      margin-bottom: ${theme.space['4']};
       gap: ${theme.space['4']};
 
       padding: 0;
@@ -111,7 +111,7 @@ const DesktopHiddenAnchor = styled(Anchor)(
   `
 );
 
-const isActiveRound = (round: RoundType) => round.votingEnd > new Date();
+const isActiveRound = (round: RoundType) => round.votingEnd > new Date() && round.proposalStart < new Date();
 
 function Home() {
   const { rounds, isLoading } = useRounds();

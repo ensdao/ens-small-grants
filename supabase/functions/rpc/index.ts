@@ -44,7 +44,12 @@ const snapshotTypes = {
 };
 
 // temporary, hardcoded "admins" for web2 service
-const adminAddresses = new Set(['0x9B6568d72A6f6269049Fac3998d1fadf1E6263cc'].map(x => x.toLowerCase()));
+const adminAddressList = [
+  '0x9B6568d72A6f6269049Fac3998d1fadf1E6263cc',
+  '0x179A862703a4adfb29896552DF9e307980D19285',
+  '0x1D5460F896521aD685Ea4c3F2c679Ec0b6806359',
+];
+const adminAddresses = new Set(adminAddressList.map(x => x.toLowerCase()));
 
 serve(async req => {
   if (req.method === 'OPTIONS') {

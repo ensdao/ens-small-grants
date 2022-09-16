@@ -52,11 +52,13 @@ export function useRounds(selection?: string) {
         return;
       }
 
+      const selectedRound = data.find(round => round.id === (selection ? Number(selection) : 0)) || data[0];
+
       const body = (await fetch('https://hub.snapshot.org/graphql', {
         method: 'POST',
         body: JSON.stringify({
           query: QUERY,
-          variables: { spaceId: data[0].snapshot_space_id },
+          variables: { spaceId: selectedRound.snapshot_space_id },
         }),
         headers: {
           'content-type': 'application/json',

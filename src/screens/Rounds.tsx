@@ -4,6 +4,7 @@ import styled, { css } from 'styled-components';
 import BackButton from '../components/BackButton';
 import RoundCard from '../components/RoundCard';
 import { useRounds } from '../hooks';
+import { Round as RoundType } from '../types';
 
 const RoundGrid = styled.div(
   ({ theme }) => css`
@@ -36,12 +37,13 @@ const Rounds = () => {
   }
 
   const title = <Title>All rounds</Title>;
+  const activeRounds = rounds.filter((round: RoundType) => round.proposalStart < new Date());
 
   return (
     <>
       <BackButton to="/" title={title} />
       <RoundGrid>
-        {rounds
+        {activeRounds
           .sort((a, b) => (a.createdAt > b.createdAt ? -1 : 1))
           .map(r => (
             <RoundCard key={r.id} {...r} />

@@ -1,14 +1,11 @@
-import { Button, mq, Spinner, Typography } from '@ensdomains/thorin';
-import { useConnectModal } from '@rainbow-me/rainbowkit';
-import { useCallback, useMemo, useState } from 'react';
+import { mq, Spinner, Typography } from '@ensdomains/thorin';
+import { useMemo } from 'react';
 import styled, { css } from 'styled-components';
-import { useAccount } from 'wagmi';
 
 import { useSnapshotProposal } from '../hooks';
 import type { Grant, Round } from '../types';
 import { voteCountFormatter } from '../utils';
 import Profile from './Profile';
-import VoteModal from './VoteModal';
 import { Card, TextWithHighlight } from './atoms';
 
 export function clipAddress(address: string) {
@@ -89,21 +86,15 @@ const VoterAmountTypography = styled(Typography)<{ $voteCount: number }>(
 );
 
 function VoteInProgressSection({ round, snapshotProposalId, proposal }: VoteInProgressSectionProps) {
-  const [openVoteModal, setOpenVoteModal] = useState(false);
-  const { openConnectModal } = useConnectModal();
-  const { address } = useAccount();
-  const { proposal: snapshotProposal, vote, isLoading } = useSnapshotProposal(snapshotProposalId);
+  const { proposal: snapshotProposal, isLoading } = useSnapshotProposal(snapshotProposalId);
   const snapshotGrant = useMemo(
     () => snapshotProposal?.grants.find(g => g.grantId === proposal.id),
     [snapshotProposal, proposal.id]
   );
 
-  const executeVote = useCallback(async () => {
-    if (snapshotGrant) {
-      await vote(snapshotGrant.choiceId);
-      setOpenVoteModal(false);
-    }
-  }, [vote, snapshotGrant, setOpenVoteModal]);
+  if (round.votingStart > new Date()) {
+    return <Typography>Voting has not started yet</Typography>;
+  }
 
   if (isLoading) {
     return <Spinner />;
@@ -114,49 +105,9 @@ function VoteInProgressSection({ round, snapshotProposalId, proposal }: VoteInPr
   }
 
   const preVoting = new Date() < round.votingStart;
-  const roundIsClosed = !!snapshotGrant.voteStatus || new Date() >= round.votingEnd;
 
   if (preVoting) {
     return <Typography>Voting has not started</Typography>;
-  }
-
-  const currentVoter = {
-    voterAddr: address,
-    grantProposalId: proposal.id,
-    voteCountForGrantProposal: snapshotGrant.currentVotes, // this will be > 0 if they voted for this proposal
-    votingPower: snapshotProposal.votesAvailable ?? 0,
-    remainingVotingPower: snapshotProposal.votesAvailable ?? 0, // this will be 0 if they voted on another proposal
-  };
-
-  const userHasVotingPower = address && currentVoter?.votingPower > 0;
-  const userVotedForCurrentProposal = userHasVotingPower && currentVoter.voteCountForGrantProposal > 0;
-
-  let actionButton: React.ReactNode;
-
-  if (roundIsClosed) {
-    actionButton = (
-      <Button shadowless size="small" disabled>
-        Voting closed
-      </Button>
-    );
-  } else if (!address) {
-    actionButton = (
-      <Button shadowless size="small" onClick={openConnectModal}>
-        Connect
-      </Button>
-    );
-  } else if (userVotedForCurrentProposal) {
-    actionButton = (
-      <Button shadowless size="small" disabled>
-        Voted
-      </Button>
-    );
-  } else {
-    actionButton = (
-      <Button shadowless size="small" onClick={() => setOpenVoteModal(true)}>
-        Vote
-      </Button>
-    );
   }
 
   return (
@@ -166,7 +117,6 @@ function VoteInProgressSection({ round, snapshotProposalId, proposal }: VoteInPr
           <VotesTypography>
             <b>{voteCountFormatter.format(snapshotGrant.voteCount)}</b> Votes
           </VotesTypography>
-          <div>{actionButton}</div>
         </TopSection>
         {snapshotGrant.voteSamples.slice(0, 4).map(voter => (
           <Profile address={voter.voter} subtitle={`${voteCountFormatter.format(voter.vp)} votes`} key={voter.voter} />
@@ -177,16 +127,6 @@ function VoteInProgressSection({ round, snapshotProposalId, proposal }: VoteInPr
           </ExtraVotersContainer>
         )}
       </Container>
-      {!roundIsClosed && !!address && (
-        <VoteModal
-          address={address}
-          onClose={() => setOpenVoteModal(false)}
-          open={openVoteModal}
-          onVote={executeVote}
-          proposal={proposal}
-          votingPower={currentVoter.votingPower}
-        />
-      )}
     </>
   );
 }

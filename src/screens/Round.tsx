@@ -1,9 +1,11 @@
-import { Button, Helper, mq, Spinner, Typography } from '@ensdomains/thorin';
+import { Helper, mq, Spinner, Typography } from '@ensdomains/thorin';
 import { formatEther } from 'ethers/lib/utils';
+import ReactMarkdown from 'react-markdown';
 import { useHref, useLinkClickHandler, useLocation, useParams } from 'react-router-dom';
 import styled, { css } from 'styled-components';
 
 import BackButton from '../components/BackButton';
+import { BannerContainer } from '../components/BannerContainer';
 import GrantRoundSection from '../components/GrantRoundSection';
 import { useRounds } from '../hooks';
 import { ClickHandler } from '../types';
@@ -21,7 +23,7 @@ const Container = styled.div(
 );
 
 const HeadingContainer = styled.div(
-  () => css`
+  ({ theme }) => css`
     display: flex;
     flex-direction: column;
     align-items: flex-end;
@@ -30,6 +32,7 @@ const HeadingContainer = styled.div(
     width: 100%;
 
     ${mq.md.min(css`
+      gap: ${theme.space['4']};
       flex-direction: row;
       height: max-content;
     `)}
@@ -132,40 +135,26 @@ const VoteTimeTypography = styled(Typography)(
   `
 );
 
-const NoProposalsContainer = styled.div(
+const RoundDescription = styled(Typography)(
   ({ theme }) => css`
+    grid-area: content;
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
-    gap: ${theme.space['4']};
-
     width: 100%;
+    max-width: 80ch;
+    color: ${theme.colors.textSecondary};
 
-    padding: ${theme.space['8']};
-    border-radius: ${theme.radii.extraLarge};
+    gap: ${theme.space['4']};
+    margin-top: ${theme.space['8']};
 
-    background-color: ${theme.colors.foregroundTertiary};
-
-    & > div:first-child {
-      text-align: center;
-      & > div:first-child {
-        font-size: ${theme.fontSizes.extraLarge};
-        font-weight: bold;
-      }
-      & > div:last-child {
-        color: ${theme.colors.textSecondary};
-        font-size: ${theme.fontSizes.large};
-      }
+    a {
+      color: ${theme.colors.indigo};
     }
 
-    ${mq.md.min(css`
-      & > div:first-child {
-        text-align: left;
-      }
-      flex-direction: row;
-      align-items: center;
-      justify-content: space-between;
+    ${mq.md.max(css`
+      margin-bottom: ${theme.space['4']};
     `)}
   `
 );
@@ -185,15 +174,19 @@ export const Round = () => {
     return <Spinner size="large" />;
   }
 
-  // Check if round[0] is active (in proposals or voting stage)
-  const isActiveRound = round.votingEnd > new Date();
-  const isVotingRound = round.proposalEnd < new Date();
+  const isActiveRound = round.proposalStart < new Date() && round.votingEnd > new Date();
+  const isVotingRound = round.votingStart < new Date() && round.votingEnd > new Date();
+  const isPropRound = round.proposalStart < new Date() && round.proposalEnd > new Date();
 
   let upperVoteMsg: React.ReactNode;
   let lowerVoteMsg: React.ReactNode;
   let noSnapshotWhenNeeded = false;
 
-  if (!round.snapshot && (!isActiveRound || isVotingRound)) {
+  if (isActiveRound && !isPropRound && !isVotingRound) {
+    // Time between submissions closed and voting starts
+    upperVoteMsg = <p>Voting starts in {getTimeDifferenceString(new Date(), round.votingStart)}</p>;
+    lowerVoteMsg = <p>Submissions closed</p>;
+  } else if (!round.snapshot && (!isActiveRound || isVotingRound)) {
     noSnapshotWhenNeeded = true;
     upperVoteMsg = (
       <>
@@ -227,7 +220,7 @@ export const Round = () => {
         </>
       );
     } else {
-      upperVoteMsg = 'No votes so far';
+      upperVoteMsg = 'Accepting submissions';
       lowerVoteMsg = (
         <>
           Submissions close in <br />
@@ -243,6 +236,9 @@ export const Round = () => {
     </Title>
   );
 
+  const ethPerWinner = formatEther((Number(round.allocationTokenAmount) / round.maxWinnerCount).toString());
+  const ethPerWinnerStr = ethPerWinner.endsWith('.0') ? ethPerWinner.replace(/\..*/, '') : ethPerWinner;
+
   return (
     <>
       <BackButton to="/" title={titleContent} />
@@ -250,33 +246,42 @@ export const Round = () => {
       <Container>
         <HeadingContainer>
           <Subtitle>
-            The <b>Top {round.maxWinnerCount}</b> voted proposals of this round get{' '}
-            <b>{formatEther(round.allocationTokenAmount).replace(/\..*/, '')} ETH</b> each
+            The <b>Top {round.maxWinnerCount}</b> voted proposals of this round get <b>{ethPerWinnerStr} ETH</b> each
           </Subtitle>
           <VoteDetailsContainer>
             <VotesTypography>{upperVoteMsg}</VotesTypography>
             <VoteTimeTypography>{lowerVoteMsg}</VoteTimeTypography>
           </VoteDetailsContainer>
         </HeadingContainer>
+        {round.description && (
+          <RoundDescription>
+            <ReactMarkdown
+              components={{
+                p: ({ children }) => <Typography as="p">{children}</Typography>,
+                a: ({ children, href: mdHref }) => (
+                  <a href={mdHref} target="_blank" rel="noreferrer">
+                    {children}
+                  </a>
+                ),
+              }}
+            >
+              {round.description}
+            </ReactMarkdown>
+          </RoundDescription>
+        )}
       </Container>
       {noSnapshotWhenNeeded ? (
-        <NoProposalsContainer>
+        <BannerContainer>
           <Typography>Looks like something went wrong, try again later.</Typography>
-        </NoProposalsContainer>
-      ) : isVotingRound ? (
-        <GrantRoundSection randomiseGrants={isActiveRound && isVotingRound} {...round} />
+        </BannerContainer>
       ) : (
-        <NoProposalsContainer>
-          <div>
-            <Typography>No proposals here yet</Typography>
-            <Typography>You can submit your own proposal until the submissions close.</Typography>
-          </div>
-          <div>
-            <Button as="a" href={href} onClick={onClick as unknown as ClickHandler}>
-              Submit Proposal
-            </Button>
-          </div>
-        </NoProposalsContainer>
+        <GrantRoundSection
+          randomiseGrants={isActiveRound && isVotingRound}
+          isPropsOpen={isPropRound}
+          createProposalHref={href}
+          createProposalClick={onClick as unknown as ClickHandler | (() => void)}
+          {...round}
+        />
       )}
       <div style={{ flexGrow: 1 }} />
     </>
