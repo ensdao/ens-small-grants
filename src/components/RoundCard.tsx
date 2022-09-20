@@ -151,11 +151,13 @@ export const RoundCard = (round: Round) => {
       <BaseRoundCard {...baseProps}>
         <InfoContainer>
           {round.title.includes('Ecosystem') || round.title.includes('Public Goods') ? (
-            round.title.includes('Ecosystem') ? (
-              <ClosingTypography>Projects that specifically build on or improve the ENS Ecosystem.</ClosingTypography>
-            ) : (
-              <ClosingTypography>Projects that benefit the entire Ethereum or Web3 space.</ClosingTypography>
-            )
+            <div style={{ paddingBottom: '0.5rem' }}>
+              {round.title.includes('Ecosystem') ? (
+                <ClosingTypography>Projects that specifically build on or improve the ENS Ecosystem.</ClosingTypography>
+              ) : (
+                <ClosingTypography>Projects that benefit the entire Ethereum or Web3 space.</ClosingTypography>
+              )}
+            </div>
           ) : (
             <>
               <Typography>
@@ -189,11 +191,13 @@ export const RoundCard = (round: Round) => {
       <BaseRoundCard {...baseProps}>
         <InfoContainer>
           {round.title.includes('Ecosystem') || round.title.includes('Public Goods') ? (
-            round.title.includes('Ecosystem') ? (
-              <ClosingTypography>Projects that specifically build on or improve the ENS Ecosystem.</ClosingTypography>
-            ) : (
-              <ClosingTypography>Projects that benefit the entire Ethereum or Web3 space.</ClosingTypography>
-            )
+            <div style={{ paddingBottom: '0.5rem' }}>
+              {round.title.includes('Ecosystem') ? (
+                <ClosingTypography>Projects that specifically build on or improve the ENS Ecosystem.</ClosingTypography>
+              ) : (
+                <ClosingTypography>Projects that benefit the entire Ethereum or Web3 space.</ClosingTypography>
+              )}
+            </div>
           ) : (
             <ClosingTypography>
               Voting closes in{' '}

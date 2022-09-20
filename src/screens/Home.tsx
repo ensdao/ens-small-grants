@@ -127,8 +127,8 @@ function Home() {
       <HeadingContainer>
         <Heading>Small Grants from ENS DAO</Heading>
         <Subheading>
-          Small grants are bytesized grants that any $ENS holder can vote on, with the top proposals of each round
-          getting funded. Rounds are in waves, so there may not always be an active round.{' '}
+          ENS DAO Small Grants allow $ENS holders to vote on projects to receive funding. Sponsored by the Public Goods
+          and Ecosystem working group, these recurring small grants award 1Ξ to your favorite projects.{' '}
         </Subheading>
       </HeadingContainer>
       <RoundItemsOuter>
