@@ -32,7 +32,7 @@ const MainContent = styled.div(
     max-width: ${theme.space['320']};
 
     ${mq.md.min(css`
-      gap: ${theme.space['8']};
+      gap: ${theme.space['10']};
     `)}
   `
 );

@@ -9,19 +9,24 @@ import { Card } from './atoms';
 const StyledCard = styled(Card)(
   ({ theme }) => css`
     width: 100%;
-    ${mq.md.min(css`
-      width: ${theme.space['72']};
-    `)}
+    min-height: ${theme.space['60']};
   `
 );
 
 const HeadingContainer = styled.div(
-  () => css`
+  ({ theme }) => css`
     display: flex;
-    flex-direction: row;
-    align-items: center;
+    flex-direction: column-reverse;
+    align-items: flex-start;
+    gap: ${theme.space['2']};
     justify-content: space-between;
     width: 100%;
+    padding-bottom: ${theme.space['2']};
+
+    ${mq.lg.min(css`
+      flex-direction: row;
+      align-items: center;
+    `)}
   `
 );
 
@@ -52,7 +57,7 @@ const InfoContainer = styled.div(
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    justify-content: center;
+    justify-content: flex-end;
     gap: ${theme.space['2']};
     width: 100%;
     flex-grow: 1;
@@ -84,9 +89,11 @@ type BaseProps = {
 };
 
 const StatusTag = ({ status }: { status: Status }) => {
-  if (status === 'proposals') return null;
+  if (status === 'proposals') {
+    return <Tag tone="green">Accepting submissions</Tag>;
+  }
   if (status === 'voting') {
-    return <Tag tone="red">Voting</Tag>;
+    return <Tag tone="green">Voting open</Tag>;
   }
   return <Tag tone="secondary">Closed</Tag>;
 };
@@ -113,7 +120,7 @@ const BaseRoundCard = ({ id, title, round, status, children }: BaseProps) => {
         variant={status === 'closed' ? 'secondary' : 'primary'}
         onClick={handleClick as unknown as ClickHandler}
       >
-        View
+        {status === 'voting' ? 'Vote' : 'View'}
       </Button>
     </StyledCard>
   );
@@ -135,17 +142,64 @@ export const RoundCard = (round: Round) => {
     title: round.title,
   };
 
-  if (status === 'proposals') {
+  const isPropsOpen = status === 'proposals';
+  const isWaitingForVoting = round.proposalEnd < new Date() && round.votingStart > new Date();
+  const isVotingOpen = status === 'voting';
+
+  if (isPropsOpen) {
     return (
       <BaseRoundCard {...baseProps}>
         <InfoContainer>
-          <Typography>
-            <b>Now accepting submissions</b>
-          </Typography>
+          {round.title.includes('Ecosystem') || round.title.includes('Public Goods') ? (
+            round.title.includes('Ecosystem') ? (
+              <ClosingTypography>Projects that specifically build on or improve the ENS Ecosystem.</ClosingTypography>
+            ) : (
+              <ClosingTypography>Projects that benefit the entire Ethereum or Web3 space.</ClosingTypography>
+            )
+          ) : (
+            <>
+              <Typography>
+                <b>Now accepting submissions</b>
+              </Typography>
+              <ClosingTypography>
+                Submissions close in{' '}
+                <b style={{ display: 'block' }}>{getTimeDifferenceString(new Date(), round.proposalEnd)}</b>
+              </ClosingTypography>
+            </>
+          )}
+        </InfoContainer>
+      </BaseRoundCard>
+    );
+  }
+
+  if (isWaitingForVoting) {
+    return (
+      <BaseRoundCard {...baseProps}>
+        <InfoContainer>
           <ClosingTypography>
-            Submissions close in{' '}
-            <b style={{ display: 'block' }}>{getTimeDifferenceString(new Date(), round.proposalEnd)}</b>
+            Voting opens in <b style={{ display: 'block' }}>{getTimeDifferenceString(new Date(), round.votingStart)}</b>
           </ClosingTypography>
+        </InfoContainer>
+      </BaseRoundCard>
+    );
+  }
+
+  if (isVotingOpen) {
+    return (
+      <BaseRoundCard {...baseProps}>
+        <InfoContainer>
+          {round.title.includes('Ecosystem') || round.title.includes('Public Goods') ? (
+            round.title.includes('Ecosystem') ? (
+              <ClosingTypography>Projects that specifically build on or improve the ENS Ecosystem.</ClosingTypography>
+            ) : (
+              <ClosingTypography>Projects that benefit the entire Ethereum or Web3 space.</ClosingTypography>
+            )
+          ) : (
+            <ClosingTypography>
+              Voting closes in{' '}
+              <b style={{ display: 'block' }}>{getTimeDifferenceString(new Date(), round.votingEnd)}</b>
+            </ClosingTypography>
+          )}
         </InfoContainer>
       </BaseRoundCard>
     );

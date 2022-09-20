@@ -31,7 +31,7 @@ const HeadingContainer = styled.div(
     max-width: ${theme.space['144']};
     text-align: center;
 
-    margin-top: ${theme.space['8']};
+    margin-top: ${theme.space['10']};
 
     ${mq.md.min(css`
       margin-top: 0;
@@ -39,17 +39,15 @@ const HeadingContainer = styled.div(
   `
 );
 
-const RoundItems = styled.div(
+const RoundGrid = styled.div(
   ({ theme }) => css`
-    display: flex;
-    flex-direction: row;
-    align-items: stretch;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: ${theme.space['4']};
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    gap: ${theme.space['8']};
+    width: 100%;
 
     ${mq.md.min(css`
-      height: ${theme.space['64']};
+      grid-template-columns: repeat(2, 1fr);
     `)}
   `
 );
@@ -61,6 +59,9 @@ const RoundItemsOuter = styled.div(
     align-items: center;
     justify-content: center;
     gap: ${theme.space['2']};
+    width: 100%;
+    max-width: ${theme.space['256']};
+    margin-top: ${theme.space['2']};
   `
 );
 
@@ -126,8 +127,8 @@ function Home() {
       <HeadingContainer>
         <Heading>Small Grants from ENS DAO</Heading>
         <Subheading>
-          ENS DAO Small Grants allow $ENS holders to vote on projects to receive funding. Sponsored by the Public Goods
-          and Ecosystem working group, these recurring small grants award 1Ξ to your favorite projects.{' '}
+          Small grants are bytesized grants that any $ENS holder can vote on, with the top proposals of each round
+          getting funded. Rounds are in waves, so there may not always be an active round.{' '}
         </Subheading>
       </HeadingContainer>
       <RoundItemsOuter>
@@ -135,11 +136,11 @@ function Home() {
           <ActiveTypography>Showing all active rounds</ActiveTypography>
           <MobileHiddenAnchor to="/rounds">See all rounds</MobileHiddenAnchor>
         </SectionHeading>
-        <RoundItems>
+        <RoundGrid>
           {activeRounds.map(r => (
             <RoundCard key={r.id} {...r} />
           ))}
-        </RoundItems>
+        </RoundGrid>
         <SectionHeading>
           <DesktopHiddenAnchor to="/rounds">See all rounds</DesktopHiddenAnchor>
         </SectionHeading>

@@ -1,4 +1,4 @@
-import { Heading, Spinner } from '@ensdomains/thorin';
+import { mq, Heading, Spinner } from '@ensdomains/thorin';
 import styled, { css } from 'styled-components';
 
 import BackButton from '../components/BackButton';
@@ -10,9 +10,12 @@ const RoundGrid = styled.div(
   ({ theme }) => css`
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(${theme.space['72']}, 1fr));
-    grid-auto-rows: ${theme.space['64']};
     gap: ${theme.space['8']};
     width: 100%;
+
+    ${mq.md.min(css`
+      grid-template-columns: repeat(auto-fill, minmax(${theme.space['96']}, 1fr));
+    `)}
   `
 );
 

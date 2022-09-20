@@ -41,7 +41,7 @@ function GrantRoundSection({
     if (!_grants || !randomiseGrants) return _grants;
     return _grants.sort(() => 0.5 - Math.random());
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [round]);
 
   // Keep track of the selected prop ids for approval voting
   const [selectedProps, setSelectedProps] = useState<number[]>([]);
