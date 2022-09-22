@@ -150,6 +150,12 @@ export function CreateProposal() {
     return <Navigate to="/" />;
   }
 
+  // Redirect to round page if it is not accepting proposals
+  const isPropRound = round.proposalStart < new Date() && round.proposalEnd > new Date();
+  if (!isPropRound) {
+    return <Navigate to={to} />;
+  }
+
   return (
     <>
       <Dialog open={dialogOpen} onDismiss={() => setDialogOpen(false)} variant="blank">
@@ -224,8 +230,10 @@ export function CreateProposal() {
                 <InputDescription>
                   This should be a full description of what you are proposing, with a minimum of at least 300
                   characters. You can use{' '}
-                  <a href="https://www.markdownguide.org/cheat-sheet/">markdown for formatting</a> (extended syntax is
-                  supported).
+                  <a href="https://www.markdownguide.org/cheat-sheet/" target="_blank" rel="noreferrer">
+                    markdown for formatting
+                  </a>{' '}
+                  (extended syntax is supported).
                 </InputDescription>
               }
               validated={getFieldState('fullText', formState).isDirty}

@@ -110,6 +110,10 @@ const MarkdownWrapper = styled.div(
     a {
       color: ${theme.colors.indigo};
     }
+
+    img {
+      max-width: 100%;
+    }
   `
 );
 

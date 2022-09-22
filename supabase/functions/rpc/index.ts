@@ -155,8 +155,6 @@ serve(async req => {
         });
       }
 
-      await supabaseClient.from('grants').update({ deleted: true }).eq('proposer', address);
-
       const { data, error: grantError } = await supabaseClient.from('grants').insert([
         {
           round_id: grantData.roundId,
