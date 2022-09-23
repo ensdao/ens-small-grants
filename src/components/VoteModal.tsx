@@ -1,4 +1,4 @@
-import { Button, Dialog, Helper, Typography } from '@ensdomains/thorin';
+import { Button, Dialog, Helper, Typography, lightTheme } from '@ensdomains/thorin';
 import { useState } from 'react';
 import styled, { css } from 'styled-components';
 
@@ -20,6 +20,18 @@ const Message = styled(Typography)(
     text-align: center;
     color: ${theme.colors.textSecondary};
     max-width: ${theme.space['112']};
+  `
+);
+
+const CustomHelper = styled(Helper)(
+  ({ theme }) => css`
+    color: ${theme.colors.green};
+    background-color: rgba(73, 179, 147, 0.075);
+    border-color: ${theme.colors.green};
+
+    svg {
+      color: ${theme.colors.green};
+    }
   `
 );
 
@@ -63,9 +75,9 @@ function VoteModal({ open, onClose, grantIds, proposalId, address }: VoteModalPr
       <Dialog.Heading title="Allocate your vote" />
       <InnerModal>
         {voted ? (
-          <Helper alignment="horizontal" type="info">
+          <CustomHelper alignment="horizontal" type="info">
             Your vote was submitted successfully!
-          </Helper>
+          </CustomHelper>
         ) : error ? (
           <Helper alignment="horizontal" type="error">
             {error}
@@ -75,7 +87,7 @@ function VoteModal({ open, onClose, grantIds, proposalId, address }: VoteModalPr
           {voted ? (
             <>
               <Typography>
-                <b>The vote count may take a few minutes to update.</b>
+                <b style={{ color: lightTheme.colors.red }}>The vote count may take a few minutes to update.</b>
               </Typography>
               <Typography>Voting again will override your previous vote.</Typography>
             </>
