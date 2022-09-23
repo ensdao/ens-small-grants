@@ -110,13 +110,14 @@ export function useSnapshotProposal(proposalId: string) {
         voteCount: body.data.proposal.scores[i],
         voteStatus: body.data.proposal.scores_state === 'final',
         voteSamples: body.data.votes
-          .filter(v => v.choice === i + 1)
+          // Only show the voters who voted for this grant
+          .filter(voter => voter.choice.includes(i + 1))
           .sort((a, b) => {
             if (a.voter === address) return -1;
             if (b.voter === address) return 1;
             return b.vp - a.vp;
           }),
-        currentVotes: body.data.currentVote?.[0].choice === i ? body.data.currentVote[0].vp : 0,
+        currentVotes: body.data.currentVote?.[0].choice.includes(i + 1) ? body.data.currentVote[0].vp : 0,
       })) || [];
 
     return {

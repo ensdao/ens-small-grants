@@ -29,11 +29,12 @@ export function useGrants(round: Round | undefined, selection?: string) {
 
       return data
         .map(g => {
-          const snapshotId = round!.snapshot?.choices.findIndex(c => Number.parseInt(c.split(' - ')[0]) === g.id);
+          let snapshotId = round!.snapshot?.choices.findIndex(c => Number.parseInt(c.split(' - ')[0]) === g.id) || 0;
+
           return {
             ...replaceKeysWithFunc(g, camelCaseToUpperCase),
-            voteCount: snapshotId ? round!.snapshot?.scores[snapshotId] : 0,
-            snapshotId,
+            voteCount: round!.snapshot?.scores[snapshotId],
+            snapshotId: snapshotId++,
           };
         })
         .sort((a, b) => (a.voteCount === b.voteCount ? 0 : a.voteCount! < b.voteCount! ? 1 : -1)) as Grant[];

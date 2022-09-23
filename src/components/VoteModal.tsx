@@ -25,35 +25,64 @@ const Message = styled(Typography)(
 
 function VoteModal({ open, onClose, grantIds, proposalId, address }: VoteModalProps) {
   const [waiting, setWaiting] = useState(false);
+  const [voted, setVoted] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const { proposal: snapshotProposal, vote } = useSnapshotProposal(proposalId);
 
+  // If any of the grandIds are NaN for some reason, set the error message
+  if (grantIds.some(id => Number.isNaN(id))) {
+    setError('Invalid grant IDs. Refresh the page to try again.');
+  }
+
   const onPressAddVote = async () => {
-    try {
-      setWaiting(true);
-      await vote(grantIds).catch(error_ => {
+    setWaiting(true);
+    await vote(grantIds)
+      .then(() => {
+        setVoted(true);
+      })
+      .catch(error_ => {
         if (error_.error_description) {
-          setError(error_.error_description);
+          setError(`Snapshot error: ${error_.error_description}`);
+        } else {
+          setError('Unknown error. Refresh the page and try again.');
         }
       });
-    } finally {
-      setWaiting(false);
-    }
+
+    setWaiting(false);
   };
 
+  function handleDismiss() {
+    onClose();
+    setVoted(false);
+    setError(null);
+  }
+
   return (
-    <Dialog open={open} onDismiss={onClose} variant="blank">
-      <Dialog.CloseButton onClick={onClose} />
+    <Dialog open={open} onDismiss={handleDismiss} variant="blank">
+      <Dialog.CloseButton onClick={handleDismiss} />
       <Dialog.Heading title="Allocate your vote" />
       <InnerModal>
-        {error && (
-          <Helper alignment="horizontal" type="error">
-            Snapshot error: {error}
+        {voted ? (
+          <Helper alignment="horizontal" type="info">
+            Your vote was submitted successfully!
           </Helper>
-        )}
+        ) : error ? (
+          <Helper alignment="horizontal" type="error">
+            {error}
+          </Helper>
+        ) : null}
         <Message>
-          You are about to vote for {grantIds.length > 1 ? 'these proposals' : 'this proposal'}, please confirm the
-          details below.
+          {voted ? (
+            <>
+              <Typography>
+                <b>The vote count may take a few minutes to update.</b>
+              </Typography>
+              <Typography>Voting again will override your previous vote.</Typography>
+            </>
+          ) : (
+            `You are about to vote for ${grantIds.length > 1 ? 'these proposals' : 'this proposal'}, please confirm the
+          details below.`
+          )}
         </Message>
         <DisplayItems>
           <DisplayItem label="Connected address" address value={address} />
@@ -66,14 +95,16 @@ function VoteModal({ open, onClose, grantIds, proposalId, address }: VoteModalPr
       </InnerModal>
       <Dialog.Footer
         leading={
-          <Button onClick={onClose} variant="secondary" shadowless>
-            Cancel
+          <Button onClick={handleDismiss} variant="secondary" shadowless>
+            {voted ? 'Close' : 'Cancel'}
           </Button>
         }
         trailing={
-          <Button shadowless disabled={waiting} onClick={onPressAddVote}>
-            Vote
-          </Button>
+          !voted && (
+            <Button shadowless disabled={waiting} onClick={onPressAddVote} loading={waiting}>
+              Vote
+            </Button>
+          )
         }
       />
     </Dialog>

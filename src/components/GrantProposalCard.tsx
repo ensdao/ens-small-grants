@@ -1,6 +1,7 @@
 import { Checkbox, mq, Typography } from '@ensdomains/thorin';
 import { Link } from 'react-router-dom';
 import styled, { css } from 'styled-components';
+import { useAccount } from 'wagmi';
 
 import { Grant } from '../types';
 import { getTimeDifferenceString, voteCountFormatter } from '../utils';
@@ -117,6 +118,7 @@ function GrantProposalCard({
   votingStarted,
   inProgress,
 }: GrantProposalCardProps) {
+  const { address } = useAccount();
   const to = `/rounds/${roundId}/proposals/${proposal.id}`;
 
   return (
@@ -138,7 +140,7 @@ function GrantProposalCard({
       {votingStarted && (
         <Votes>
           <b>{voteCountFormatter.format(proposal.voteCount!)}</b>votes
-          {inProgress && (
+          {inProgress && address && (
             <div>
               <Checkbox
                 label=""

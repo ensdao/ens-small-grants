@@ -46,11 +46,9 @@ const Rounds = () => {
     <>
       <BackButton to="/" title={title} />
       <RoundGrid>
-        {activeRounds
-          .sort((a, b) => (a.createdAt > b.createdAt ? -1 : 1))
-          .map(r => (
-            <RoundCard key={r.id} {...r} />
-          ))}
+        {activeRounds.map(r => (
+          <RoundCard key={r.id} {...r} />
+        ))}
       </RoundGrid>
       <div style={{ flexGrow: 1 }} />
     </>

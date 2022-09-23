@@ -1,10 +1,11 @@
 import { Button, Spinner, Typography } from '@ensdomains/thorin';
-import { useMemo, useState } from 'react';
+import { useConnectModal } from '@rainbow-me/rainbowkit';
+import { useEffect, useState } from 'react';
 import styled, { css } from 'styled-components';
 import { useAccount } from 'wagmi';
 
 import { useGrants } from '../hooks';
-import type { ClickHandler, Round } from '../types';
+import type { ClickHandler, Grant, Round } from '../types';
 import { BannerContainer } from './BannerContainer';
 import GrantProposalCard from './GrantProposalCard';
 import VoteModal from './VoteModal';
@@ -36,12 +37,20 @@ function GrantRoundSection({
   ...round
 }: GrantRoundSectionProps) {
   const { address } = useAccount();
+  const { openConnectModal } = useConnectModal();
   const { grants: _grants, isLoading } = useGrants(round);
-  const grants = useMemo(() => {
-    if (!_grants || !randomiseGrants) return _grants;
-    return _grants.sort(() => 0.5 - Math.random());
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [round]);
+  const [grants, setGrants] = useState<Grant[]>(_grants || []);
+  const [isShuffled, setIsShuffled] = useState<number>(0);
+
+  useEffect(() => {
+    // Only run once, after grants are loaded
+    if (_grants && isShuffled === 0) {
+      if (randomiseGrants) {
+        setGrants(_grants.sort(() => Math.random() - 0.5));
+      }
+      setIsShuffled(isShuffled + 1);
+    }
+  }, [_grants, isShuffled, randomiseGrants]);
 
   // Keep track of the selected prop ids for approval voting
   const [selectedProps, setSelectedProps] = useState<number[]>([]);
@@ -74,7 +83,15 @@ function GrantRoundSection({
           Submit Proposal
         </Button>
       )}
-      {selectedProps.length > 0 && (
+      {!address && randomiseGrants && (
+        <Button variant="secondary" onClick={openConnectModal}>
+          Connect wallet to vote
+        </Button>
+      )}
+      {address && randomiseGrants && selectedProps.length === 0 && (
+        <Button variant="secondary">Check the grants you'd like to vote for</Button>
+      )}
+      {address && selectedProps.length > 0 && (
         <Button onClick={() => setVotingModalOpen(true)}>
           Vote for {selectedProps.length} proposal{selectedProps.length > 1 && 's'}
         </Button>

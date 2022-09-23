@@ -43,7 +43,7 @@ export function useRounds(selection?: string) {
   const { data: rounds, isLoading } = useQuery(
     ['rounds'],
     async () => {
-      const { data, error } = await client.from('rounds').select();
+      const { data, error } = await client.from('rounds').select().order('id', { ascending: false });
       if (error) {
         throw error;
       }
