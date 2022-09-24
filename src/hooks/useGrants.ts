@@ -61,3 +61,23 @@ export function useGrants(round: Round | undefined, selection?: string) {
   if (selection) return { grant: grants, isLoading };
   return { grants, isLoading };
 }
+
+export function useGrantIds(roundId: number) {
+  const { data: grants, isLoading } = useQuery(
+    ['grants', roundId],
+    async () => {
+      const { data, error } = await client.from('grants').select('id').eq('round_id', roundId).eq('deleted', false);
+
+      if (error) {
+        throw error;
+      }
+
+      return data.map(g => g.id);
+    },
+    {
+      enabled: !!roundId,
+    }
+  );
+
+  return { grants, isLoading };
+}

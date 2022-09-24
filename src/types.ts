@@ -65,3 +65,8 @@ export type Grant = {
   voteStatus?: boolean | null;
   voteSamples?: SnapshotVote[];
 };
+
+export type SelectedPropVotes = {
+  round: number;
+  votes: number[];
+};

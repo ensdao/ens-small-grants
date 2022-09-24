@@ -53,15 +53,33 @@ const Wrapper = styled.div(
 
 const BackButton = ({
   title,
+  text,
+  reverse,
   ...props
-}: Omit<React.ComponentProps<typeof Link>, 'title'> & { title?: React.ReactNode }) => {
+}: Omit<React.ComponentProps<typeof Link>, 'title'> & {
+  title?: React.ReactNode;
+  text?: string;
+  reverse?: boolean;
+}) => {
   return (
     <Container>
-      <Wrapper>
+      <Wrapper
+        style={{
+          flexDirection: reverse ? 'row-reverse' : 'row',
+        }}
+      >
         <Link {...props}>
-          <BackButtonContainer>
-            <ArrowCircleSVG />
-            <Typography>Back</Typography>
+          <BackButtonContainer
+            style={{
+              flexDirection: reverse ? 'row-reverse' : 'row',
+            }}
+          >
+            <ArrowCircleSVG
+              style={{
+                transform: reverse ? 'rotate(0deg)' : 'rotate(180deg)',
+              }}
+            />
+            <Typography>{text || 'Back'}</Typography>
           </BackButtonContainer>
         </Link>
         {title}

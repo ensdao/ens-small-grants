@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import styled, { css } from 'styled-components';
 import { useAccount } from 'wagmi';
 
-import { Grant } from '../types';
+import { Grant, SelectedPropVotes } from '../types';
 import { getTimeDifferenceString, voteCountFormatter } from '../utils';
 import Profile from './Profile';
 import { cardStyles } from './atoms';
@@ -11,8 +11,8 @@ import { cardStyles } from './atoms';
 export type GrantProposalCardProps = {
   roundId: string | number;
   proposal: Grant;
-  selectedProps: number[];
-  setSelectedProps: (selectedProps: number[]) => void;
+  selectedProps: SelectedPropVotes;
+  setSelectedProps: (props: SelectedPropVotes) => void;
   votingStarted: boolean;
   inProgress?: boolean;
 };
@@ -145,13 +145,20 @@ function GrantProposalCard({
               <Checkbox
                 label=""
                 variant="regular"
+                checked={selectedProps.votes.includes(proposal.snapshotId)}
                 onChange={e => {
                   // if target is checked, push the proposal id to the array
                   if (e.target.checked) {
-                    setSelectedProps([...selectedProps, proposal.snapshotId]);
+                    setSelectedProps({
+                      round: Number(roundId),
+                      votes: [...(selectedProps.votes || []), proposal.snapshotId],
+                    });
                   } else {
                     // if target is unchecked, remove the proposal id from the array
-                    setSelectedProps(selectedProps.filter(id => id !== proposal.snapshotId));
+                    setSelectedProps({
+                      round: Number(roundId),
+                      votes: (selectedProps.votes || []).filter(vote => vote !== proposal.snapshotId),
+                    });
                   }
                 }}
               />

@@ -7,7 +7,7 @@ import styled, { css } from 'styled-components';
 import BackButton from '../components/BackButton';
 import Profile from '../components/Profile';
 import VoteSection from '../components/VoteSection';
-import { useGrants, useRounds } from '../hooks';
+import { useGrantIds, useGrants, useRounds } from '../hooks';
 import { getTimeDifferenceString } from '../utils';
 
 const Title = styled(Heading)(
@@ -117,10 +117,24 @@ const MarkdownWrapper = styled.div(
   `
 );
 
+const ProposalNavigator = styled.div(
+  () => css`
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+  `
+);
+
 function Proposal() {
   const { id, roundId } = useParams<{ id: string; roundId: string }>();
   const { round, isLoading: roundLoading } = useRounds(roundId!);
   const { grant, isLoading } = useGrants(round, id!);
+
+  const { grants: grantIds, isLoading: grandIdsLoading } = useGrantIds(Number(roundId));
+  // Find the grant id that is one before and one after the current grant.id
+  const currentIndex = grantIds?.findIndex(grantId => grantId.id === grant?.id);
+  const previousGrantId = grantIds?.[currentIndex! - 1]?.id;
+  const nextGrantId = grantIds?.[currentIndex! + 1]?.id;
 
   if (isLoading || roundLoading || !grant || !round) {
     return <Spinner size="large" />;
@@ -157,6 +171,12 @@ function Proposal() {
             {grant.fullText}
           </ReactMarkdown>
         </MarkdownWrapper>
+        {!grandIdsLoading && (
+          <ProposalNavigator>
+            {previousGrantId && <BackButton to={`/rounds/${round.id}/proposals/${previousGrantId}`} text="Previous" />}
+            {nextGrantId && <BackButton to={`/rounds/${round.id}/proposals/${nextGrantId}`} text="Next" reverse />}
+          </ProposalNavigator>
+        )}
       </ContentGrid>
       <div style={{ flexGrow: 1 }} />
     </>

@@ -5,7 +5,7 @@ import styled, { css } from 'styled-components';
 import { useAccount } from 'wagmi';
 
 import { useGrants } from '../hooks';
-import type { ClickHandler, Grant, Round } from '../types';
+import type { ClickHandler, Grant, Round, SelectedPropVotes } from '../types';
 import { BannerContainer } from './BannerContainer';
 import GrantProposalCard from './GrantProposalCard';
 import VoteModal from './VoteModal';
@@ -53,8 +53,23 @@ function GrantRoundSection({
   }, [_grants, isShuffled, randomiseGrants]);
 
   // Keep track of the selected prop ids for approval voting
-  const [selectedProps, setSelectedProps] = useState<number[]>([]);
+  const [selectedProps, setSelectedProps] = useState<SelectedPropVotes>();
   const [votingModalOpen, setVotingModalOpen] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (!selectedProps && localStorage.getItem(`round-${round.id}-votes`)) {
+      setSelectedProps(JSON.parse(localStorage.getItem(`round-${round.id}-votes`) || ''));
+    } else if (!selectedProps) {
+      setSelectedProps({
+        round: round.id,
+        votes: [],
+      });
+    }
+
+    if (selectedProps) {
+      localStorage.setItem(`round-${round.id}-votes`, JSON.stringify(selectedProps));
+    }
+  }, [selectedProps, round]);
 
   if (isLoading) {
     return <Spinner size="large" />;
@@ -88,19 +103,19 @@ function GrantRoundSection({
           Connect wallet to vote
         </Button>
       )}
-      {address && randomiseGrants && selectedProps.length === 0 && (
+      {address && randomiseGrants && selectedProps && selectedProps.votes.length === 0 && (
         <Button variant="secondary">Check the grants you'd like to vote for</Button>
       )}
-      {address && selectedProps.length > 0 && (
+      {address && selectedProps && selectedProps.votes.length > 0 && (
         <Button onClick={() => setVotingModalOpen(true)}>
-          Vote for {selectedProps.length} proposal{selectedProps.length > 1 && 's'}
+          Vote for {selectedProps.votes.length} proposal{selectedProps.votes.length > 1 && 's'}
         </Button>
       )}
       {grants &&
         grants.map(g => (
           <GrantProposalCard
             proposal={g}
-            selectedProps={selectedProps}
+            selectedProps={selectedProps || { round: round.id, votes: [] }}
             setSelectedProps={setSelectedProps}
             roundId={round.id}
             votingStarted={round.votingStart < new Date()}
@@ -114,7 +129,7 @@ function GrantRoundSection({
           open={votingModalOpen}
           onClose={() => setVotingModalOpen(false)}
           proposalId={round.snapshot.id}
-          grantIds={selectedProps.map(id => id + 1)}
+          grantIds={selectedProps?.votes.map(id => id + 1) || []}
           address={address}
         />
       )}
