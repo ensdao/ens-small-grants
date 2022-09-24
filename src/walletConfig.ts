@@ -1,9 +1,10 @@
 import { getDefaultWallets } from '@rainbow-me/rainbowkit';
 import { QueryClient } from '@tanstack/react-query';
 import { chain, configureChains, createClient } from 'wagmi';
+import { alchemyProvider } from 'wagmi/providers/alchemy';
 import { publicProvider } from 'wagmi/providers/public';
 
-export const { chains, provider } = configureChains([chain.mainnet], [publicProvider()]);
+export const { chains, provider } = configureChains([chain.mainnet], [alchemyProvider({}), publicProvider()]);
 
 export const { connectors } = getDefaultWallets({
   appName: 'ENS DAO Small Grants',
