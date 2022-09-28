@@ -5,6 +5,7 @@ import styled, { css } from 'styled-components';
 import { useAccount } from 'wagmi';
 
 import { useGrants } from '../hooks';
+import useStorage from '../hooks/useLocalStorage';
 import type { ClickHandler, Grant, Round, SelectedPropVotes } from '../types';
 import { BannerContainer } from './BannerContainer';
 import GrantProposalCard from './GrantProposalCard';
@@ -37,20 +38,39 @@ function GrantRoundSection({
   ...round
 }: GrantRoundSectionProps) {
   const { address } = useAccount();
+  const { getItem, setItem } = useStorage();
   const { openConnectModal } = useConnectModal();
+  const [grants, setGrants] = useState<Grant[]>([]);
   const { grants: _grants, isLoading } = useGrants(round);
-  const [grants, setGrants] = useState<Grant[]>(_grants || []);
-  const [isShuffled, setIsShuffled] = useState<number>(0);
 
   useEffect(() => {
-    // Only run once, after grants are loaded
-    if (_grants && isShuffled === 0) {
+    if (_grants && _grants.length > grants.length) {
+      // There are _grants loaded but we haven't set grants
       if (randomiseGrants) {
-        setGrants(_grants.sort(() => Math.random() - 0.5));
+        // We want to randomise the grants
+        const storedGrants = getItem(`round-${round.id}-grants`, 'session');
+
+        if (storedGrants) {
+          // If we've already shuffled the grants, use the shuffled grants
+          const json = JSON.parse(storedGrants);
+          json.map((g: Grant) => {
+            g.createdAt = new Date(g.createdAt);
+            g.updatedAt = new Date(g.updatedAt);
+            return g;
+          });
+          setGrants(json);
+        } else {
+          // If we don't have shuffled grants yet: shuffle them, set them as grants, and save them in the session
+          const shuffledGrants = _grants.sort(() => 0.5 - Math.random());
+          setGrants(shuffledGrants);
+          setItem(`round-${round.id}-grants`, JSON.stringify(shuffledGrants), 'session');
+        }
+      } else {
+        // Otherwise, just set the grants as they come from the hook
+        setGrants(_grants);
       }
-      setIsShuffled(isShuffled + 1);
     }
-  }, [_grants, isShuffled, randomiseGrants]);
+  }, [_grants, getItem, grants, randomiseGrants, round.id, setItem]);
 
   // Keep track of the selected prop ids for approval voting
   const [selectedProps, setSelectedProps] = useState<SelectedPropVotes>();
@@ -71,7 +91,7 @@ function GrantRoundSection({
     }
   }, [selectedProps, round]);
 
-  if (isLoading) {
+  if (isLoading || (_grants && _grants.length > grants.length)) {
     return <Spinner size="large" />;
   }
 
