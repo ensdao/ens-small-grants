@@ -16,6 +16,7 @@ const types = {
     { name: 'title', type: 'string' },
     { name: 'description', type: 'string' },
     { name: 'fullText', type: 'string' },
+    { name: 'twitter', type: 'string' },
   ],
 };
 
@@ -24,6 +25,7 @@ export type CreateGrantArgs = {
   title: string;
   description: string;
   fullText: string;
+  twitter: string;
 };
 
 export function useCreateGrant() {
@@ -40,6 +42,7 @@ export function useCreateGrant() {
           title: args.title,
           description: args.description,
           fullText: args.fullText,
+          twitter: args.twitter,
         };
 
         try {

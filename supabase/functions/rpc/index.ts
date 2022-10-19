@@ -18,6 +18,7 @@ const types = {
     { name: 'title', type: 'string' },
     { name: 'description', type: 'string' },
     { name: 'fullText', type: 'string' },
+    { name: 'twitter', type: 'string' },
   ],
 };
 
@@ -162,6 +163,7 @@ serve(async req => {
           title: grantData.title,
           description: grantData.description,
           full_text: grantData.fullText,
+          twitter: grantData.twitter,
         },
       ]);
 
