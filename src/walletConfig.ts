@@ -4,7 +4,15 @@ import { chain, configureChains, createClient } from 'wagmi';
 import { alchemyProvider } from 'wagmi/providers/alchemy';
 import { publicProvider } from 'wagmi/providers/public';
 
-export const { chains, provider } = configureChains([chain.mainnet], [alchemyProvider({}), publicProvider()]);
+export const { chains, provider } = configureChains(
+  [chain.mainnet],
+  [
+    alchemyProvider({
+      apiKey: import.meta.env.VITE_ALCHEMY_API_KEY,
+    }),
+    publicProvider(),
+  ]
+);
 
 export const { connectors } = getDefaultWallets({
   appName: 'ENS DAO Small Grants',
