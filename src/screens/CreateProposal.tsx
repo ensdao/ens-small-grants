@@ -144,7 +144,9 @@ export function CreateProposal() {
       mutationKey: ['createGrant', roundId, dialogData],
     }
   );
-  const publishError = (error as Error | undefined)?.message;
+  const _publishError = error as Error | undefined;
+  const publishError =
+    _publishError && (typeof _publishError?.message === 'string' ? _publishError?.message : 'Error signing message');
 
   const onCancel = useCallback(() => {
     navigate(to);
@@ -168,7 +170,7 @@ export function CreateProposal() {
     <>
       <Dialog open={dialogOpen} onDismiss={() => setDialogOpen(false)} variant="blank">
         <Dialog.Heading title="Confirm your proposal" />
-        {publishError && <Helper type="error">{publishError}</Helper>}
+        {publishError && <Helper type="error">{publishError.toString()}</Helper>}
         <InnerModal>
           <DialogDescription>
             Make sure everything is correct, proposal submissions are public and can't be undone.
