@@ -54,15 +54,17 @@ const ContentGrid = styled.div(
       grid-area: profile;
     }
 
-    ${mq.md.min(css`
+    ${mq.lg.min(css`
+      max-width: 100%;
       grid-template-columns: 4fr minmax(${theme.space['72']}, 1fr);
       row-gap: ${theme.space['8']};
-      column-gap: ${theme.space['32']};
+      column-gap: ${theme.space['24']};
       grid-auto-rows: min-content;
       grid-template-areas:
         'title votes'
         'profile votes'
         'content votes'
+        '. votes'
         '. votes';
     `)}
   `

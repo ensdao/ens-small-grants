@@ -15,16 +15,18 @@ export type GrantProposalCardProps = {
   setSelectedProps: (props: SelectedPropVotes) => void;
   votingStarted: boolean;
   inProgress?: boolean;
+  highlighted?: boolean;
 };
 
 const StyledCard = styled('div')(
   cardStyles,
   ({ theme }) => css`
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
     grid-template-areas:
-      'profile votes'
-      'content content';
+      'profile'
+      'content'
+      'votes';
     gap: ${theme.space['4']};
     border: 1px solid ${theme.colors.borderSecondary};
     width: 100%;
@@ -34,9 +36,20 @@ const StyledCard = styled('div')(
       background-color: ${theme.colors.backgroundTertiary};
     }
 
+    &.selected {
+      border: ${theme.borderWidths['0.5']} solid ${theme.colors.blue};
+    }
+
+    ${mq.xs.min(css`
+      grid-template-columns: 1fr 1fr;
+      grid-template-areas:
+        'profile votes'
+        'content content';
+    `)}
+
     ${mq.md.min(css`
       grid-template-areas: 'profile content votes';
-      grid-template-columns: ${theme.space['44']} 1fr min-content;
+      grid-template-columns: ${theme.space['52']} 1fr min-content;
     `)}
   `
 );
@@ -76,6 +89,12 @@ const Votes = styled(Typography)(
       color: ${theme.colors.text};
       padding-right: ${theme.space['1']};
     }
+
+    ${mq.xs.max(css`
+      justify-content: flex-start;
+      padding-top: ${theme.space['2']};
+      border-top: ${theme.borderWidths['0.5']} solid ${theme.colors.borderTertiary};
+    `)}
   `
 );
 
@@ -88,8 +107,8 @@ const ProfileWrapper = styled.div(
     justify-content: flex-start;
     overflow: hidden;
 
-    width: ${theme.space['44']};
-    min-width: ${theme.space['44']};
+    width: ${theme.space['52']};
+    min-width: ${theme.space['52']};
     padding: ${theme.space['2']};
     border-radius: ${theme.radii.large};
 
@@ -117,12 +136,13 @@ function GrantProposalCard({
   setSelectedProps,
   votingStarted,
   inProgress,
+  highlighted,
 }: GrantProposalCardProps) {
   const { address } = useAccount();
   const to = `/rounds/${roundId}/proposals/${proposal.id}`;
 
   return (
-    <StyledCard>
+    <StyledCard className={highlighted ? 'selected' : ''}>
       <ProfileWrapper>
         <Link to={to}>
           <Profile
@@ -131,12 +151,12 @@ function GrantProposalCard({
           />
         </Link>
       </ProfileWrapper>
-      <Link to={to}>
-        <ContentWrapper>
+      <ContentWrapper>
+        <Link to={to}>
           <Title>{proposal.title}</Title>
           <Description>{proposal.description}</Description>
-        </ContentWrapper>
-      </Link>
+        </Link>
+      </ContentWrapper>
       {votingStarted && (
         <Votes>
           <b>{voteCountFormatter.format(proposal.voteCount!)}</b>votes

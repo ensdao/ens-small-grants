@@ -51,7 +51,8 @@ export function useCreateSnapshot() {
             .from('grants')
             .select()
             .eq('round_id', args.roundId)
-            .eq('deleted', false);
+            .eq('deleted', false)
+            .order('created_at', { ascending: true });
 
           if (error || !grants) {
             throw new Error('failed to fetch grants');

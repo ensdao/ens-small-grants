@@ -78,7 +78,7 @@ const ClosingTypography = styled(Typography)(
   `
 );
 
-type Status = 'proposals' | 'voting' | 'closed';
+type Status = 'proposals' | 'waiting-for-voting' | 'voting' | 'closed';
 
 type BaseProps = {
   id: number;
@@ -91,6 +91,9 @@ type BaseProps = {
 const StatusTag = ({ status }: { status: Status }) => {
   if (status === 'proposals') {
     return <Tag tone="green">Accepting submissions</Tag>;
+  }
+  if (status === 'waiting-for-voting') {
+    return <Tag tone="blue">Voting pending</Tag>;
   }
   if (status === 'voting') {
     return <Tag tone="green">Voting open</Tag>;
@@ -128,6 +131,7 @@ const BaseRoundCard = ({ id, title, round, status, children }: BaseProps) => {
 
 const calcStatus = (round: Round): Status => {
   if (round.proposalEnd > new Date()) return 'proposals';
+  if (round.proposalEnd < new Date() && round.votingStart > new Date()) return 'waiting-for-voting';
   if (round.votingEnd > new Date()) return 'voting';
   return 'closed';
 };
@@ -143,7 +147,7 @@ export const RoundCard = (round: Round) => {
   };
 
   const isPropsOpen = status === 'proposals';
-  const isWaitingForVoting = round.proposalEnd < new Date() && round.votingStart > new Date();
+  const isWaitingForVoting = status === 'waiting-for-voting';
   const isVotingOpen = status === 'voting';
 
   if (isPropsOpen) {

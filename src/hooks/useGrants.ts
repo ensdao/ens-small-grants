@@ -21,7 +21,12 @@ export function useGrants(round: Round | undefined, selection?: string) {
   const { data: grants, isLoading } = useQuery(
     ['grants', round?.id],
     async () => {
-      const { data, error } = await client.from('grants').select().eq('round_id', round!.id).eq('deleted', false);
+      const { data, error } = await client
+        .from('grants')
+        .select()
+        .eq('round_id', round!.id)
+        .eq('deleted', false)
+        .order('created_at', { ascending: false });
 
       if (error) {
         throw error;
@@ -29,12 +34,14 @@ export function useGrants(round: Round | undefined, selection?: string) {
 
       return data
         .map(g => {
-          let snapshotId = round!.snapshot?.choices.findIndex(c => Number.parseInt(c.split(' - ')[0]) === g.id) || 0;
+          let snapshotId = round!.snapshot?.choices.findIndex(c => Number.parseInt(c.split(' - ')[0]) === g.id);
+          const _score = round!.snapshot?.scores[snapshotId!];
+          const score = !_score || _score === undefined ? 0 : _score;
 
           return {
             ...replaceKeysWithFunc(g, camelCaseToUpperCase),
-            voteCount: round!.snapshot?.scores[snapshotId],
-            snapshotId: snapshotId++,
+            voteCount: score,
+            snapshotId: snapshotId && (snapshotId++ ?? 0),
           };
         })
         .sort((a, b) => (a.voteCount === b.voteCount ? 0 : a.voteCount! < b.voteCount! ? 1 : -1)) as Grant[];

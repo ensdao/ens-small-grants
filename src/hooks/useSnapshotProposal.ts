@@ -107,7 +107,7 @@ export function useSnapshotProposal(proposalId: string) {
       body.data.proposal.choices.map((choice, i) => ({
         choiceId: i,
         grantId: Number.parseInt(choice.split(' - ')[0]),
-        voteCount: body.data.proposal.scores[i],
+        voteCount: body.data.proposal.scores[i] || 0,
         voteStatus: body.data.proposal.scores_state === 'final',
         voteSamples: body.data.votes
           // Only show the voters who voted for this grant

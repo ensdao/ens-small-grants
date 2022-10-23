@@ -15,7 +15,7 @@ const removeItem = (key: string, type?: StorageType): void => {
   window[storageType(type)].removeItem(key);
 };
 
-const useStorage = (): UseStorageReturnValue => {
+export const useStorage = (): UseStorageReturnValue => {
   const isBrowser: boolean = ((): boolean => typeof window !== 'undefined')();
 
   const getItem = (key: string, type?: StorageType): string => {
@@ -37,5 +37,3 @@ const useStorage = (): UseStorageReturnValue => {
     removeItem,
   };
 };
-
-export default useStorage;
