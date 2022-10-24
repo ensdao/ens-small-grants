@@ -48,11 +48,16 @@ const Title = styled(Typography)(
   ({ theme }) => css`
     font-size: ${theme.fontSizes.extraLarge};
     font-weight: bold;
+    display: none;
 
     i {
       display: none;
       font-style: normal;
     }
+
+    ${mq.sm.min(css`
+      display: block;
+    `)}
 
     ${mq.md.min(css`
       i {
@@ -82,7 +87,7 @@ const NavButtons = styled.nav(
       }
     }
 
-    gap: ${theme.space['2']};
+    gap: ${theme.space['6']};
 
     ${mq.md.min(css`
       justify-content: center;
@@ -102,6 +107,7 @@ const Header = () => {
         </Title>
       </LogoAndText>
       <NavButtons>
+        <Link to="/faq">FAQ</Link>
         <ConnectButton chainStatus="none" showBalance={false} />
       </NavButtons>
     </HeaderContainer>
