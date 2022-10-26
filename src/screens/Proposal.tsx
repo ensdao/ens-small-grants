@@ -77,6 +77,9 @@ const MarkdownWrapper = styled.div(
     flex-direction: column;
     align-items: flex-start;
     justify-content: center;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    word-break: break-word;
     width: 100%;
 
     gap: ${theme.space['4']};
