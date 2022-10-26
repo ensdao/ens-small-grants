@@ -12558,6 +12558,7 @@ __metadata:
     "@vitejs/plugin-react": ^1.3.0
     "@vitest/ui": ^0.12.9
     arweave: ^1.11.4
+    buffer: ^6.0.3
     eslint: ^8.12.0
     eslint-config-prettier: ^8.5.0
     eslint-config-react-app: ^7.0.0
