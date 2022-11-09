@@ -108,3 +108,7 @@ docs/api
 # Supabase
 **/supabase/.branches
 **/supabase/.temp
+
+# Hosting
+.netlify
+.vercel
