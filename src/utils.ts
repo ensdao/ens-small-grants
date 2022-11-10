@@ -74,3 +74,19 @@ export const shortenAddress = (address = '', maxLength = 10, leftSlice = 5, righ
 
   return `${address.slice(0, leftSlice)}...${address.slice(-rightSlice)}`;
 };
+
+export const getRoundStatus = (round: Round): 'queued' | 'proposals' | 'pending-voting' | 'voting' | 'closed' => {
+  const now = new Date();
+
+  if (now < round.proposalStart) {
+    return 'queued';
+  } else if (now < round.proposalEnd) {
+    return 'proposals';
+  } else if (now < round.votingStart) {
+    return 'pending-voting';
+  } else if (now < round.votingEnd) {
+    return 'voting';
+  } else {
+    return 'closed';
+  }
+};

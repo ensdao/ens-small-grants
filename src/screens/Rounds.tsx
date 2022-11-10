@@ -1,10 +1,11 @@
 import { mq, Heading, Spinner } from '@ensdomains/thorin';
+import { useParams } from 'react-router-dom';
 import styled, { css } from 'styled-components';
 
 import BackButton from '../components/BackButton';
+import { EmptyHouse } from '../components/HouseCard';
 import RoundCard from '../components/RoundCard';
-import { useRounds } from '../hooks';
-import { Round as RoundType } from '../types';
+import { useHouses, useRounds } from '../hooks';
 
 const RoundGrid = styled.div(
   ({ theme }) => css`
@@ -33,20 +34,34 @@ const Title = styled(Heading)(
 );
 
 const Rounds = () => {
-  const { rounds, isLoading } = useRounds();
+  const { slug } = useParams<{ slug?: string }>();
+  const { house } = useHouses({ slug });
+  const { rounds } = useRounds();
 
-  if (isLoading || !rounds) {
+  if (!rounds || (slug && !house)) {
     return <Spinner />;
   }
 
-  const title = <Title>All rounds</Title>;
-  const activeRounds = rounds.filter((round: RoundType) => round.proposalStart < new Date());
+  const filteredRounds = slug ? rounds.filter(round => round.houseId === house?.id) : rounds;
+
+  const title = <Title>{house ? house.title : 'All'} Rounds</Title>;
 
   return (
     <>
-      <BackButton to="/" title={title} />
+      <BackButton to={house ? `/${house.slug}` : '/'} title={title} />
+
+      {filteredRounds.length === 0 && (
+        <div
+          style={{
+            padding: '2rem 0',
+          }}
+        >
+          <EmptyHouse>No rounds</EmptyHouse>
+        </div>
+      )}
+
       <RoundGrid>
-        {activeRounds.map(r => (
+        {filteredRounds.map(r => (
           <RoundCard key={r.id} {...r} />
         ))}
       </RoundGrid>

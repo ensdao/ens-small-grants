@@ -6,14 +6,14 @@ import { ClickHandler, Round } from '../types';
 import { getTimeDifferenceString } from '../utils';
 import { Card } from './atoms';
 
-const StyledCard = styled(Card)(
+export const StyledCard = styled(Card)(
   ({ theme }) => css`
     width: 100%;
     min-height: ${theme.space['60']};
   `
 );
 
-const HeadingContainer = styled.div(
+export const HeadingContainer = styled.div(
   ({ theme }) => css`
     display: flex;
     flex-direction: column-reverse;
@@ -39,14 +39,14 @@ const HeadingTextContainer = styled.div(
   `
 );
 
-const Title = styled(Typography)(
+export const Title = styled(Typography)(
   ({ theme }) => css`
     font-size: ${theme.fontSizes.headingThree};
     font-weight: bold;
   `
 );
 
-const Subtitle = styled(Typography)(
+export const Subtitle = styled(Typography)(
   ({ theme }) => css`
     color: ${theme.colors.textTertiary};
   `

@@ -98,6 +98,7 @@ export function useRounds(selection?: string) {
         createdAt: new Date(r.created_at),
         updatedAt: new Date(r.updated_at),
         allocationTokenAmount: BigNumber.from(r.allocation_token_amount),
+        houseId: Number.parseInt(r.house_id),
       })) as Round[];
     },
     {
