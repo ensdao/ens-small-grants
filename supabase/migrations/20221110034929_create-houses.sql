@@ -44,9 +44,9 @@ CREATE POLICY "Enable read access for all users"
     USING (true);
 
 ALTER TABLE IF EXISTS public.rounds
-    ADD COLUMN "houseId" bigint;
+    ADD COLUMN "house_id" bigint;
 ALTER TABLE IF EXISTS public.rounds
-    ADD CONSTRAINT "rounds_houseId_fkey" FOREIGN KEY ("houseId")
+    ADD CONSTRAINT "rounds_house_id_fkey" FOREIGN KEY ("house_id")
     REFERENCES public.houses (id) MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION;
