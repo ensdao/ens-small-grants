@@ -1,5 +1,4 @@
 import { Helper, mq, Spinner, Typography } from '@ensdomains/thorin';
-import { formatEther } from 'ethers/lib/utils';
 import ReactMarkdown from 'react-markdown';
 import { useHref, useLinkClickHandler, useLocation, useParams } from 'react-router-dom';
 import styled, { css } from 'styled-components';
@@ -9,7 +8,7 @@ import { BannerContainer } from '../components/BannerContainer';
 import GrantRoundSection from '../components/GrantRoundSection';
 import { useRounds } from '../hooks';
 import { ClickHandler } from '../types';
-import { getTimeDifferenceString } from '../utils';
+import { formatEthPerWinner, getTimeDifferenceString } from '../utils';
 
 const Container = styled.div(
   ({ theme }) => css`
@@ -236,8 +235,7 @@ export const Round = () => {
     </Title>
   );
 
-  const ethPerWinner = formatEther((Number(round.allocationTokenAmount) / round.maxWinnerCount).toString());
-  const ethPerWinnerStr = ethPerWinner.endsWith('.0') ? ethPerWinner.replace(/\..*/, '') : ethPerWinner;
+  const ethPerWinnerStr = formatEthPerWinner(round);
 
   return (
     <>

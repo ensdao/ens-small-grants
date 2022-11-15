@@ -1,15 +1,16 @@
 import { mq, Typography } from '@ensdomains/thorin';
 import styled, { css, DefaultTheme } from 'styled-components';
 
-export const cardStyles = ({ theme }: { theme: DefaultTheme }) => css`
+export const cardStyles = ({ theme, hasPadding }: { theme: DefaultTheme; hasPadding?: boolean }) => css`
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
 
-  padding: ${theme.space['4']};
+  padding: ${hasPadding ? theme.space['4'] : 0};
   gap: ${theme.space['3']};
 
+  overflow: hidden;
   background-color: ${theme.colors.background};
   box-shadow: 0px 3px 8px rgba(0, 0, 0, 0.05);
   border-radius: ${theme.radii.extraLarge};

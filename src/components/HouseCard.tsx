@@ -18,9 +18,11 @@ const Rounds = styled.div(
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    justify-content: center;
+    justify-content: flex-end;
     gap: ${theme.space['3']};
     width: 100%;
+    height: 100%;
+    vertical-align: baseline;
   `
 );
 
@@ -80,7 +82,7 @@ export const EmptyHouse = styled.div(
 
 export default function HouseCard({ house, rounds }: HouseCardProps) {
   return (
-    <StyledCard>
+    <StyledCard hasPadding={true}>
       <HeadingContainer>
         <Title>{house.title}</Title>
       </HeadingContainer>

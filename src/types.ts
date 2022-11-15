@@ -80,3 +80,5 @@ export type SelectedPropVotes = {
   round: number;
   votes: number[];
 };
+
+export type Status = 'queued' | 'proposals' | 'pending-voting' | 'voting' | 'closed';
