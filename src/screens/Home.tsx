@@ -1,7 +1,17 @@
 import { Heading, Spinner } from '@ensdomains/thorin';
 
-import HouseCard from '../components/HouseCard';
-import { HeadingContainer, RoundGrid, RoundItemsOuter, Subheading } from '../components/atoms';
+import { EmptyHouse } from '../components/HouseCard';
+import RoundCard from '../components/RoundCard';
+import {
+  ActiveTypography,
+  DesktopHiddenAnchor,
+  HeadingContainer,
+  MobileHiddenAnchor,
+  RoundGrid,
+  RoundItemsOuter,
+  SectionHeading,
+  Subheading,
+} from '../components/atoms';
 import { useRounds, useHouses } from '../hooks';
 import type { Round as RoundType } from '../types';
 
@@ -27,11 +37,29 @@ function Home() {
         </Subheading>
       </HeadingContainer>
       <RoundItemsOuter>
+        <SectionHeading className="desktop-only">
+          <ActiveTypography>Showing all active rounds</ActiveTypography>
+          <MobileHiddenAnchor to={`/rounds`}>See all rounds</MobileHiddenAnchor>
+        </SectionHeading>
+
+        {activeRounds.length === 0 && (
+          <div
+            style={{
+              padding: '2rem 0',
+            }}
+          >
+            <EmptyHouse>No active rounds</EmptyHouse>
+          </div>
+        )}
+
         <RoundGrid>
-          {houses.map(house => (
-            <HouseCard key={house.id} house={house} rounds={activeRounds.filter(round => round.houseId === house.id)} />
+          {activeRounds.map(round => (
+            <RoundCard key={round.id} {...round} />
           ))}
         </RoundGrid>
+        <SectionHeading>
+          <DesktopHiddenAnchor to="/rounds">See all rounds</DesktopHiddenAnchor>
+        </SectionHeading>
       </RoundItemsOuter>
     </>
   );
