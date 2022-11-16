@@ -16,6 +16,7 @@ type FormInput = {
   shortDescription: string;
   fullText: string;
   twitter: string;
+  payoutAddress: string;
 };
 
 const Container = styled(Card)(
@@ -41,7 +42,7 @@ const Container = styled(Card)(
     }
 
     fieldset > div:last-child {
-      gap: 2.5rem;
+      gap: ${theme.space['8']};
     }
   `
 );
@@ -115,6 +116,7 @@ export function CreateProposal() {
     shortDescription: '',
     fullText: '',
     twitter: '',
+    payoutAddress: '',
   });
 
   const isFormDisabled = !address;
@@ -136,6 +138,7 @@ export function CreateProposal() {
         description: dialogData.shortDescription,
         fullText: dialogData.fullText,
         twitter: dialogData.twitter,
+        payoutAddress: dialogData.payoutAddress,
       });
 
       navigate(to, { state: { submission: true } });
@@ -166,6 +169,9 @@ export function CreateProposal() {
     return <Navigate to={to} />;
   }
 
+  const _description = dialogData.shortDescription;
+  const formattedDescription = _description.length > 30 ? _description.slice(0, 30).trim() + '...' : _description;
+
   return (
     <>
       <Dialog open={dialogOpen} onDismiss={() => setDialogOpen(false)} variant="blank">
@@ -178,7 +184,8 @@ export function CreateProposal() {
           <DisplayItems>
             <DisplayItem label="Title" value={dialogData.title} />
             <DisplayItem label="Twitter" value={dialogData.twitter} />
-            <DisplayItem label="TL;DR" value={dialogData.shortDescription} />
+            {dialogData.payoutAddress && <DisplayItem label="Payout Address" value={dialogData.payoutAddress} />}
+            <DisplayItem label="TL;DR" value={formattedDescription} />
             <DisplayItem label="Description" value={`${dialogData.fullText.slice(0, 30).trim()}...`} />
           </DisplayItems>
         </InnerModal>
@@ -234,6 +241,19 @@ export function CreateProposal() {
               required
               placeholder="ens_dao"
               {...register('twitter', { required: true })}
+            />
+            <Input
+              label="Payout Address"
+              showDot
+              id="payoutAddress"
+              description={
+                <InputDescription>
+                  The address or ENS name where the funds will be sent if you win. This will not be public.
+                </InputDescription>
+              }
+              validated={getFieldState('payoutAddress', formState).isDirty}
+              placeholder="ens.eth"
+              {...register('payoutAddress', { required: false })}
             />
             <Input
               label="TL;DR"
