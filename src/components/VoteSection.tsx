@@ -221,7 +221,7 @@ function VoteSection({ round, proposal }: GrantProposalCardProps) {
     <VoteInProgressSection round={round} snapshotProposalId={round.snapshot.id} proposal={proposal} />
   );
 
-  return <StyledCard>{innerContent}</StyledCard>;
+  return <StyledCard hasPadding={true}>{innerContent}</StyledCard>;
 }
 
 const VotersModalContent = styled.div(

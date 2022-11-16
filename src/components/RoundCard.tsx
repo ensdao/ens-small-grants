@@ -69,6 +69,7 @@ const InfoContainer = styled.div(
     align-items: flex-start;
     justify-content: flex-end;
     gap: ${theme.space['2']};
+    padding-top: ${theme.space['2']};
     width: 100%;
     flex-grow: 1;
 

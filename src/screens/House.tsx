@@ -1,66 +1,20 @@
-import { mq, Spinner, Typography } from '@ensdomains/thorin';
+import { Heading, Spinner } from '@ensdomains/thorin';
 import { useParams } from 'react-router-dom';
-import styled, { css } from 'styled-components';
 
-import Anchor from '../components/Anchor';
 import { EmptyHouse } from '../components/HouseCard';
 import RoundCard from '../components/RoundCard';
+import {
+  ActiveTypography,
+  DesktopHiddenAnchor,
+  HeadingContainer,
+  MobileHiddenAnchor,
+  RoundGrid,
+  RoundItemsOuter,
+  SectionHeading,
+  Subheading,
+} from '../components/atoms';
 import { useHouses, useRounds } from '../hooks';
 import { getRoundStatus } from '../utils';
-import { Heading, HeadingContainer, RoundGrid, RoundItemsOuter, Subheading } from './Home';
-
-const SectionHeading = styled.div(
-  ({ theme }) => css`
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    padding: ${theme.space['2']};
-
-    ${mq.md.min(css`
-      flex-direction: row;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: ${theme.space['2']};
-      gap: ${theme.space['4']};
-
-      padding: 0;
-    `)}
-
-    width: 100%;
-
-    &.desktop-only {
-      ${mq.md.max(css`
-        display: none;
-      `)}
-    }
-  `
-);
-
-const ActiveTypography = styled(Typography)(
-  ({ theme }) => css`
-    color: ${theme.colors.textTertiary};
-    font-weight: bold;
-  `
-);
-
-const MobileHiddenAnchor = styled(Anchor)(
-  () => css`
-    display: none;
-    ${mq.md.min(css`
-      display: block;
-    `)}
-  `
-);
-
-const DesktopHiddenAnchor = styled(Anchor)(
-  () => css`
-    display: block;
-    ${mq.md.min(css`
-      display: none;
-    `)}
-  `
-);
 
 export default function House() {
   const { slug } = useParams<{ slug: string }>();
