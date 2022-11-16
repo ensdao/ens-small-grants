@@ -126,6 +126,8 @@ export function CreateProposal() {
     setDialogData(data);
   }, []);
 
+  const [publishError, setPublishError] = useState<string | undefined | null>(null);
+
   const {
     mutate: handlePublish,
     isLoading: mutationLoading,
@@ -139,17 +141,24 @@ export function CreateProposal() {
         fullText: dialogData.fullText,
         twitter: dialogData.twitter,
         payoutAddress: dialogData.payoutAddress,
+      }).then(res => {
+        if (!res.ok) {
+          console.error(res);
+          setPublishError(`Error ${res.status}. Try again later`);
+        } else {
+          navigate(to, { state: { submission: true } });
+        }
       });
-
-      navigate(to, { state: { submission: true } });
     },
     {
       mutationKey: ['createGrant', roundId, dialogData],
     }
   );
+
   const _publishError = error as Error | undefined;
-  const publishError =
-    _publishError && (typeof _publishError?.message === 'string' ? _publishError?.message : 'Error signing message');
+  if (_publishError) {
+    setPublishError(typeof _publishError?.message === 'string' ? _publishError?.message : 'Error signing message');
+  }
 
   const onCancel = useCallback(() => {
     navigate(to);
