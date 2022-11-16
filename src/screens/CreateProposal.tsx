@@ -203,7 +203,7 @@ export function CreateProposal() {
           </Title>
         }
       />
-      <Container>
+      <Container hasPadding={true}>
         {isFormDisabled && (
           <Helper alignment="horizontal" type="warning">
             You must connect your wallet to submit a proposal.

@@ -2,18 +2,28 @@ import { Button, mq, Tag, Typography } from '@ensdomains/thorin';
 import { useHref, useLinkClickHandler } from 'react-router-dom';
 import styled, { css } from 'styled-components';
 
-import { ClickHandler, Round } from '../types';
-import { getTimeDifferenceString } from '../utils';
+import { ClickHandler, Round, Status } from '../types';
+import { formatEthPerWinner, getRoundStatus, getTimeDifferenceString } from '../utils';
 import { Card } from './atoms';
 
-const StyledCard = styled(Card)(
-  ({ theme }) => css`
+export const StyledCard = styled(Card)(
+  ({ theme, hasPadding }) => css`
     width: 100%;
     min-height: ${theme.space['60']};
+
+    ${!hasPadding &&
+    css`
+      padding-top: ${theme.space['4']};
+
+      & > div:not(:last-child) {
+        padding-left: ${theme.space['4']};
+        padding-right: ${theme.space['4']};
+      }
+    `}
   `
 );
 
-const HeadingContainer = styled.div(
+export const HeadingContainer = styled.div(
   ({ theme }) => css`
     display: flex;
     flex-direction: column-reverse;
@@ -39,14 +49,14 @@ const HeadingTextContainer = styled.div(
   `
 );
 
-const Title = styled(Typography)(
+export const Title = styled(Typography)(
   ({ theme }) => css`
     font-size: ${theme.fontSizes.headingThree};
     font-weight: bold;
   `
 );
 
-const Subtitle = styled(Typography)(
+export const Subtitle = styled(Typography)(
   ({ theme }) => css`
     color: ${theme.colors.textTertiary};
   `
@@ -59,6 +69,7 @@ const InfoContainer = styled.div(
     align-items: flex-start;
     justify-content: flex-end;
     gap: ${theme.space['2']};
+    padding-top: ${theme.space['2']};
     width: 100%;
     flex-grow: 1;
 
@@ -70,20 +81,45 @@ const InfoContainer = styled.div(
   `
 );
 
-const ClosingTypography = styled(Typography)(
+const RoundMeta = styled.div(
   ({ theme }) => css`
-    b {
-      color: ${theme.colors.red};
+    display: grid;
+    gap: ${theme.space['8']};
+    align-items: center;
+    grid-template-columns: repeat(3, 1fr);
+    width: 100%;
+    padding: ${theme.space['4']};
+    background-color: ${theme.colors.backgroundSecondary};
+
+    ${mq.sm.max(css`
+      grid-template-columns: repeat(2, 1fr);
+    `)}
+
+    .meta {
+      &__item {
+        display: flex;
+        flex-direction: column;
+        gap: ${theme.space['2']};
+
+        &:last-child {
+          ${mq.sm.max(css`
+            display: none;
+          `)}
+        }
+      }
+
+      &__title {
+        font-size: 14px;
+        color: ${theme.colors.textTertiary};
+      }
     }
   `
 );
 
-type Status = 'proposals' | 'waiting-for-voting' | 'voting' | 'closed';
-
 type BaseProps = {
   id: number;
   title: string;
-  round: number;
+  round: Round;
   status: Status;
   children: React.ReactNode;
 };
@@ -92,7 +128,7 @@ const StatusTag = ({ status }: { status: Status }) => {
   if (status === 'proposals') {
     return <Tag tone="green">Accepting submissions</Tag>;
   }
-  if (status === 'waiting-for-voting') {
+  if (status === 'pending-voting') {
     return <Tag tone="blue">Voting pending</Tag>;
   }
   if (status === 'voting') {
@@ -107,134 +143,83 @@ const BaseRoundCard = ({ id, title, round, status, children }: BaseProps) => {
   const handleClick = useLinkClickHandler(to);
 
   return (
-    <StyledCard>
+    <StyledCard hasPadding={false}>
       <HeadingContainer>
         <HeadingTextContainer>
           <Title>{title}</Title>
-          <Subtitle>Round {round}</Subtitle>
+          <Subtitle>Round {round.round}</Subtitle>
         </HeadingTextContainer>
         <StatusTag status={status} />
       </HeadingContainer>
       {children}
-      <Button
-        shadowless
-        as="a"
-        href={href}
-        variant={status === 'closed' ? 'secondary' : 'primary'}
-        onClick={handleClick as unknown as ClickHandler}
+      <div
+        style={{
+          width: '100%',
+        }}
       >
-        {status === 'voting' ? 'Vote' : 'View'}
-      </Button>
+        <Button
+          shadowless
+          as="a"
+          href={href}
+          variant={status === 'closed' ? 'secondary' : 'primary'}
+          onClick={handleClick as unknown as ClickHandler}
+        >
+          {status === 'voting' ? 'Vote' : 'View'}
+        </Button>
+      </div>
+
+      <RoundMeta>
+        <MetaItem name="Funding" value={`${formatEthPerWinner(round)} ETH x ${round.maxWinnerCount}`} />
+
+        {status === 'proposals' && (
+          <MetaItem name="Prop deadline" value={getTimeDifferenceString(new Date(), round.proposalEnd)} />
+        )}
+
+        {status === 'pending-voting' && (
+          <MetaItem name="Voting starts" value={getTimeDifferenceString(new Date(), round.votingStart)} />
+        )}
+
+        {status === 'voting' && (
+          <MetaItem name="Voting ends" value={getTimeDifferenceString(new Date(), round.votingEnd)} />
+        )}
+
+        {status === 'closed' && (
+          <MetaItem name="Ended" value={getTimeDifferenceString(round.votingEnd, new Date()) + ' ago'} />
+        )}
+
+        <MetaItem name="Proposals" value={round?.snapshot?.choices.length.toString() || '0'} />
+      </RoundMeta>
     </StyledCard>
   );
 };
 
-const calcStatus = (round: Round): Status => {
-  if (round.proposalEnd > new Date()) return 'proposals';
-  if (round.proposalEnd < new Date() && round.votingStart > new Date()) return 'waiting-for-voting';
-  if (round.votingEnd > new Date()) return 'voting';
-  return 'closed';
+const MetaItem = ({ name, value }: { name: string; value: string }) => {
+  return (
+    <div className="meta__item">
+      <span className="meta__title">{name}</span>
+      <span>{value}</span>
+    </div>
+  );
 };
 
 export const RoundCard = (round: Round) => {
-  const status = calcStatus(round);
+  const status = getRoundStatus(round);
 
   const baseProps = {
     id: round.id,
-    round: round.round,
+    round: round,
     status,
     title: round.title,
   };
 
-  const isPropsOpen = status === 'proposals';
-  const isWaitingForVoting = status === 'waiting-for-voting';
-  const isVotingOpen = status === 'voting';
-
-  if (isPropsOpen) {
-    return (
-      <BaseRoundCard {...baseProps}>
-        <InfoContainer>
-          {round.title.includes('Ecosystem') || round.title.includes('Public Goods') ? (
-            <div style={{ paddingBottom: '0.5rem' }}>
-              {round.title.includes('Ecosystem') ? (
-                <ClosingTypography>Projects that specifically build on or improve the ENS Ecosystem.</ClosingTypography>
-              ) : (
-                <ClosingTypography>Projects that benefit the entire Ethereum or Web3 space.</ClosingTypography>
-              )}
-            </div>
-          ) : (
-            <>
-              <Typography>
-                <b>Now accepting submissions</b>
-              </Typography>
-              <ClosingTypography>
-                Submissions close in{' '}
-                <b style={{ display: 'block' }}>{getTimeDifferenceString(new Date(), round.proposalEnd)}</b>
-              </ClosingTypography>
-            </>
-          )}
-        </InfoContainer>
-      </BaseRoundCard>
-    );
-  }
-
-  if (isWaitingForVoting) {
-    return (
-      <BaseRoundCard {...baseProps}>
-        <InfoContainer>
-          <ClosingTypography>
-            Voting opens in <b style={{ display: 'block' }}>{getTimeDifferenceString(new Date(), round.votingStart)}</b>
-          </ClosingTypography>
-        </InfoContainer>
-      </BaseRoundCard>
-    );
-  }
-
-  if (isVotingOpen) {
-    return (
-      <BaseRoundCard {...baseProps}>
-        <InfoContainer>
-          {round.title.includes('Ecosystem') || round.title.includes('Public Goods') ? (
-            <div style={{ paddingBottom: '0.5rem' }}>
-              {round.title.includes('Ecosystem') ? (
-                <ClosingTypography>Projects that specifically build on or improve the ENS Ecosystem.</ClosingTypography>
-              ) : (
-                <ClosingTypography>Projects that benefit the entire Ethereum or Web3 space.</ClosingTypography>
-              )}
-            </div>
-          ) : (
-            <ClosingTypography>
-              Voting closes in{' '}
-              <b style={{ display: 'block' }}>{getTimeDifferenceString(new Date(), round.votingEnd)}</b>
-            </ClosingTypography>
-          )}
-        </InfoContainer>
-      </BaseRoundCard>
-    );
-  }
-
-  if (!round.snapshot) {
-    return (
-      <BaseRoundCard {...baseProps}>
-        <div style={{ flexGrow: 1 }} />
-      </BaseRoundCard>
-    );
-  }
-
-  const proposalCount = round.snapshot.choices.length;
-  const voteCount = round.snapshot.scoresTotal;
-
   return (
     <BaseRoundCard {...baseProps}>
       <InfoContainer>
-        <Typography>
-          <b>{proposalCount}</b> proposals
-        </Typography>
-        <Typography>
-          <b>{Intl.NumberFormat('en', { notation: 'compact' }).format(voteCount)}</b> voted tokens
-        </Typography>
-        {status === 'closed' && (
-          <Typography>Ended {getTimeDifferenceString(round.votingEnd, new Date())} ago</Typography>
+        {round.title.includes('Ecosystem') && (
+          <Typography>Projects that specifically build on or improve the ENS Ecosystem.</Typography>
+        )}
+        {round.title.includes('Public Goods') && (
+          <Typography>Projects that benefit the entire Ethereum or Web3 space.</Typography>
         )}
       </InfoContainer>
     </BaseRoundCard>

@@ -38,6 +38,7 @@ export type Round = {
   creator: string;
   title: string;
   round: number;
+  houseId: number;
   description?: string | null;
   proposalStart: Date;
   proposalEnd: Date;
@@ -66,7 +67,18 @@ export type Grant = {
   voteSamples?: SnapshotVote[];
 };
 
+export type House = {
+  id: number;
+  slug: string;
+  title: string;
+  hidden: boolean;
+  description: string;
+  created_at: Date;
+};
+
 export type SelectedPropVotes = {
   round: number;
   votes: number[];
 };
+
+export type Status = 'queued' | 'proposals' | 'pending-voting' | 'voting' | 'closed';

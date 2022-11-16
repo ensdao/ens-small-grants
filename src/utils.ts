@@ -1,4 +1,6 @@
-import { Round } from './types';
+import { formatEther } from 'ethers/lib/utils';
+
+import { Round, Status } from './types';
 
 export const voteCountFormatter = new Intl.NumberFormat('en', {
   notation: 'compact',
@@ -73,4 +75,35 @@ export const shortenAddress = (address = '', maxLength = 10, leftSlice = 5, righ
   }
 
   return `${address.slice(0, leftSlice)}...${address.slice(-rightSlice)}`;
+};
+
+export const getRoundStatus = (round: Round): Status => {
+  const now = new Date();
+
+  if (now < round.proposalStart) {
+    return 'queued';
+  } else if (now < round.proposalEnd) {
+    return 'proposals';
+  } else if (now < round.votingStart) {
+    return 'pending-voting';
+  } else if (now < round.votingEnd) {
+    return 'voting';
+  } else {
+    return 'closed';
+  }
+};
+
+export const formatEthPerWinner = (round: Round): string => {
+  const ethPerWinner = formatEther((Number(round.allocationTokenAmount) / round.maxWinnerCount).toString());
+  return ethPerWinner.endsWith('.0') ? ethPerWinner.replace(/\..*/, '') : ethPerWinner;
+};
+
+export const dateToString = (date: Date): string => {
+  return new Intl.DateTimeFormat('en-US', {
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+    hour12: true,
+  }).format(date);
 };

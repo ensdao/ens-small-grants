@@ -1,4 +1,5 @@
 import { Heading, Spinner } from '@ensdomains/thorin';
+import { useParams } from 'react-router-dom';
 
 import { EmptyHouse } from '../components/HouseCard';
 import RoundCard from '../components/RoundCard';
@@ -12,36 +13,36 @@ import {
   SectionHeading,
   Subheading,
 } from '../components/atoms';
-import { useRounds } from '../hooks';
-import type { Round as RoundType } from '../types';
+import { useHouses, useRounds } from '../hooks';
+import { getRoundStatus } from '../utils';
 
-const isActiveRound = (round: RoundType) => round.votingEnd > new Date() && round.proposalStart < new Date();
+export default function House() {
+  const { slug } = useParams<{ slug: string }>();
+  const { house } = useHouses({ slug });
+  const { rounds } = useRounds();
 
-function Home() {
-  const { rounds, isLoading: roundsAreLoading } = useRounds();
-
-  if (roundsAreLoading || !rounds) {
+  if (!house || !rounds) {
     return <Spinner size="large" color="purple" />;
   }
 
-  const activeRounds = rounds.filter(r => isActiveRound(r));
+  const activeRoundStates = new Set(['proposals', 'pending-voting', 'voting']);
+  const activeHouseRounds = rounds.filter(
+    round => round.houseId === house.id && activeRoundStates.has(getRoundStatus(round))
+  );
 
   return (
     <>
       <HeadingContainer>
-        <Heading>Small Grants from ENS DAO</Heading>
-        <Subheading>
-          ENS DAO Small Grants allow $ENS holders to vote on projects to receive funding, sponsored by the Public Goods
-          and Ecosystem working group.
-        </Subheading>
+        <Heading>{house.title}</Heading>
+        <Subheading>{house.description}</Subheading>
       </HeadingContainer>
       <RoundItemsOuter>
         <SectionHeading className="desktop-only">
           <ActiveTypography>Showing all active rounds</ActiveTypography>
-          <MobileHiddenAnchor to={`/rounds`}>See all rounds</MobileHiddenAnchor>
+          <MobileHiddenAnchor to={`/${slug}/rounds`}>See all rounds</MobileHiddenAnchor>
         </SectionHeading>
 
-        {activeRounds.length === 0 && (
+        {activeHouseRounds.length === 0 && (
           <div
             style={{
               padding: '2rem 0',
@@ -52,7 +53,7 @@ function Home() {
         )}
 
         <RoundGrid>
-          {activeRounds.map(round => (
+          {activeHouseRounds.map(round => (
             <RoundCard key={round.id} {...round} />
           ))}
         </RoundGrid>
@@ -63,5 +64,3 @@ function Home() {
     </>
   );
 }
-
-export default Home;

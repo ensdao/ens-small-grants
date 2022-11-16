@@ -142,7 +142,7 @@ function GrantProposalCard({
   const to = `/rounds/${roundId}/proposals/${proposal.id}`;
 
   return (
-    <StyledCard className={highlighted ? 'selected' : ''}>
+    <StyledCard hasPadding={true} className={highlighted ? 'selected' : ''}>
       <ProfileWrapper>
         <Link to={to}>
           <Profile
