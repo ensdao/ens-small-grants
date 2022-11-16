@@ -12,16 +12,15 @@ import {
   SectionHeading,
   Subheading,
 } from '../components/atoms';
-import { useRounds, useHouses } from '../hooks';
+import { useRounds } from '../hooks';
 import type { Round as RoundType } from '../types';
 
 const isActiveRound = (round: RoundType) => round.votingEnd > new Date() && round.proposalStart < new Date();
 
 function Home() {
   const { rounds, isLoading: roundsAreLoading } = useRounds();
-  const { houses, isLoading: housesAreLoading } = useHouses({});
 
-  if (roundsAreLoading || !rounds || housesAreLoading || !houses) {
+  if (roundsAreLoading || !rounds) {
     return <Spinner size="large" color="purple" />;
   }
 

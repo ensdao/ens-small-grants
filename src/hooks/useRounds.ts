@@ -43,14 +43,18 @@ export function useRounds(selection?: string) {
   const { data: rounds, isLoading } = useQuery(
     ['rounds'],
     async () => {
-      const { data, error } = await client.from('rounds').select().order('id', { ascending: false });
+      const { data: _data, error } = await client.from('rounds').select().order('id', { ascending: false });
       if (error) {
         throw error;
       }
 
-      if (!data) {
+      if (!_data) {
         return;
       }
+
+      // Filter down to only the rounds that have started (proposal_start < now)
+      const now = new Date();
+      const data = _data.filter(round => new Date(round.proposal_start) < now);
 
       const selectedRound = data.find(round => round.id === (selection ? Number(selection) : 0)) || data[0];
 
