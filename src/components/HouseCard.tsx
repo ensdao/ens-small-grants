@@ -32,7 +32,7 @@ const PropRound = styled.a(
     justify-content: space-between;
     align-items: center;
     width: 100%;
-    padding: ${theme.space['2']} ${theme.space['4']};
+    padding: ${theme.space['2']};
     border-radius: ${theme.radii.medium};
     background-color: ${theme.colors.backgroundSecondary};
     box-shadow: 1px 1px 4px -1px rgba(0, 0, 0, 0.15);
@@ -57,8 +57,8 @@ const AccentText = styled.span(
 
 const Icon = styled.div(
   ({ theme }) => css`
-    width: ${theme.space['4']};
-    height: ${theme.space['4']};
+    width: ${theme.space['5']};
+    height: ${theme.space['5']};
 
     svg {
       width: 100%;
