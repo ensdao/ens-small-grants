@@ -187,8 +187,10 @@ const BaseRoundCard = ({ id, title, round, status, children }: BaseProps) => {
           <MetaItem name="Ended" value={getTimeDifferenceString(round.votingEnd, new Date()) + ' ago'} />
         )}
 
-        {round?.snapshot?.choices && (
+        {round?.snapshot?.choices ? (
           <MetaItem name="Proposals" value={round.snapshot.choices.length.toString() || '0'} />
+        ) : (
+          <MetaItem name="" value="" />
         )}
       </RoundMeta>
     </StyledCard>
