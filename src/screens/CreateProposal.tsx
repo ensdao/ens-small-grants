@@ -141,14 +141,18 @@ export function CreateProposal() {
         fullText: dialogData.fullText,
         twitter: dialogData.twitter,
         payoutAddress: dialogData.payoutAddress,
-      }).then(res => {
-        if (!res.ok) {
-          console.error(res);
-          setPublishError(`Error ${res.status}. Try again later`);
-        } else {
-          navigate(to, { state: { submission: true } });
-        }
-      });
+      })
+        .then(res => {
+          if (!res.ok) {
+            console.error(res);
+            setPublishError(`Error ${res.status}. ${res.statusText}`);
+          } else {
+            navigate(to, { state: { submission: true } });
+          }
+        })
+        .catch(error_ => {
+          setPublishError(typeof error_?.message === 'string' ? error_?.message : 'Error signing message');
+        });
     },
     {
       mutationKey: ['createGrant', roundId, dialogData],
