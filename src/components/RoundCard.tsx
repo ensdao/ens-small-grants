@@ -2,7 +2,8 @@ import { Button, mq, Tag, Typography } from '@ensdomains/thorin';
 import { useHref, useLinkClickHandler } from 'react-router-dom';
 import styled, { css } from 'styled-components';
 
-import { ClickHandler, Round, Status } from '../types';
+import { useGrants } from '../hooks';
+import { ClickHandler, Grant, Round, Status } from '../types';
 import { formatEthPerWinner, getRoundStatus, getTimeDifferenceString } from '../utils';
 import { Card } from './atoms';
 
@@ -122,6 +123,7 @@ type BaseProps = {
   round: Round;
   status: Status;
   children: React.ReactNode;
+  grants: Grant[] | undefined;
 };
 
 const StatusTag = ({ status }: { status: Status }) => {
@@ -137,7 +139,7 @@ const StatusTag = ({ status }: { status: Status }) => {
   return <Tag tone="secondary">Closed</Tag>;
 };
 
-const BaseRoundCard = ({ id, title, round, status, children }: BaseProps) => {
+const BaseRoundCard = ({ id, title, round, status, children, grants }: BaseProps) => {
   const to = `/rounds/${id}`;
   const href = useHref(to);
   const handleClick = useLinkClickHandler(to);
@@ -187,11 +189,7 @@ const BaseRoundCard = ({ id, title, round, status, children }: BaseProps) => {
           <MetaItem name="Ended" value={getTimeDifferenceString(round.votingEnd, new Date()) + ' ago'} />
         )}
 
-        {round?.snapshot?.choices ? (
-          <MetaItem name="Proposals" value={round.snapshot.choices.length.toString() || '0'} />
-        ) : (
-          <MetaItem name="" value="" />
-        )}
+        {grants ? <MetaItem name="Proposals" value={grants.length.toString()} /> : <MetaItem name="" value="" />}
       </RoundMeta>
     </StyledCard>
   );
@@ -208,12 +206,14 @@ const MetaItem = ({ name, value }: { name: string; value: string }) => {
 
 export const RoundCard = (round: Round) => {
   const status = getRoundStatus(round);
+  const { grants } = useGrants(round);
 
   const baseProps = {
     id: round.id,
     round: round,
     status,
     title: round.title,
+    grants,
   };
 
   return (
