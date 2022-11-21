@@ -174,19 +174,35 @@ const BaseRoundCard = ({ id, title, round, status, children, grants }: BaseProps
         <MetaItem name="Funding" value={`${formatEthPerWinner(round)} ETH x ${round.maxWinnerCount}`} />
 
         {status === 'proposals' && (
-          <MetaItem name="Prop deadline" value={getTimeDifferenceString(new Date(), round.proposalEnd)} />
+          <MetaItem
+            name="Prop deadline"
+            value={getTimeDifferenceString(new Date(), round.proposalEnd)}
+            tooltip={round.proposalEnd.toLocaleString()}
+          />
         )}
 
         {status === 'pending-voting' && (
-          <MetaItem name="Voting starts" value={getTimeDifferenceString(new Date(), round.votingStart)} />
+          <MetaItem
+            name="Voting starts"
+            value={getTimeDifferenceString(new Date(), round.votingStart)}
+            tooltip={round.votingStart.toLocaleString()}
+          />
         )}
 
         {status === 'voting' && (
-          <MetaItem name="Voting ends" value={getTimeDifferenceString(new Date(), round.votingEnd)} />
+          <MetaItem
+            name="Voting ends"
+            value={getTimeDifferenceString(new Date(), round.votingEnd)}
+            tooltip={round.votingEnd.toLocaleString()}
+          />
         )}
 
         {status === 'closed' && (
-          <MetaItem name="Ended" value={getTimeDifferenceString(round.votingEnd, new Date()) + ' ago'} />
+          <MetaItem
+            name="Ended"
+            value={getTimeDifferenceString(round.votingEnd, new Date()) + ' ago'}
+            tooltip={round.votingEnd.toLocaleString()}
+          />
         )}
 
         {grants ? <MetaItem name="Proposals" value={grants.length.toString()} /> : <MetaItem name="" value="" />}
@@ -195,11 +211,11 @@ const BaseRoundCard = ({ id, title, round, status, children, grants }: BaseProps
   );
 };
 
-const MetaItem = ({ name, value }: { name: string; value: string }) => {
+const MetaItem = ({ name, value, tooltip }: { name: string; value: string; tooltip?: string }) => {
   return (
     <div className="meta__item">
       <span className="meta__title">{name}</span>
-      <span>{value}</span>
+      <span title={tooltip}>{value}</span>
     </div>
   );
 };

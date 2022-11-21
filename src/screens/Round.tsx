@@ -200,10 +200,10 @@ export const Round = () => {
       </>
     );
     lowerVoteMsg = (
-      <>
+      <span title={round.votingEnd.toLocaleString()}>
         Voting closed <br />
         {getTimeDifferenceString(round.votingEnd, new Date())} ago
-      </>
+      </span>
     );
   } else {
     if (isVotingRound) {
@@ -213,18 +213,18 @@ export const Round = () => {
         </>
       );
       lowerVoteMsg = (
-        <>
+        <span title={round.votingEnd.toLocaleString()}>
           Voting closes in <br />
           {getTimeDifferenceString(new Date(), round.votingEnd)}
-        </>
+        </span>
       );
     } else {
       upperVoteMsg = 'Accepting submissions';
       lowerVoteMsg = (
-        <>
+        <span title={round.proposalEnd.toLocaleString()}>
           Submissions close in <br />
           {getTimeDifferenceString(new Date(), round.proposalEnd)}
-        </>
+        </span>
       );
     }
   }
