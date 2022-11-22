@@ -54,7 +54,7 @@ const StyledCard = styled('div')(
   `
 );
 
-const Title = styled(Typography)(
+export const Title = styled(Typography)(
   ({ theme }) => css`
     font-size: ${theme.fontSizes.extraLarge};
     font-weight: bold;
@@ -66,7 +66,7 @@ const Title = styled(Typography)(
   `
 );
 
-const Description = styled(Typography)(
+export const Description = styled(Typography)(
   () => css`
     overflow: hidden;
     display: -webkit-box;

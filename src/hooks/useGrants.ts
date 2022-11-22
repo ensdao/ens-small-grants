@@ -88,3 +88,31 @@ export function useGrantIds(roundId: number) {
 
   return { grants, isLoading };
 }
+
+export function useGrantsByUser({ address }: { address: string | undefined }) {
+  const { data, isLoading } = useQuery(
+    ['grants', address],
+    async () => {
+      const { data: grants, error } = await client
+        .from('grants')
+        .select()
+        .ilike('proposer', `${address}`)
+        .eq('deleted', false)
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        throw error;
+      }
+
+      return grants.map(g => ({
+        ...g,
+        roundId: g.round_id,
+      }));
+    },
+    {
+      enabled: !!address,
+    }
+  );
+
+  return { grants: data, isLoading };
+}
