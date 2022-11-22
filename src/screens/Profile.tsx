@@ -8,6 +8,7 @@ import { GrantsContainer } from '../components/GrantRoundSection';
 import { cardStyles, HeadingContainer } from '../components/atoms';
 import { useRounds, useGrantsByUser } from '../hooks';
 import type { Grant } from '../types';
+import { voteCountFormatter } from '../utils';
 
 const StyledCard = styled('div')(
   cardStyles,
@@ -45,9 +46,8 @@ const Subtitle = styled(Heading)(
 );
 
 export default function Profile() {
+  const { rounds } = useRounds();
   const { address } = useParams<{ address: string }>();
-  const { rounds, isLoading: roundsAreLoading } = useRounds();
-
   const { grants } = useGrantsByUser({ address: address });
 
   const { data: ensName } = useEnsName({
@@ -60,7 +60,7 @@ export default function Profile() {
     chainId: 1,
   });
 
-  if (roundsAreLoading || !rounds || !address) {
+  if (!rounds || !address || !grants) {
     return <Spinner size="large" color="purple" />;
   }
 
@@ -74,15 +74,29 @@ export default function Profile() {
       </HeadingContainer>
 
       <GrantsContainer>
-        <Subtitle as="h2">Proposal History</Subtitle>
-        {grants?.map((grant: Grant) => (
-          <StyledCard key={grant.id} hasPadding={true}>
-            <Link to={`/rounds/${grant.roundId}/proposals/${grant.id}`}>
-              <Title>{grant.title}</Title>
-              <Description>{grant.description}</Description>
-            </Link>
-          </StyledCard>
-        ))}
+        <Subtitle as="h2">Proposal history</Subtitle>
+        {grants?.map((grant: Grant) => {
+          const round = rounds.find(r => r.id === grant.roundId);
+          const snapshotChoiceIndex = round?.snapshot?.choices.findIndex(c => Number(c.split(' - ')[0]) === grant.id);
+          const votes = round?.snapshot?.scores[snapshotChoiceIndex || 0] || 0;
+
+          return (
+            <StyledCard key={grant.id} hasPadding={true}>
+              <Link to={`/rounds/${grant.roundId}/proposals/${grant.id}`}>
+                <p>
+                  {round?.title} Round {round?.round}
+                </p>
+
+                <p>{voteCountFormatter.format(votes)} votes</p>
+
+                <br />
+
+                <Title>{grant.title}</Title>
+                <Description>{grant.description}</Description>
+              </Link>
+            </StyledCard>
+          );
+        })}
       </GrantsContainer>
     </>
   );
