@@ -3,10 +3,11 @@ import { useParams, Link } from 'react-router-dom';
 import styled, { css } from 'styled-components';
 import { useEnsAvatar, useEnsName } from 'wagmi';
 
+import TwitterIcon from '../assets/twitter.svg';
 import { Description, Title } from '../components/GrantProposalCard';
 import { GrantsContainer } from '../components/GrantRoundSection';
 import { cardStyles, HeadingContainer } from '../components/atoms';
-import { useRounds, useGrantsByUser } from '../hooks';
+import { useRounds, useGrantsByUser, useEnsRecords } from '../hooks';
 import type { Grant } from '../types';
 import { getRoundStatus, voteCountFormatter } from '../utils';
 
@@ -53,10 +54,36 @@ const RoundMeta = styled.div(
   `
 );
 
+const HeadingWrapper = styled.div(
+  ({ theme }) => css`
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: ${theme.space['2']};
+  `
+);
+
+const Icon = styled.div(
+  ({ theme }) => css`
+    width: ${theme.space['6']};
+    height: ${theme.space['6']};
+
+    a {
+      display: flex;
+    }
+
+    svg {
+      width: 100%;
+      height: 100%;
+    }
+  `
+);
+
 export default function Profile() {
   const { rounds } = useRounds();
   const { address } = useParams<{ address: string }>();
   const { grants } = useGrantsByUser({ address: address });
+  const { ensRecords } = useEnsRecords(address);
 
   const { data: ensName } = useEnsName({
     address: address,
@@ -72,13 +99,30 @@ export default function Profile() {
     return <Spinner size="large" color="purple" />;
   }
 
+  const twitter = ensRecords?.twitter;
+  const twitterHandle = twitter?.includes('twitter.com/') ? twitter.split('twitter.com/')[1] : twitter;
+
   return (
     <>
       <HeadingContainer>
         <AvatarWrapper>
           <Avatar src={ensAvatar || undefined} label={ensName || 'label'} />
         </AvatarWrapper>
-        <Heading title={address}>{ensName || `${address.slice(0, 6)}..${address.slice(36, 40)}`}</Heading>
+        <HeadingWrapper>
+          <Heading title={address}>{ensName || `${address.slice(0, 6)}..${address.slice(36, 40)}`}</Heading>
+          {twitter && (
+            <Icon>
+              <a
+                href={`https://twitter.com/${twitterHandle}`}
+                title={`@${twitterHandle}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <TwitterIcon />
+              </a>
+            </Icon>
+          )}
+        </HeadingWrapper>
       </HeadingContainer>
 
       <GrantsContainer>
