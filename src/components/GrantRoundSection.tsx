@@ -10,7 +10,7 @@ import { BannerContainer } from './BannerContainer';
 import GrantProposalCard from './GrantProposalCard';
 import VoteModal from './VoteModal';
 
-const GrantsContainer = styled.div(
+export const GrantsContainer = styled.div(
   ({ theme }) => css`
     display: flex;
     flex-direction: column;
