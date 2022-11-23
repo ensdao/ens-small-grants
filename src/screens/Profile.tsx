@@ -167,8 +167,8 @@ function ProposalHistory({ grants }: { grants: Grant[] | undefined }) {
                 {round?.title} Round {round?.round}
               </Tag>
 
-              {roundStatus !== 'proposals' && <Tag>{voteCountFormatter.format(votes)} votes</Tag>}
               {roundStatus !== 'closed' && <Tag tone="green">Active</Tag>}
+              {roundStatus !== 'proposals' && <Tag>{voteCountFormatter.format(votes)} votes</Tag>}
             </RoundMeta>
 
             <Title>{grant.title}</Title>
