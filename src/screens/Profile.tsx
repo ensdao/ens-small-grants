@@ -8,7 +8,7 @@ import { GrantsContainer } from '../components/GrantRoundSection';
 import { cardStyles, HeadingContainer } from '../components/atoms';
 import { useRounds, useGrantsByUser } from '../hooks';
 import type { Grant } from '../types';
-import { voteCountFormatter } from '../utils';
+import { getRoundStatus, voteCountFormatter } from '../utils';
 
 const StyledCard = styled('div')(
   cardStyles,
@@ -85,6 +85,7 @@ export default function Profile() {
         <Subtitle as="h2">Proposal history</Subtitle>
         {grants?.map((grant: Grant) => {
           const round = rounds.find(r => r.id === grant.roundId);
+          const roundStatus = round && getRoundStatus(round);
           const snapshotChoiceIndex = round?.snapshot?.choices.findIndex(c => Number(c.split(' - ')[0]) === grant.id);
           const votes = round?.snapshot?.scores[snapshotChoiceIndex || 0] || 0;
 
@@ -96,7 +97,8 @@ export default function Profile() {
                     {round?.title} Round {round?.round}
                   </Tag>
 
-                  <Tag>{voteCountFormatter.format(votes)} votes</Tag>
+                  {roundStatus !== 'proposals' && <Tag>{voteCountFormatter.format(votes)} votes</Tag>}
+                  {roundStatus !== 'closed' && <Tag tone="green">Active</Tag>}
                 </RoundMeta>
 
                 <Title>{grant.title}</Title>

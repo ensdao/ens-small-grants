@@ -34,6 +34,10 @@ const StyledCard = styled('div')(
     transition: all 0.15s ease-in-out;
     &:hover {
       background-color: ${theme.colors.backgroundTertiary};
+
+      & > a:first-child > div {
+        background-color: ${theme.colors.background};
+      }
     }
 
     &.selected {
@@ -143,14 +147,14 @@ function GrantProposalCard({
 
   return (
     <StyledCard hasPadding={true} className={highlighted ? 'selected' : ''}>
-      <ProfileWrapper>
-        <Link to={to}>
+      <Link to={`/profile/${proposal.proposer}`}>
+        <ProfileWrapper>
           <Profile
             address={proposal.proposer}
             subtitle={`${getTimeDifferenceString(proposal.createdAt, new Date())} ago`}
           />
-        </Link>
-      </ProfileWrapper>
+        </ProfileWrapper>
+      </Link>
       <ContentWrapper>
         <Link to={to}>
           <Title>{proposal.title}</Title>

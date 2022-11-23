@@ -138,7 +138,7 @@ export const HeadingContainer = styled.div(
     margin-top: ${theme.space['10']};
 
     ${mq.md.min(css`
-      margin-top: 0;
+      margin-top: ${theme.space['6']};
     `)}
   `
 );

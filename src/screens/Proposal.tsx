@@ -1,6 +1,6 @@
 import { Heading, mq, Spinner, Typography } from '@ensdomains/thorin';
 import ReactMarkdown from 'react-markdown';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import remarkGfm from 'remark-gfm';
 import styled, { css } from 'styled-components';
 
@@ -130,6 +130,21 @@ const ProposalNavigator = styled.div(
   `
 );
 
+const ProfileWrapper = styled(Link)(
+  ({ theme }) => css`
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    min-width: ${theme.space['52']};
+    padding: ${theme.space['2']};
+    border-radius: ${theme.radii.large};
+
+    background-color: ${theme.colors.background};
+    box-shadow: 0px 3px 8px rgba(0, 0, 0, 0.05);
+  `
+);
+
 function Proposal() {
   const { id, roundId } = useParams<{ id: string; roundId: string }>();
   const { round, isLoading: roundLoading } = useRounds(roundId!);
@@ -153,7 +168,9 @@ function Proposal() {
           <Title>{grant.title}</Title>
           <Description>{grant.description}</Description>
         </TitleContainer>
-        <Profile address={grant.proposer} subtitle={`${getTimeDifferenceString(grant.createdAt, new Date())} ago`} />
+        <ProfileWrapper to={`/profile/${grant.proposer}`}>
+          <Profile address={grant.proposer} subtitle={`${getTimeDifferenceString(grant.createdAt, new Date())} ago`} />
+        </ProfileWrapper>
         <VoteSection round={round} proposal={grant} />
         <MarkdownWrapper>
           <ReactMarkdown
