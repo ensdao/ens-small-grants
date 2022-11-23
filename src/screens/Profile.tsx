@@ -1,4 +1,4 @@
-import { mq, Avatar, Heading, Spinner } from '@ensdomains/thorin';
+import { mq, Avatar, Heading, Spinner, Tag } from '@ensdomains/thorin';
 import { useParams, Link } from 'react-router-dom';
 import styled, { css } from 'styled-components';
 import { useEnsAvatar, useEnsName } from 'wagmi';
@@ -45,6 +45,14 @@ const Subtitle = styled(Heading)(
   `
 );
 
+const RoundMeta = styled.div(
+  ({ theme }) => css`
+    display: flex;
+    gap: ${theme.space['2']};
+    margin-bottom: ${theme.space['3']};
+  `
+);
+
 export default function Profile() {
   const { rounds } = useRounds();
   const { address } = useParams<{ address: string }>();
@@ -83,13 +91,13 @@ export default function Profile() {
           return (
             <StyledCard key={grant.id} hasPadding={true}>
               <Link to={`/rounds/${grant.roundId}/proposals/${grant.id}`}>
-                <p>
-                  {round?.title} Round {round?.round}
-                </p>
+                <RoundMeta>
+                  <Tag tone="accent">
+                    {round?.title} Round {round?.round}
+                  </Tag>
 
-                <p>{voteCountFormatter.format(votes)} votes</p>
-
-                <br />
+                  <Tag>{voteCountFormatter.format(votes)} votes</Tag>
+                </RoundMeta>
 
                 <Title>{grant.title}</Title>
                 <Description>{grant.description}</Description>
