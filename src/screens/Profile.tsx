@@ -1,5 +1,5 @@
 import { mq, Avatar, Heading, Spinner, Tag } from '@ensdomains/thorin';
-import { useParams, Link } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import styled, { css } from 'styled-components';
 import { useEnsAvatar, useEnsName } from 'wagmi';
 
@@ -7,7 +7,7 @@ import TwitterIcon from '../assets/twitter.svg';
 import { Description, Title } from '../components/GrantProposalCard';
 import { GrantsContainer } from '../components/GrantRoundSection';
 import { cardStyles, HeadingContainer } from '../components/atoms';
-import { useRounds, useGrantsByUser, useEnsRecords } from '../hooks';
+import { useRounds, useGrantsByUser, useEnsRecords, useSnapshotVotes } from '../hooks';
 import type { Grant } from '../types';
 import { getRoundStatus, voteCountFormatter } from '../utils';
 
@@ -79,8 +79,16 @@ const Icon = styled.div(
   `
 );
 
+const Ul = styled.ul`
+  margin-top: 0.25rem;
+  list-style: initial;
+  margin-inline-start: 1em;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+`;
+
 export default function Profile() {
-  const { rounds } = useRounds();
   const { address } = useParams<{ address: string }>();
   const { grants } = useGrantsByUser({ address: address });
   const { ensRecords } = useEnsRecords(address);
@@ -95,7 +103,7 @@ export default function Profile() {
     chainId: 1,
   });
 
-  if (!rounds || !address || !grants) {
+  if (!address) {
     return <Spinner size="large" color="purple" />;
   }
 
@@ -125,33 +133,87 @@ export default function Profile() {
         </HeadingWrapper>
       </HeadingContainer>
 
+      {grants && grants.length > 0 && (
+        <GrantsContainer>
+          <ProposalHistory grants={grants} />
+        </GrantsContainer>
+      )}
+
       <GrantsContainer>
-        <Subtitle as="h2">Proposal history</Subtitle>
-        {grants?.map((grant: Grant) => {
-          const round = rounds.find(r => r.id === grant.roundId);
-          const roundStatus = round && getRoundStatus(round);
-          const snapshotChoiceIndex = round?.snapshot?.choices.findIndex(c => Number(c.split(' - ')[0]) === grant.id);
-          const votes = round?.snapshot?.scores[snapshotChoiceIndex || 0] || 0;
-
-          return (
-            <StyledCard key={grant.id} hasPadding={true}>
-              <Link to={`/rounds/${grant.roundId}/proposals/${grant.id}`}>
-                <RoundMeta>
-                  <Tag tone="accent">
-                    {round?.title} Round {round?.round}
-                  </Tag>
-
-                  {roundStatus !== 'proposals' && <Tag>{voteCountFormatter.format(votes)} votes</Tag>}
-                  {roundStatus !== 'closed' && <Tag tone="green">Active</Tag>}
-                </RoundMeta>
-
-                <Title>{grant.title}</Title>
-                <Description>{grant.description}</Description>
-              </Link>
-            </StyledCard>
-          );
-        })}
+        <VotingHistory address={address} />
       </GrantsContainer>
+    </>
+  );
+}
+
+function ProposalHistory({ grants }: { grants: Grant[] | undefined }) {
+  const { rounds } = useRounds();
+
+  if (!grants || !rounds || grants.length === 0) return null;
+
+  return (
+    <>
+      <Subtitle as="h2">Proposal history</Subtitle>
+      {grants?.map((grant: Grant) => {
+        const round = rounds.find(r => r.id === grant.roundId);
+        const roundStatus = round && getRoundStatus(round);
+        const snapshotChoiceIndex = round?.snapshot?.choices.findIndex(c => Number(c.split(' - ')[0]) === grant.id);
+        const votes = round?.snapshot?.scores[snapshotChoiceIndex || 0] || 0;
+
+        return (
+          <StyledCard as="a" href={`/rounds/${grant.roundId}/proposals/${grant.id}`} key={grant.id} hasPadding={true}>
+            <RoundMeta>
+              <Tag tone="accent">
+                {round?.title} Round {round?.round}
+              </Tag>
+
+              {roundStatus !== 'proposals' && <Tag>{voteCountFormatter.format(votes)} votes</Tag>}
+              {roundStatus !== 'closed' && <Tag tone="green">Active</Tag>}
+            </RoundMeta>
+
+            <Title>{grant.title}</Title>
+            <Description>{grant.description}</Description>
+          </StyledCard>
+        );
+      })}
+    </>
+  );
+}
+
+function VotingHistory({ address }: { address?: string }) {
+  const { votes: votingHistory } = useSnapshotVotes(address?.toLowerCase());
+
+  if (!votingHistory || votingHistory.length === 0) return null;
+
+  return (
+    <>
+      <Subtitle as="h2">Voting history</Subtitle>
+
+      {votingHistory.map(vote => {
+        const votedPropIndexes = Array.isArray(vote.choice) ? vote.choice : [vote.choice];
+        const votedProps: {
+          name: string;
+          id: number;
+        }[] = [];
+
+        vote.proposal.choices.forEach((choice, index) => {
+          if (votedPropIndexes.includes(index + 1)) {
+            const [id, name] = choice.split(' - ');
+            votedProps.push({ name, id: Number(id) });
+          }
+        });
+
+        return (
+          <StyledCard key={vote.proposal.title} hasPadding={true}>
+            <Title>{vote.proposal.title}</Title>
+            <Ul>
+              {votedProps.map(prop => (
+                <li key={prop.id}>{prop.name}</li>
+              ))}
+            </Ul>
+          </StyledCard>
+        );
+      })}
     </>
   );
 }
