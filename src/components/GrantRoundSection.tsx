@@ -37,6 +37,8 @@ export type GrantRoundSectionProps = Round & {
   createProposalClick?: ClickHandler;
 };
 
+export type GrantsFilterOptions = 'random' | 'votes';
+
 function GrantRoundSection({
   isPropsOpen,
   randomiseGrants,
@@ -47,7 +49,7 @@ function GrantRoundSection({
   const { address } = useAccount();
   const { getItem, setItem } = useStorage();
   const { openConnectModal } = useConnectModal();
-  const [filter, setFilter] = useState<'random' | 'votes' | null>(null);
+  const [filter, setFilter] = useState<GrantsFilterOptions | null>(null);
   const [grants, setGrants] = useState<Grant[]>([]);
   const { grants: _grants, isLoading } = useGrants(round);
 
@@ -92,7 +94,10 @@ function GrantRoundSection({
         setFilter(null);
       }
     }
-  }, [_grants, filter, grants, round.id, setItem]);
+
+    setItem('grants-filter', filter || 'random', 'session');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [_grants, filter]);
 
   // Keep track of the selected prop ids for approval voting
   const [selectedProps, setSelectedProps] = useState<SelectedPropVotes>(

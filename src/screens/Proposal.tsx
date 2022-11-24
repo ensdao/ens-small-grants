@@ -5,9 +5,11 @@ import remarkGfm from 'remark-gfm';
 import styled, { css } from 'styled-components';
 
 import BackButton from '../components/BackButton';
+import { GrantsFilterOptions } from '../components/GrantRoundSection';
 import Profile from '../components/Profile';
 import VoteSection from '../components/VoteSection';
-import { useGrantIds, useGrants, useRounds } from '../hooks';
+import { useGrantIds, useGrants, useRounds, useStorage } from '../hooks';
+import type { Grant } from '../types';
 import { getTimeDifferenceString } from '../utils';
 
 const Title = styled(Heading)(
@@ -151,10 +153,28 @@ function Proposal() {
   const { grant, isLoading } = useGrants(round, id!);
 
   const { grants: grantIds, isLoading: grandIdsLoading } = useGrantIds(Number(roundId));
-  // Find the grant id that is one before and one after the current grant.id
-  const currentIndex = grantIds?.findIndex(grantId => grantId.id === grant?.id);
-  const previousGrantId = grantIds?.[currentIndex! - 1]?.id;
-  const nextGrantId = grantIds?.[currentIndex! + 1]?.id;
+
+  const { getItem } = useStorage();
+  const _grantsFilter = getItem('grants-filter', 'session');
+  const grantsFilter = _grantsFilter as GrantsFilterOptions | undefined;
+
+  const _storedGrants = getItem(`round-${roundId}-grants`, 'session');
+  const storedGrants: Grant[] | undefined = _storedGrants && JSON.parse(_storedGrants);
+
+  let currentIndex: number | undefined;
+  let previousGrantId: number | undefined;
+  let nextGrantId: number | undefined;
+
+  // If grants are stored in session storage, use that to calculate the previous and next grant
+  if (grantsFilter === 'random' && storedGrants) {
+    currentIndex = storedGrants.findIndex(storedGrant => storedGrant.id === grant?.id);
+    previousGrantId = storedGrants[currentIndex - 1]?.id;
+    nextGrantId = storedGrants[currentIndex + 1]?.id;
+  } else {
+    currentIndex = grantIds?.findIndex(grantId => grantId.id === grant?.id);
+    previousGrantId = grantIds?.[currentIndex! - 1]?.id;
+    nextGrantId = grantIds?.[currentIndex! + 1]?.id;
+  }
 
   if (isLoading || roundLoading || !grant || !round) {
     return <Spinner size="large" />;
