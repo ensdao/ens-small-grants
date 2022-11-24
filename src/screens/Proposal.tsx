@@ -88,18 +88,22 @@ const MarkdownWrapper = styled.div(
 
     p {
       font-weight: ${theme.fontWeights.medium};
+      line-height: ${theme.lineHeights['1.625']};
     }
 
     h4 {
       font-size: ${theme.fontSizes.large};
+      margin-top: ${theme.space['2']};
     }
 
     h3 {
       font-size: ${theme.fontSizes.extraLarge};
+      margin-top: ${theme.space['2']};
     }
 
     h2 {
       font-size: ${theme.fontSizes.headingThree};
+      margin-top: ${theme.space['4']};
     }
 
     h1 {
@@ -108,10 +112,12 @@ const MarkdownWrapper = styled.div(
 
     ul {
       list-style: inside;
+      margin-inline-start: 1.5rem;
+      line-height: ${theme.lineHeights['1.625']};
+
       ${mq.md.min(css`
         list-style: disc;
       `)}
-      line-height: ${theme.lineHeights['1.5']};
     }
 
     a {
