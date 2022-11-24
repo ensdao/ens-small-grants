@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import styled, { css } from 'styled-components';
 import { useAccount } from 'wagmi';
 
+import { useStorage } from '../hooks';
 import { Grant, SelectedPropVotes } from '../types';
 import { getTimeDifferenceString, voteCountFormatter } from '../utils';
 import Profile from './Profile';
@@ -143,6 +144,7 @@ function GrantProposalCard({
   highlighted,
 }: GrantProposalCardProps) {
   const { address } = useAccount();
+  const { removeItem } = useStorage();
   const to = `/rounds/${roundId}/proposals/${proposal.id}`;
 
   return (
@@ -173,6 +175,12 @@ function GrantProposalCard({
                 onChange={e => {
                   // if target is checked, push the proposal id to the array
                   if (e.target.checked) {
+                    // Clear session storage and refresh page if the Snapshot ID is not available
+                    if (!proposal.snapshotId) {
+                      removeItem(`round-${roundId}-grants`, 'session');
+                      window.location.reload();
+                    }
+
                     setSelectedProps({
                       round: Number(roundId),
                       votes: [...(selectedProps.votes || []), proposal.snapshotId],
