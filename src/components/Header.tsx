@@ -64,7 +64,8 @@ const Title = styled(Typography)(
         display: inline-block;
       }
       white-space: nowrap;
-      font-size: ${theme.fontSizes.headingTwo};
+      font-size: 1.625rem;
+      transform: translateY(0.0625rem);
       margin-bottom: ${theme.space['1']};
     `)}
   `
