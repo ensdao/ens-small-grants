@@ -132,7 +132,7 @@ export const HeadingContainer = styled.div(
     justify-content: center;
 
     gap: ${theme.space['2']};
-    max-width: ${theme.space['144']};
+    max-width: 37rem;
     text-align: center;
 
     margin-top: ${theme.space['10']};

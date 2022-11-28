@@ -15,7 +15,7 @@ export const { chains, provider } = configureChains(
 );
 
 export const { connectors } = getDefaultWallets({
-  appName: 'ENS DAO Small Grants',
+  appName: 'ENS Small Grants',
   chains,
 });
 
