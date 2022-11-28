@@ -29,9 +29,9 @@ function Home() {
   return (
     <>
       <HeadingContainer>
-        <Heading>Small Grants from ENS DAO</Heading>
+        <Heading>Small Grants from ENS</Heading>
         <Subheading>
-          ENS DAO Small Grants allow $ENS holders to vote on projects to receive funding, sponsored by the Public Goods
+          ENS Small Grants allow $ENS holders to vote on projects to receive funding, sponsored by the Public Goods
           and Ecosystem working group.
         </Subheading>
       </HeadingContainer>
