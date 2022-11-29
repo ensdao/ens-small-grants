@@ -1,5 +1,6 @@
 import { Button, Checkbox, Dialog, mq, Spinner, Typography } from '@ensdomains/thorin';
 import { useEffect, useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 import styled, { css } from 'styled-components';
 import { useAccount } from 'wagmi';
 
@@ -182,7 +183,9 @@ function VoteInProgressSection({ round, snapshotProposalId, proposal }: VoteInPr
           </Button>
         )}
         {snapshotGrant.voteSamples.slice(0, 5).map(voter => (
-          <Profile address={voter.voter} subtitle={`${voteCountFormatter.format(voter.vp)} votes`} key={voter.voter} />
+          <Link to={`/profile/${voter.voter}`} key={voter.voter}>
+            <Profile address={voter.voter} subtitle={`${voteCountFormatter.format(voter.vp)} votes`} />
+          </Link>
         ))}
         {snapshotGrant.voteSamples.length > 5 && (
           <ExtraVotersContainer onClick={() => setVotersModalOpen(true)}>
@@ -249,7 +252,9 @@ function VotersModal({
     <Dialog open={isOpen} variant="blank" onDismiss={() => setIsOpen(false)}>
       <VotersModalContent>
         {voters.map(voter => (
-          <Profile address={voter.voter} subtitle={`${voteCountFormatter.format(voter.vp)} votes`} key={voter.voter} />
+          <Link to={`/profile/${voter.voter}`} key={voter.voter}>
+            <Profile address={voter.voter} subtitle={`${voteCountFormatter.format(voter.vp)} votes`} />
+          </Link>
         ))}
       </VotersModalContent>
     </Dialog>
