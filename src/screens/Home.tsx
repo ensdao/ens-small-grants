@@ -65,7 +65,7 @@ function Home() {
           ))}
         </RoundGrid>
         <SectionHeading>
-          <DesktopHiddenAnchor to="/rounds">See all rounds</DesktopHiddenAnchor>
+          {activeRounds.length > 0 && <DesktopHiddenAnchor to="/rounds">See all rounds</DesktopHiddenAnchor>}
         </SectionHeading>
       </RoundItemsOuter>
     </>
