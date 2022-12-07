@@ -4,7 +4,7 @@ import styled, { css } from 'styled-components';
 
 import { useGrants } from '../hooks';
 import { ClickHandler, Grant, Round, Status } from '../types';
-import { formatEthPerWinner, getRoundStatus, getTimeDifferenceString } from '../utils';
+import { formatFundingPerWinner, getRoundStatus, getTimeDifferenceString } from '../utils';
 import { Card } from './atoms';
 
 export const StyledCard = styled(Card)(
@@ -171,7 +171,7 @@ const BaseRoundCard = ({ id, title, round, status, children, grants }: BaseProps
       </div>
 
       <RoundMeta>
-        <MetaItem name="Funding" value={`${formatEthPerWinner(round)} ETH x ${round.maxWinnerCount}`} />
+        <MetaItem name="Funding" value={`${formatFundingPerWinner(round)} x ${round.maxWinnerCount}`} />
 
         {status === 'proposals' && (
           <MetaItem
@@ -235,11 +235,14 @@ export const RoundCard = (round: Round) => {
   return (
     <BaseRoundCard {...baseProps}>
       <InfoContainer>
-        {round.title.includes('Ecosystem') && (
+        {round.title === 'Ecosystem' && (
           <Typography>Projects that specifically build on or improve the ENS Ecosystem.</Typography>
         )}
-        {round.title.includes('Public Goods') && (
+        {round.title === 'Public Goods' && (
           <Typography>Projects that benefit the entire Ethereum or Web3 space.</Typography>
+        )}
+        {round.title === 'Public Goods Fellows' && (
+          <Typography>Individuals who contribute towards the betterment of ENS and web3 public goods.</Typography>
         )}
       </InfoContainer>
     </BaseRoundCard>

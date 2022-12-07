@@ -164,7 +164,7 @@ function GrantRoundSection({
         </Button>
       )}
       {address && randomiseGrants && selectedProps && selectedProps.votes.length === 0 && (
-        <Button variant="secondary">Check the grants you'd like to vote for</Button>
+        <Button variant="secondary">Check your favorite proposals</Button>
       )}
       {address && randomiseGrants && selectedProps && selectedProps.votes.length > 0 && (
         <Button onClick={() => setVotingModalOpen(true)}>

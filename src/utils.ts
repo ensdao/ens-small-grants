@@ -1,4 +1,4 @@
-import { formatEther } from 'ethers/lib/utils';
+import { formatEther, formatUnits } from 'ethers/lib/utils';
 
 import { Round, Status } from './types';
 
@@ -93,9 +93,22 @@ export const getRoundStatus = (round: Round): Status => {
   }
 };
 
-export const formatEthPerWinner = (round: Round): string => {
-  const ethPerWinner = formatEther((Number(round.allocationTokenAmount) / round.maxWinnerCount).toString());
-  return ethPerWinner.endsWith('.0') ? ethPerWinner.replace(/\..*/, '') : ethPerWinner;
+export const formatFundingPerWinner = (round: Round): string => {
+  const tokenName = round.allocationTokenAddress === '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48' ? 'USDC' : 'ETH';
+
+  const number =
+    tokenName === 'USDC'
+      ? formatUnits(Number(round.allocationTokenAmount) / round.maxWinnerCount, 6).toString()
+      : formatEther((Number(round.allocationTokenAmount) / round.maxWinnerCount).toString());
+
+  return (
+    new Intl.NumberFormat('en-US', {
+      notation: 'compact',
+      maximumFractionDigits: 2,
+    }).format(Number(number)) +
+    ' ' +
+    tokenName
+  );
 };
 
 export const dateToString = (date: Date): string => {

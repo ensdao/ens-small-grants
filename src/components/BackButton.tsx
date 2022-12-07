@@ -35,7 +35,6 @@ const Wrapper = styled.div(
     justify-content: space-between;
 
     width: 100%;
-    padding: ${theme.space['4']};
     margin-top: ${theme.space['4']};
 
     & > *:not(a) {
@@ -51,7 +50,7 @@ const Wrapper = styled.div(
   `
 );
 
-const BackButton = ({
+export default function BackButton({
   title,
   text,
   reverse,
@@ -60,7 +59,7 @@ const BackButton = ({
   title?: React.ReactNode;
   text?: string;
   reverse?: boolean;
-}) => {
+}) {
   return (
     <Container>
       <Wrapper
@@ -86,6 +85,14 @@ const BackButton = ({
       </Wrapper>
     </Container>
   );
-};
+}
 
-export default BackButton;
+export const BackButtonWithSpacing = styled(BackButton)(
+  ({ theme }) => css`
+    margin-top: ${theme.space['4']};
+
+    ${mq.md.min(css`
+      margin-top: 0;
+    `)}
+  `
+);

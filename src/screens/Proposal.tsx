@@ -4,7 +4,7 @@ import { Link, useParams } from 'react-router-dom';
 import remarkGfm from 'remark-gfm';
 import styled, { css } from 'styled-components';
 
-import BackButton from '../components/BackButton';
+import BackButton, { BackButtonWithSpacing } from '../components/BackButton';
 import { GrantsFilterOptions } from '../components/GrantRoundSection';
 import Profile from '../components/Profile';
 import VoteSection from '../components/VoteSection';
@@ -188,7 +188,7 @@ function Proposal() {
 
   return (
     <>
-      <BackButton to={`/rounds/${roundId}`} />
+      <BackButtonWithSpacing to={`/rounds/${roundId}`} />
       <ContentGrid>
         <TitleContainer>
           <Title>{grant.title}</Title>
