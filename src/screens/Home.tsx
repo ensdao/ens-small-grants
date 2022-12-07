@@ -1,5 +1,6 @@
 import { Heading, Spinner } from '@ensdomains/thorin';
 
+import Anchor from '../components/Anchor';
 import { EmptyHouse } from '../components/HouseCard';
 import RoundCard from '../components/RoundCard';
 import {
@@ -36,18 +37,25 @@ function Home() {
         </Subheading>
       </HeadingContainer>
       <RoundItemsOuter>
-        <SectionHeading className="desktop-only">
-          <ActiveTypography>Showing all active rounds</ActiveTypography>
-          <MobileHiddenAnchor to={`/rounds`}>See all rounds</MobileHiddenAnchor>
-        </SectionHeading>
+        {activeRounds.length > 0 && (
+          <SectionHeading className="desktop-only">
+            <ActiveTypography>Showing all active rounds</ActiveTypography>
+            <MobileHiddenAnchor to={`/rounds`}>See all rounds</MobileHiddenAnchor>
+          </SectionHeading>
+        )}
 
         {activeRounds.length === 0 && (
           <div
             style={{
               padding: '2rem 0',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: '1rem',
             }}
           >
             <EmptyHouse>No active rounds</EmptyHouse>
+            <Anchor to="/rounds">See all rounds</Anchor>
           </div>
         )}
 
