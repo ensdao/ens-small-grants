@@ -50,6 +50,7 @@ export type Round = {
   createdAt: Date;
   updatedAt: Date;
   snapshot?: SnapshotProposal;
+  scholarship: boolean;
 };
 
 export type Grant = {

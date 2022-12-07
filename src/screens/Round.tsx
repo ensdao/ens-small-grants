@@ -3,7 +3,7 @@ import ReactMarkdown from 'react-markdown';
 import { useHref, useLinkClickHandler, useLocation, useParams } from 'react-router-dom';
 import styled, { css } from 'styled-components';
 
-import BackButton from '../components/BackButton';
+import { BackButtonWithSpacing } from '../components/BackButton';
 import { BannerContainer } from '../components/BannerContainer';
 import GrantRoundSection from '../components/GrantRoundSection';
 import { useRounds } from '../hooks';
@@ -11,13 +11,9 @@ import { ClickHandler } from '../types';
 import { formatFundingPerWinner, getTimeDifferenceString } from '../utils';
 
 const Container = styled.div(
-  ({ theme }) => css`
+  ({ scholarship }: { scholarship?: boolean }) => css`
     width: 100%;
-    margin-top: ${theme.space['4']};
-
-    ${mq.md.min(css`
-      margin-top: 0;
-    `)}
+    max-width: ${scholarship ? '60rem' : '100%'};
   `
 );
 
@@ -163,7 +159,10 @@ export const Round = () => {
 
     upperVoteMsg = (
       <>
-        <b>{fundingPerWinnerStr}</b> x <b>{round.maxWinnerCount} projects</b>
+        <b>{fundingPerWinnerStr}</b> x{' '}
+        <b>
+          {round.maxWinnerCount} {round.scholarship ? 'people' : 'projects'}
+        </b>
       </>
     );
 
@@ -184,8 +183,7 @@ export const Round = () => {
         </span>
       ) : (
         <span title={round.proposalEnd.toLocaleString()}>
-          Submissions close in <br />
-          {getTimeDifferenceString(new Date(), round.proposalEnd)}
+          Submissions close in {getTimeDifferenceString(new Date(), round.proposalEnd)}
         </span>
       );
     }
@@ -193,14 +191,14 @@ export const Round = () => {
 
   const titleContent = (
     <Title>
-      <b>{round.title}</b> Round {round.round}
+      <b>{round.title}</b> {!round.scholarship && `Round ${round.round}`}
     </Title>
   );
 
   return (
     <>
-      <Container>
-        <BackButton to="/" />
+      <Container scholarship={round.scholarship}>
+        <BackButtonWithSpacing to="/" />
         {showHelper && <Helper type="info">Proposal submission recieved!</Helper>}
 
         <HeadingContainer>
@@ -227,19 +225,23 @@ export const Round = () => {
           </RoundDescription>
         )}
       </Container>
-      {noSnapshotWhenNeeded ? (
-        <BannerContainer>
-          <Typography>Looks like something went wrong, try again later.</Typography>
-        </BannerContainer>
-      ) : (
-        <GrantRoundSection
-          randomiseGrants={isActiveRound && isVotingRound}
-          isPropsOpen={isPropRound}
-          createProposalHref={href}
-          createProposalClick={onClick as unknown as ClickHandler | (() => void)}
-          {...round}
-        />
-      )}
+
+      <Container scholarship={round.scholarship}>
+        {noSnapshotWhenNeeded ? (
+          <BannerContainer>
+            <Typography>Looks like something went wrong, try again later.</Typography>
+          </BannerContainer>
+        ) : (
+          <GrantRoundSection
+            randomiseGrants={isActiveRound && isVotingRound}
+            isPropsOpen={isPropRound}
+            createProposalHref={href}
+            createProposalClick={onClick as unknown as ClickHandler | (() => void)}
+            {...round}
+          />
+        )}
+      </Container>
+
       <div style={{ flexGrow: 1 }} />
     </>
   );
