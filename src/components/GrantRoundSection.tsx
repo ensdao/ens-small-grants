@@ -6,6 +6,7 @@ import { useAccount } from 'wagmi';
 
 import { useGrants, useStorage } from '../hooks';
 import type { ClickHandler, Grant, Round, SelectedPropVotes } from '../types';
+import { getRoundStatus } from '../utils';
 import { BannerContainer } from './BannerContainer';
 import GrantProposalCard from './GrantProposalCard';
 import VoteModal from './VoteModal';
@@ -30,28 +31,38 @@ const FilterButton = styled(Button)(
   `
 );
 
-export type GrantRoundSectionProps = Round & {
-  isPropsOpen?: boolean;
-  randomiseGrants?: boolean;
+const ProposalWrapper = styled.div(
+  ({ scholarship }: { scholarship?: boolean }) => css`
+    display: grid;
+    width: 100%;
+    gap: 1rem;
+
+    ${scholarship &&
+    css`
+      grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
+    `}
+  `
+);
+
+export type GrantRoundSectionProps = {
+  round: Round;
   createProposalHref?: string;
   createProposalClick?: ClickHandler;
 };
 
 export type GrantsFilterOptions = 'random' | 'votes';
 
-function GrantRoundSection({
-  isPropsOpen,
-  randomiseGrants,
-  createProposalHref,
-  createProposalClick,
-  ...round
-}: GrantRoundSectionProps) {
+function GrantRoundSection({ round, createProposalHref, createProposalClick }: GrantRoundSectionProps) {
   const { address } = useAccount();
   const { getItem, setItem } = useStorage();
   const { openConnectModal } = useConnectModal();
   const [filter, setFilter] = useState<GrantsFilterOptions | null>(null);
   const [grants, setGrants] = useState<Grant[]>([]);
   const { grants: _grants, isLoading } = useGrants(round);
+
+  const roundStatus = getRoundStatus(round);
+  const isPropsOpen = roundStatus === 'proposals';
+  const randomiseGrants = roundStatus === 'voting';
 
   useEffect(() => {
     if (_grants && _grants.length > grants.length) {
@@ -164,34 +175,37 @@ function GrantRoundSection({
         </Button>
       )}
       {address && randomiseGrants && selectedProps && selectedProps.votes.length === 0 && (
-        <Button variant="secondary">Check the grants you'd like to vote for</Button>
+        <Button variant="secondary">Check your favorite proposals</Button>
       )}
       {address && randomiseGrants && selectedProps && selectedProps.votes.length > 0 && (
         <Button onClick={() => setVotingModalOpen(true)}>
           Vote for {selectedProps.votes.length} proposal{selectedProps.votes.length > 1 && 's'}
         </Button>
       )}
-      {grants &&
-        grants.map(g => (
-          <GrantProposalCard
-            proposal={g}
-            selectedProps={selectedProps || { round: round.id, votes: [] }}
-            setSelectedProps={setSelectedProps}
-            roundId={round.id}
-            votingStarted={round.votingStart < new Date()}
-            inProgress={round.votingEnd > new Date()}
-            key={g.id}
-            highlighted={
-              // In the voting stage, highlight the selected grants
-              // In the completed stage, highlight the winning grants
-              randomiseGrants
-                ? selectedProps && selectedProps.votes.includes(g.snapshotId)
-                : round.votingStart < new Date()
-                ? grants.findIndex(grant => grant.id === g.id) < round.maxWinnerCount
-                : false
-            }
-          />
-        ))}
+
+      <ProposalWrapper scholarship={round.scholarship}>
+        {grants &&
+          grants.map(g => (
+            <GrantProposalCard
+              proposal={g}
+              selectedProps={selectedProps || { round: round.id, votes: [] }}
+              setSelectedProps={setSelectedProps}
+              round={round}
+              votingStarted={round.votingStart < new Date()}
+              inProgress={round.votingEnd > new Date()}
+              key={g.id}
+              highlighted={
+                // In the voting stage, highlight the selected grants
+                // In the completed stage, highlight the winning grants
+                randomiseGrants
+                  ? selectedProps && selectedProps.votes.includes(g.snapshotId)
+                  : round.votingStart < new Date()
+                  ? grants.findIndex(grant => grant.id === g.id) < round.maxWinnerCount
+                  : false
+              }
+            />
+          ))}
+      </ProposalWrapper>
 
       {address && round?.snapshot?.id && (
         <VoteModal

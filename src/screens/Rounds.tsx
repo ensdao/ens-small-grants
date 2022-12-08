@@ -2,7 +2,7 @@ import { mq, Heading, Spinner } from '@ensdomains/thorin';
 import { useParams } from 'react-router-dom';
 import styled, { css } from 'styled-components';
 
-import BackButton from '../components/BackButton';
+import { BackButtonWithSpacing } from '../components/BackButton';
 import { EmptyHouse } from '../components/HouseCard';
 import RoundCard from '../components/RoundCard';
 import { useHouses, useRounds } from '../hooks';
@@ -48,7 +48,7 @@ const Rounds = () => {
 
   return (
     <>
-      <BackButton to={house ? `/${house.slug}` : '/'} title={title} />
+      <BackButtonWithSpacing to={house ? `/${house.slug}` : '/'} title={title} />
 
       {filteredRounds.length === 0 && (
         <div

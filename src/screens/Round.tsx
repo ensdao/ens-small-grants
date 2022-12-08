@@ -3,21 +3,17 @@ import ReactMarkdown from 'react-markdown';
 import { useHref, useLinkClickHandler, useLocation, useParams } from 'react-router-dom';
 import styled, { css } from 'styled-components';
 
-import BackButton from '../components/BackButton';
+import { BackButtonWithSpacing } from '../components/BackButton';
 import { BannerContainer } from '../components/BannerContainer';
 import GrantRoundSection from '../components/GrantRoundSection';
 import { useRounds } from '../hooks';
 import { ClickHandler } from '../types';
-import { formatEthPerWinner, getTimeDifferenceString } from '../utils';
+import { formatFundingPerWinner, getTimeDifferenceString } from '../utils';
 
 const Container = styled.div(
-  ({ theme }) => css`
+  ({ scholarship }: { scholarship?: boolean }) => css`
     width: 100%;
-    margin-top: ${theme.space['4']};
-
-    ${mq.md.min(css`
-      margin-top: 0;
-    `)}
+    max-width: ${scholarship ? '60rem' : '100%'};
   `
 );
 
@@ -25,13 +21,13 @@ const HeadingContainer = styled.div(
   ({ theme }) => css`
     display: flex;
     flex-direction: column;
-    align-items: flex-end;
     justify-content: space-between;
-
+    gap: ${theme.space['4']};
     width: 100%;
+    margin-top: ${theme.space['4']};
 
     ${mq.md.min(css`
-      gap: ${theme.space['4']};
+      gap: ${theme.space['8']};
       flex-direction: row;
       height: max-content;
     `)}
@@ -40,43 +36,17 @@ const HeadingContainer = styled.div(
 
 const Title = styled(Typography)(
   ({ theme }) => css`
-    font-size: ${theme.fontSizes.headingThree};
+    font-size: ${theme.fontSizes.headingTwo};
     color: ${theme.colors.textTertiary};
-    text-align: right;
     flex-grow: 1;
-    width: 100%;
 
     b {
       color: ${theme.colors.text};
       font-weight: bold;
-      display: block;
     }
 
     ${mq.md.min(css`
       font-size: ${theme.space['9']};
-      text-align: left;
-      b {
-        display: inline-block;
-      }
-    `)}
-  `
-);
-
-const Subtitle = styled(Typography)(
-  ({ theme }) => css`
-    text-align: center;
-    font-size: ${theme.fontSizes.extraLarge};
-    color: ${theme.colors.textTertiary};
-    width: 100%;
-
-    b {
-      color: ${theme.colors.indigo};
-      font-weight: bold;
-    }
-
-    ${mq.md.min(css`
-      width: auto;
-      text-align: left;
     `)}
   `
 );
@@ -86,17 +56,16 @@ const VoteDetailsContainer = styled.div(
     width: 100%;
 
     display: flex;
+    gap: ${theme.space['4']};
     flex-direction: row;
     align-items: flex-end;
     justify-content: space-between;
 
-    margin-top: ${theme.space['6']};
-
     ${mq.md.min(css`
+      gap: 0;
       flex-direction: column;
       align-items: flex-end;
       justify-content: center;
-      margin-top: 0;
       margin-bottom: 0;
       width: max-content;
     `)}
@@ -109,7 +78,7 @@ const VotesTypography = styled(Typography)(
     color: ${theme.colors.textTertiary};
 
     b {
-      color: ${theme.colors.text};
+      color: ${theme.colors.indigo};
     }
 
     ${mq.md.min(css`
@@ -185,45 +154,36 @@ export const Round = () => {
     // Time between submissions closed and voting starts
     upperVoteMsg = <p>Voting starts in {getTimeDifferenceString(new Date(), round.votingStart)}</p>;
     lowerVoteMsg = <p>Submissions closed</p>;
-  } else if (!round.snapshot && (!isActiveRound || isVotingRound)) {
-    noSnapshotWhenNeeded = true;
-    upperVoteMsg = (
-      <>
-        <b>0</b> total votes
-      </>
-    );
-    lowerVoteMsg = <>Close time unknown</>;
-  } else if (!isActiveRound) {
-    upperVoteMsg = (
-      <>
-        <b>{Intl.NumberFormat('en', { notation: 'compact' }).format(round.snapshot!.scoresTotal!)}</b> total votes
-      </>
-    );
-    lowerVoteMsg = (
-      <span title={round.votingEnd.toLocaleString()}>
-        Voting closed <br />
-        {getTimeDifferenceString(round.votingEnd, new Date())} ago
-      </span>
-    );
   } else {
-    if (isVotingRound) {
-      upperVoteMsg = (
-        <>
-          <b>{Intl.NumberFormat('en', { notation: 'compact' }).format(round.snapshot!.scoresTotal!)}</b> votes so far
-        </>
-      );
+    const fundingPerWinnerStr = formatFundingPerWinner(round);
+
+    upperVoteMsg = (
+      <>
+        <b>{fundingPerWinnerStr}</b> x{' '}
+        <b>
+          {round.maxWinnerCount} {round.scholarship ? 'people' : 'projects'}
+        </b>
+      </>
+    );
+
+    if (!round.snapshot && (!isActiveRound || isVotingRound)) {
+      noSnapshotWhenNeeded = true;
+      lowerVoteMsg = <>Close time unknown</>;
+    } else if (!isActiveRound) {
       lowerVoteMsg = (
+        <span title={round.votingEnd.toLocaleString()}>
+          Voting closed {getTimeDifferenceString(round.votingEnd, new Date())} ago
+        </span>
+      );
+    } else {
+      lowerVoteMsg = isVotingRound ? (
         <span title={round.votingEnd.toLocaleString()}>
           Voting closes in <br />
           {getTimeDifferenceString(new Date(), round.votingEnd)}
         </span>
-      );
-    } else {
-      upperVoteMsg = 'Accepting submissions';
-      lowerVoteMsg = (
+      ) : (
         <span title={round.proposalEnd.toLocaleString()}>
-          Submissions close in <br />
-          {getTimeDifferenceString(new Date(), round.proposalEnd)}
+          Submissions close in {getTimeDifferenceString(new Date(), round.proposalEnd)}
         </span>
       );
     }
@@ -231,21 +191,18 @@ export const Round = () => {
 
   const titleContent = (
     <Title>
-      <b>{round.title}</b> Round {round.round}
+      <b>{round.title}</b> {!round.scholarship && `Round ${round.round}`}
     </Title>
   );
 
-  const ethPerWinnerStr = formatEthPerWinner(round);
-
   return (
     <>
-      <BackButton to="/" title={titleContent} />
-      {showHelper && <Helper type="info">Proposal submission recieved!</Helper>}
-      <Container>
+      <Container scholarship={round.scholarship}>
+        <BackButtonWithSpacing to="/" />
+        {showHelper && <Helper type="info">Proposal submission recieved!</Helper>}
+
         <HeadingContainer>
-          <Subtitle>
-            The <b>Top {round.maxWinnerCount}</b> voted proposals of this round get <b>{ethPerWinnerStr} ETH</b> each
-          </Subtitle>
+          {titleContent}
           <VoteDetailsContainer>
             <VotesTypography>{upperVoteMsg}</VotesTypography>
             <VoteTimeTypography>{lowerVoteMsg}</VoteTimeTypography>
@@ -268,19 +225,21 @@ export const Round = () => {
           </RoundDescription>
         )}
       </Container>
-      {noSnapshotWhenNeeded ? (
-        <BannerContainer>
-          <Typography>Looks like something went wrong, try again later.</Typography>
-        </BannerContainer>
-      ) : (
-        <GrantRoundSection
-          randomiseGrants={isActiveRound && isVotingRound}
-          isPropsOpen={isPropRound}
-          createProposalHref={href}
-          createProposalClick={onClick as unknown as ClickHandler | (() => void)}
-          {...round}
-        />
-      )}
+
+      <Container scholarship={round.scholarship}>
+        {noSnapshotWhenNeeded ? (
+          <BannerContainer>
+            <Typography>Looks like something went wrong, try again later.</Typography>
+          </BannerContainer>
+        ) : (
+          <GrantRoundSection
+            round={round}
+            createProposalHref={href}
+            createProposalClick={onClick as unknown as ClickHandler | (() => void)}
+          />
+        )}
+      </Container>
+
       <div style={{ flexGrow: 1 }} />
     </>
   );
