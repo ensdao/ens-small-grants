@@ -98,7 +98,7 @@ export const formatFundingPerWinner = (round: Round): string => {
 
   const number =
     tokenName === 'USDC'
-      ? formatUnits(Number(round.allocationTokenAmount) / round.maxWinnerCount, 6).toString()
+      ? formatUnits(Math.floor(Number(round.allocationTokenAmount) / round.maxWinnerCount), 6).toString()
       : formatEther((Number(round.allocationTokenAmount) / round.maxWinnerCount).toString());
 
   return (
