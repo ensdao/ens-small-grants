@@ -1,7 +1,7 @@
 import { Checkbox, mq, Typography } from '@ensdomains/thorin';
 import { Link } from 'react-router-dom';
-import styled, { css } from 'styled-components';
-import { useAccount } from 'wagmi';
+import styled, { css, DefaultTheme } from 'styled-components';
+import { useAccount, useEnsAddress, useEnsAvatar } from 'wagmi';
 
 import { useStorage } from '../hooks';
 import { Grant, Round, SelectedPropVotes } from '../types';
@@ -61,8 +61,21 @@ const StyledCard = styled('div')(
 
 const ScholarshipCard = styled.div(
   cardStyles,
-  () => css`
-    align-items: flex-start;
+  ({ theme }) => css`
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    padding-right: 1rem;
+    border: 1px solid ${theme.colors.borderSecondary};
+    transition: all 0.15s ease-in-out;
+
+    &:hover {
+      background-color: ${theme.colors.backgroundTertiary};
+    }
+
+    &.selected {
+      border: ${theme.borderWidths['0.5']} solid ${theme.colors.blue};
+    }
   `
 );
 
@@ -88,7 +101,7 @@ export const Description = styled(Typography)(
 );
 
 const Votes = styled(Typography)(
-  ({ theme }) => css`
+  ({ theme, scholarship }: { theme: DefaultTheme; scholarship?: boolean }) => css`
     display: flex;
     align-items: center;
     justify-content: flex-end;
@@ -102,11 +115,14 @@ const Votes = styled(Typography)(
       padding-right: ${theme.space['1']};
     }
 
-    ${mq.xs.max(css`
-      justify-content: flex-start;
-      padding-top: ${theme.space['2']};
-      border-top: ${theme.borderWidths['0.5']} solid ${theme.colors.borderTertiary};
-    `)}
+    ${!scholarship &&
+    css`
+      ${mq.xs.max(css`
+        justify-content: flex-start;
+        padding-top: ${theme.space['2']};
+        border-top: ${theme.borderWidths['0.5']} solid ${theme.colors.borderTertiary};
+      `)}
+    `}
   `
 );
 
@@ -141,6 +157,47 @@ const ContentWrapper = styled.div(
   `
 );
 
+const ScholarshipCardWrapper = styled(Link)`
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  width: 100%;
+`;
+
+const AvatarWrapper = styled.div(
+  ({ theme }) => css`
+    width: ${theme.space['12']};
+    height: ${theme.space['12']};
+    border-radius: ${theme.radii.full};
+    overflow: hidden;
+    background: linear-gradient(
+      330.4deg,
+      rgb(68, 188, 240) 4.54%,
+      rgb(114, 152, 248) 59.2%,
+      rgb(160, 153, 255) 148.85%
+    );
+    position: relative;
+
+    img {
+      max-width: 100%;
+    }
+  `
+);
+
+const NameVotes = styled.div(
+  ({ theme }) => css`
+    display: flex;
+    gap: 0.125rem;
+    flex-direction: column;
+
+    span {
+      font-weight: ${theme.fontWeights.bold};
+      color: ${theme.colors.textSecondary};
+    }
+  `
+);
+
 function GrantProposalCard({
   round,
   proposal,
@@ -151,6 +208,8 @@ function GrantProposalCard({
   highlighted,
 }: GrantProposalCardProps) {
   const { address } = useAccount();
+  const { data: ensAddress } = useEnsAddress({ name: round.scholarship ? proposal.title : undefined });
+  const { data: ensAvatar } = useEnsAvatar({ addressOrName: ensAddress || undefined });
   const { removeItem } = useStorage();
   const to = `/rounds/${round.id}/proposals/${proposal.id}`;
 
@@ -166,15 +225,33 @@ function GrantProposalCard({
           </ProfileWrapper>
         </Link>
       )}
-      <ContentWrapper>
-        <Link to={to}>
-          <Title>{proposal.title}</Title>
-          <Description>{proposal.description}</Description>
-        </Link>
-      </ContentWrapper>
+
+      {!round.scholarship && (
+        <ContentWrapper>
+          <Link to={to}>
+            <Title>{proposal.title}</Title>
+            <Description>{proposal.description}</Description>
+          </Link>
+        </ContentWrapper>
+      )}
+
+      {round.scholarship && (
+        <ScholarshipCardWrapper to={to}>
+          <AvatarWrapper>{ensAvatar && <img src={ensAvatar} alt="hi" />}</AvatarWrapper>
+          <NameVotes>
+            <Title>{proposal.title}</Title>
+            {votingStarted && <span>{voteCountFormatter.format(proposal.voteCount!)} votes</span>}
+          </NameVotes>
+        </ScholarshipCardWrapper>
+      )}
+
       {votingStarted && (
-        <Votes>
-          <b>{voteCountFormatter.format(proposal.voteCount!)}</b>votes
+        <Votes scholarship={round.scholarship}>
+          {!round.scholarship && (
+            <>
+              <b>{voteCountFormatter.format(proposal.voteCount!)}</b>votes
+            </>
+          )}
           {inProgress && address && (
             <div>
               <Checkbox
@@ -211,11 +288,7 @@ function GrantProposalCard({
   );
 
   if (round.scholarship) {
-    return (
-      <ScholarshipCard hasPadding={true} className={highlighted ? 'selected' : ''}>
-        {styledCardContents}
-      </ScholarshipCard>
-    );
+    return <ScholarshipCard className={highlighted ? 'selected' : ''}>{styledCardContents}</ScholarshipCard>;
   }
 
   return (

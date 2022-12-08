@@ -233,11 +233,9 @@ export const Round = () => {
           </BannerContainer>
         ) : (
           <GrantRoundSection
-            randomiseGrants={isActiveRound && isVotingRound}
-            isPropsOpen={isPropRound}
+            round={round}
             createProposalHref={href}
             createProposalClick={onClick as unknown as ClickHandler | (() => void)}
-            {...round}
           />
         )}
       </Container>

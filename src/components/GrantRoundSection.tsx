@@ -6,6 +6,7 @@ import { useAccount } from 'wagmi';
 
 import { useGrants, useStorage } from '../hooks';
 import type { ClickHandler, Grant, Round, SelectedPropVotes } from '../types';
+import { getRoundStatus } from '../utils';
 import { BannerContainer } from './BannerContainer';
 import GrantProposalCard from './GrantProposalCard';
 import VoteModal from './VoteModal';
@@ -43,28 +44,25 @@ const ProposalWrapper = styled.div(
   `
 );
 
-export type GrantRoundSectionProps = Round & {
-  isPropsOpen?: boolean;
-  randomiseGrants?: boolean;
+export type GrantRoundSectionProps = {
+  round: Round;
   createProposalHref?: string;
   createProposalClick?: ClickHandler;
 };
 
 export type GrantsFilterOptions = 'random' | 'votes';
 
-function GrantRoundSection({
-  isPropsOpen,
-  randomiseGrants,
-  createProposalHref,
-  createProposalClick,
-  ...round
-}: GrantRoundSectionProps) {
+function GrantRoundSection({ round, createProposalHref, createProposalClick }: GrantRoundSectionProps) {
   const { address } = useAccount();
   const { getItem, setItem } = useStorage();
   const { openConnectModal } = useConnectModal();
   const [filter, setFilter] = useState<GrantsFilterOptions | null>(null);
   const [grants, setGrants] = useState<Grant[]>([]);
   const { grants: _grants, isLoading } = useGrants(round);
+
+  const roundStatus = getRoundStatus(round);
+  const isPropsOpen = roundStatus === 'proposals';
+  const randomiseGrants = roundStatus === 'voting';
 
   useEffect(() => {
     if (_grants && _grants.length > grants.length) {

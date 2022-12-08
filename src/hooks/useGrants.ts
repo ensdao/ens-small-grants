@@ -6,18 +6,12 @@ import { camelCaseToUpperCase, replaceKeysWithFunc } from '../utils';
 
 export function useGrants(
   round: Round | undefined,
-  selection: string
+  selection?: string
 ): {
-  grant: Grant | undefined;
+  grant?: Grant | undefined;
+  grants?: Grant[] | undefined;
   isLoading: boolean;
-  grants: never;
-};
-export function useGrants(round: Round | undefined): {
-  grants: Grant[] | undefined;
-  isLoading: boolean;
-  grant: never;
-};
-export function useGrants(round: Round | undefined, selection?: string) {
+} {
   const { data: grants, isLoading } = useQuery(
     ['grants', round?.id],
     async () => {
@@ -65,8 +59,11 @@ export function useGrants(round: Round | undefined, selection?: string) {
     }
   );
 
-  if (selection) return { grant: grants, isLoading };
-  return { grants, isLoading };
+  const _grant = grants as Grant;
+  const _grants = grants as Grant[];
+
+  if (selection) return { grant: _grant, isLoading };
+  return { grants: _grants, isLoading };
 }
 
 export function useGrantIds(roundId: number) {
