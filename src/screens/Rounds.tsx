@@ -10,7 +10,7 @@ import { useHouses, useRounds } from '../hooks';
 const RoundGrid = styled.div(
   ({ theme }) => css`
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(${theme.space['72']}, 1fr));
+    grid-template-columns: 1fr;
     gap: ${theme.space['8']};
     width: 100%;
 

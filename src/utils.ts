@@ -101,13 +101,16 @@ export const formatFundingPerWinner = (round: Round): string => {
       ? formatUnits(Math.floor(Number(round.allocationTokenAmount) / round.maxWinnerCount), 6).toString()
       : formatEther((Number(round.allocationTokenAmount) / round.maxWinnerCount).toString());
 
+  const endNote = round.scholarship ? '/mo' : '';
+
   return (
     new Intl.NumberFormat('en-US', {
       notation: 'compact',
       maximumFractionDigits: 2,
     }).format(Number(number)) +
     ' ' +
-    tokenName
+    tokenName +
+    endNote
   );
 };
 

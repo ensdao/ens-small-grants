@@ -241,8 +241,8 @@ export const RoundCard = (round: Round) => {
         {round.title === 'Public Goods' && (
           <Typography>Projects that benefit the entire Ethereum or Web3 space.</Typography>
         )}
-        {round.title === 'Public Goods Fellows' && (
-          <Typography>Individuals who contribute towards the betterment of ENS and web3 public goods.</Typography>
+        {round.title === 'Public Goods Scholarships' && (
+          <Typography>Individuals who have projects that benefit the entire Ethereum or Web3 space.</Typography>
         )}
       </InfoContainer>
     </BaseRoundCard>
