@@ -30,6 +30,19 @@ const FilterButton = styled(Button)(
   `
 );
 
+const ProposalWrapper = styled.div(
+  ({ scholarship }: { scholarship?: boolean }) => css`
+    display: grid;
+    width: 100%;
+    gap: 1rem;
+
+    ${scholarship &&
+    css`
+      grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
+    `}
+  `
+);
+
 export type GrantRoundSectionProps = Round & {
   isPropsOpen?: boolean;
   randomiseGrants?: boolean;
@@ -171,27 +184,30 @@ function GrantRoundSection({
           Vote for {selectedProps.votes.length} proposal{selectedProps.votes.length > 1 && 's'}
         </Button>
       )}
-      {grants &&
-        grants.map(g => (
-          <GrantProposalCard
-            proposal={g}
-            selectedProps={selectedProps || { round: round.id, votes: [] }}
-            setSelectedProps={setSelectedProps}
-            roundId={round.id}
-            votingStarted={round.votingStart < new Date()}
-            inProgress={round.votingEnd > new Date()}
-            key={g.id}
-            highlighted={
-              // In the voting stage, highlight the selected grants
-              // In the completed stage, highlight the winning grants
-              randomiseGrants
-                ? selectedProps && selectedProps.votes.includes(g.snapshotId)
-                : round.votingStart < new Date()
-                ? grants.findIndex(grant => grant.id === g.id) < round.maxWinnerCount
-                : false
-            }
-          />
-        ))}
+
+      <ProposalWrapper scholarship={round.scholarship}>
+        {grants &&
+          grants.map(g => (
+            <GrantProposalCard
+              proposal={g}
+              selectedProps={selectedProps || { round: round.id, votes: [] }}
+              setSelectedProps={setSelectedProps}
+              round={round}
+              votingStarted={round.votingStart < new Date()}
+              inProgress={round.votingEnd > new Date()}
+              key={g.id}
+              highlighted={
+                // In the voting stage, highlight the selected grants
+                // In the completed stage, highlight the winning grants
+                randomiseGrants
+                  ? selectedProps && selectedProps.votes.includes(g.snapshotId)
+                  : round.votingStart < new Date()
+                  ? grants.findIndex(grant => grant.id === g.id) < round.maxWinnerCount
+                  : false
+              }
+            />
+          ))}
+      </ProposalWrapper>
 
       {address && round?.snapshot?.id && (
         <VoteModal

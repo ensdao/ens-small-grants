@@ -4,13 +4,13 @@ import styled, { css } from 'styled-components';
 import { useAccount } from 'wagmi';
 
 import { useStorage } from '../hooks';
-import { Grant, SelectedPropVotes } from '../types';
+import { Grant, Round, SelectedPropVotes } from '../types';
 import { getTimeDifferenceString, voteCountFormatter } from '../utils';
 import Profile from './Profile';
 import { cardStyles } from './atoms';
 
 export type GrantProposalCardProps = {
-  roundId: string | number;
+  round: Round;
   proposal: Grant;
   selectedProps: SelectedPropVotes;
   setSelectedProps: (props: SelectedPropVotes) => void;
@@ -56,6 +56,13 @@ const StyledCard = styled('div')(
       grid-template-areas: 'profile content votes';
       grid-template-columns: ${theme.space['52']} 1fr min-content;
     `)}
+  `
+);
+
+const ScholarshipCard = styled.div(
+  cardStyles,
+  () => css`
+    align-items: flex-start;
   `
 );
 
@@ -135,7 +142,7 @@ const ContentWrapper = styled.div(
 );
 
 function GrantProposalCard({
-  roundId,
+  round,
   proposal,
   selectedProps,
   setSelectedProps,
@@ -145,18 +152,20 @@ function GrantProposalCard({
 }: GrantProposalCardProps) {
   const { address } = useAccount();
   const { removeItem } = useStorage();
-  const to = `/rounds/${roundId}/proposals/${proposal.id}`;
+  const to = `/rounds/${round.id}/proposals/${proposal.id}`;
 
-  return (
-    <StyledCard hasPadding={true} className={highlighted ? 'selected' : ''}>
-      <Link to={`/profile/${proposal.proposer}`}>
-        <ProfileWrapper>
-          <Profile
-            address={proposal.proposer}
-            subtitle={`${getTimeDifferenceString(proposal.createdAt, new Date())} ago`}
-          />
-        </ProfileWrapper>
-      </Link>
+  const styledCardContents = (
+    <>
+      {!round.scholarship && (
+        <Link to={`/profile/${proposal.proposer}`}>
+          <ProfileWrapper>
+            <Profile
+              address={proposal.proposer}
+              subtitle={`${getTimeDifferenceString(proposal.createdAt, new Date())} ago`}
+            />
+          </ProfileWrapper>
+        </Link>
+      )}
       <ContentWrapper>
         <Link to={to}>
           <Title>{proposal.title}</Title>
@@ -177,18 +186,18 @@ function GrantProposalCard({
                   if (e.target.checked) {
                     // Clear session storage and refresh page if the Snapshot ID is not available
                     if (!proposal.snapshotId) {
-                      removeItem(`round-${roundId}-grants`, 'session');
+                      removeItem(`round-${round.id}-grants`, 'session');
                       window.location.reload();
                     }
 
                     setSelectedProps({
-                      round: Number(roundId),
+                      round: Number(round.id),
                       votes: [...(selectedProps.votes || []), proposal.snapshotId],
                     });
                   } else {
                     // if target is unchecked, remove the proposal id from the array
                     setSelectedProps({
-                      round: Number(roundId),
+                      round: Number(round.id),
                       votes: (selectedProps.votes || []).filter(vote => vote !== proposal.snapshotId),
                     });
                   }
@@ -198,6 +207,20 @@ function GrantProposalCard({
           )}
         </Votes>
       )}
+    </>
+  );
+
+  if (round.scholarship) {
+    return (
+      <ScholarshipCard hasPadding={true} className={highlighted ? 'selected' : ''}>
+        {styledCardContents}
+      </ScholarshipCard>
+    );
+  }
+
+  return (
+    <StyledCard hasPadding={true} className={highlighted ? 'selected' : ''}>
+      {styledCardContents}
     </StyledCard>
   );
 }
