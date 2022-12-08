@@ -59,7 +59,7 @@ export type Grant = {
   proposer: string;
   roundId: number;
   title: string;
-  description: string;
+  description?: string;
   fullText: string;
   createdAt: Date;
   updatedAt: Date;

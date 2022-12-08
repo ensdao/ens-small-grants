@@ -35,7 +35,6 @@ const Description = styled(Heading)(
 
 const TitleContainer = styled.div(
   ({ theme }) => css`
-    grid-area: title;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
@@ -46,35 +45,40 @@ const TitleContainer = styled.div(
 
 const ContentGrid = styled.div(
   ({ theme }) => css`
+    width: 100%;
     display: grid;
-    grid-template-columns: 1fr;
-    grid-template-areas: 'title' 'profile' 'votes' 'content';
-    justify-items: start;
     gap: ${theme.space['4']};
 
-    .profile {
-      grid-area: profile;
+    & > div:first-child {
+      display: grid;
+      gap: ${theme.space['6']};
+
+      ${mq.lg.min(css`
+        gap: ${theme.space['8']};
+      `)}
     }
 
     ${mq.lg.min(css`
-      max-width: 100%;
       grid-template-columns: 4fr minmax(${theme.space['72']}, 1fr);
-      row-gap: ${theme.space['8']};
-      column-gap: ${theme.space['24']};
-      grid-auto-rows: min-content;
-      grid-template-areas:
-        'title votes'
-        'profile votes'
-        'content votes'
-        '. votes'
-        '. votes';
+      gap: ${theme.space['16']};
     `)}
   `
 );
 
+const OnlyMobile = styled.div`
+  ${mq.lg.min(css`
+    display: none;
+  `)}
+`;
+
+const OnlyDesktop = styled.div`
+  ${mq.lg.max(css`
+    display: none;
+  `)}
+`;
+
 const MarkdownWrapper = styled.div(
   ({ theme }) => css`
-    grid-area: content;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
@@ -143,6 +147,7 @@ const ProfileWrapper = styled(Link)(
     display: flex;
     flex-direction: row;
     align-items: center;
+    width: fit-content;
 
     min-width: ${theme.space['52']};
     padding: ${theme.space['2']};
@@ -190,41 +195,59 @@ function Proposal() {
     <>
       <BackButtonWithSpacing to={`/rounds/${roundId}`} />
       <ContentGrid>
-        <TitleContainer>
-          <Title>{grant.title}</Title>
-          <Description>{grant.description}</Description>
-        </TitleContainer>
-        <ProfileWrapper to={`/profile/${grant.proposer}`}>
-          <Profile address={grant.proposer} subtitle={`${getTimeDifferenceString(grant.createdAt, new Date())} ago`} />
-        </ProfileWrapper>
-        <VoteSection round={round} proposal={grant} />
-        <MarkdownWrapper>
-          <ReactMarkdown
-            components={{
-              h1: ({ children }) => <Typography as="h1">{children}</Typography>,
-              h2: ({ children }) => <Typography as="h2">{children}</Typography>,
-              h3: ({ children }) => <Typography as="h3">{children}</Typography>,
-              h4: ({ children }) => <Typography as="h4">{children}</Typography>,
-              h5: ({ children }) => <Typography as="h5">{children}</Typography>,
-              h6: ({ children }) => <Typography as="h6">{children}</Typography>,
-              p: ({ children }) => <Typography as="p">{children}</Typography>,
-              a: ({ children, href }) => (
-                <a href={href} target="_blank" rel="noreferrer">
-                  {children}
-                </a>
-              ),
-            }}
-            remarkPlugins={[remarkGfm]}
-          >
-            {grant.fullText}
-          </ReactMarkdown>
-        </MarkdownWrapper>
-        {!grandIdsLoading && (
-          <ProposalNavigator>
-            {previousGrantId && <BackButton to={`/rounds/${round.id}/proposals/${previousGrantId}`} text="Previous" />}
-            {nextGrantId && <BackButton to={`/rounds/${round.id}/proposals/${nextGrantId}`} text="Next" reverse />}
-          </ProposalNavigator>
-        )}
+        <div>
+          <TitleContainer>
+            <Title>{grant.title}</Title>
+            {grant.description && <Description>{grant.description}</Description>}
+          </TitleContainer>
+          {!round.scholarship && (
+            <ProfileWrapper to={`/profile/${grant.proposer}`}>
+              <Profile
+                address={grant.proposer}
+                subtitle={`${getTimeDifferenceString(grant.createdAt, new Date())} ago`}
+              />
+            </ProfileWrapper>
+          )}
+
+          {/* apply onlyMobile styles */}
+          <OnlyMobile>
+            <VoteSection round={round} proposal={grant} />
+          </OnlyMobile>
+
+          <MarkdownWrapper>
+            <ReactMarkdown
+              components={{
+                h1: ({ children }) => <Typography as="h1">{children}</Typography>,
+                h2: ({ children }) => <Typography as="h2">{children}</Typography>,
+                h3: ({ children }) => <Typography as="h3">{children}</Typography>,
+                h4: ({ children }) => <Typography as="h4">{children}</Typography>,
+                h5: ({ children }) => <Typography as="h5">{children}</Typography>,
+                h6: ({ children }) => <Typography as="h6">{children}</Typography>,
+                p: ({ children }) => <Typography as="p">{children}</Typography>,
+                a: ({ children, href }) => (
+                  <a href={href} target="_blank" rel="noreferrer">
+                    {children}
+                  </a>
+                ),
+              }}
+              remarkPlugins={[remarkGfm]}
+            >
+              {grant.fullText}
+            </ReactMarkdown>
+          </MarkdownWrapper>
+          {!grandIdsLoading && (
+            <ProposalNavigator>
+              {previousGrantId && (
+                <BackButton to={`/rounds/${round.id}/proposals/${previousGrantId}`} text="Previous" />
+              )}
+              {nextGrantId && <BackButton to={`/rounds/${round.id}/proposals/${nextGrantId}`} text="Next" reverse />}
+            </ProposalNavigator>
+          )}
+        </div>
+
+        <OnlyDesktop>
+          <VoteSection round={round} proposal={grant} />
+        </OnlyDesktop>
       </ContentGrid>
       <div style={{ flexGrow: 1 }} />
     </>

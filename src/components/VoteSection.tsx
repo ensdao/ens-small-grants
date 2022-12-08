@@ -213,7 +213,6 @@ const StyledCard = styled(Card)(
   () => css`
     width: 100%;
     height: min-content;
-    grid-area: votes;
   `
 );
 
