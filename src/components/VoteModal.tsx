@@ -94,6 +94,17 @@ function VoteModal({ open, onClose, grantIds, proposalId, address }: VoteModalPr
               </Typography>
               <Typography>Voting again will override your previous vote.</Typography>
             </>
+          ) : error ? (
+            <a
+              href={`https://snapshot.org/#/small-grants.eth/proposal/${proposalId}`}
+              target="_blank"
+              rel="noreferrer"
+              style={{
+                color: lightTheme.colors.accent,
+              }}
+            >
+              Vote on Snapshot directly
+            </a>
           ) : (
             `You are about to vote for ${grantIds.length > 1 ? 'these proposals' : 'this proposal'}, please confirm the
           details below.`
