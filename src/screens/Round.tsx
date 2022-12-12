@@ -13,7 +13,7 @@ import { formatFundingPerWinner, getTimeDifferenceString } from '../utils';
 const Container = styled.div(
   ({ scholarship }: { scholarship?: boolean }) => css`
     width: 100%;
-    max-width: ${scholarship ? '60rem' : '100%'};
+    max-width: ${scholarship ? '65rem' : '100%'};
   `
 );
 

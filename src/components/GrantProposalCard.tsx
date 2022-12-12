@@ -68,6 +68,7 @@ const ScholarshipCard = styled.div(
     padding-right: 1rem;
     border: 1px solid ${theme.colors.borderSecondary};
     transition: all 0.15s ease-in-out;
+    gap: ${theme.space['2']};
 
     &:hover {
       background-color: ${theme.colors.backgroundTertiary};
@@ -88,6 +89,7 @@ export const Title = styled(Typography)(
     display: -webkit-box;
     -webkit-line-clamp: 1;
     -webkit-box-orient: vertical;
+    word-break: break-word;
   `
 );
 
@@ -161,22 +163,18 @@ const ScholarshipCardWrapper = styled(Link)`
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  padding: 1rem;
+  padding: 1rem 0 1rem 1rem;
   width: 100%;
 `;
 
 const AvatarWrapper = styled.div(
   ({ theme }) => css`
     width: ${theme.space['12']};
+    min-width: ${theme.space['12']};
     height: ${theme.space['12']};
     border-radius: ${theme.radii.full};
     overflow: hidden;
-    background: linear-gradient(
-      330.4deg,
-      rgb(68, 188, 240) 4.54%,
-      rgb(114, 152, 248) 59.2%,
-      rgb(160, 153, 255) 148.85%
-    );
+    background: ${theme.colors.gradients.blue};
     position: relative;
 
     img {
@@ -237,7 +235,7 @@ function GrantProposalCard({
 
       {round.scholarship && (
         <ScholarshipCardWrapper to={to}>
-          <AvatarWrapper>{ensAvatar && <img src={ensAvatar} alt="hi" />}</AvatarWrapper>
+          <AvatarWrapper>{ensAvatar && <img src={ensAvatar} alt="" />}</AvatarWrapper>
           <NameVotes>
             <Title>{proposal.title}</Title>
             {votingStarted && <span>{voteCountFormatter.format(proposal.voteCount!)} votes</span>}
@@ -292,7 +290,7 @@ function GrantProposalCard({
   }
 
   return (
-    <StyledCard hasPadding={true} className={highlighted ? 'selected' : ''}>
+    <StyledCard hasPadding className={highlighted ? 'selected' : ''}>
       {styledCardContents}
     </StyledCard>
   );

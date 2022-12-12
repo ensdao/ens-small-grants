@@ -53,6 +53,9 @@ function VoteModal({ open, onClose, grantIds, proposalId, address }: VoteModalPr
         setVoted(true);
       })
       .catch(error_ => {
+        // eslint-disable-next-line no-console
+        console.error(error_);
+
         if (error_.error_description) {
           setError(`Snapshot error: ${error_.error_description}`);
         } else {
