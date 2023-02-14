@@ -196,7 +196,7 @@ export function CreateProposal() {
           </DialogDescription>
           <DisplayItems>
             <DisplayItem label="Title" value={dialogData.title} />
-            <DisplayItem label="Twitter" value={dialogData.twitter} />
+            <DisplayItem label="Website" value={dialogData.twitter} />
             {dialogData.payoutAddress && <DisplayItem label="Payout Address" value={dialogData.payoutAddress} />}
             <DisplayItem label="TL;DR" value={formattedDescription} />
             <DisplayItem label="Description" value={`${dialogData.fullText.slice(0, 30).trim()}...`} />
@@ -239,20 +239,34 @@ export function CreateProposal() {
               validated={getFieldState('title', formState).isDirty}
               required
               placeholder="ENS Spaceship"
-              {...register('title', { required: true })}
+              {...register('title', {
+                required: true,
+                validate: value => (value.length <= 50 ? undefined : 'Please keep your title under 50 characters'),
+              })}
+              error={getFieldState('title', formState).error?.message}
             />
             <Input
-              label="Twitter"
+              label="Tagline"
+              showDot
+              id="shortDescription"
+              required
+              description={<InputDescription>Your project in 100 characters or less</InputDescription>}
+              placeholder="Taking ENS users to Mars and back"
+              validated={getFieldState('shortDescription', formState).isDirty}
+              {...register('shortDescription', {
+                required: true,
+                validate: value => (value.length <= 100 ? undefined : 'Please keep your tagline under 100 characters'),
+              })}
+              error={getFieldState('shortDescription', formState).error?.message}
+            />
+            <Input
+              label="Website"
               showDot
               id="twitter"
-              description={
-                <InputDescription>
-                  The best Twitter account to reach you at in case you win. This will not be public
-                </InputDescription>
-              }
+              description={<InputDescription>Your project’s website or Twitter profile</InputDescription>}
               validated={getFieldState('twitter', formState).isDirty}
               required
-              placeholder="ens_dao"
+              placeholder="https://ens.domains/"
               {...register('twitter', { required: true })}
             />
             <Input
@@ -267,16 +281,6 @@ export function CreateProposal() {
               validated={getFieldState('payoutAddress', formState).isDirty}
               placeholder="ens.eth"
               {...register('payoutAddress', { required: false })}
-            />
-            <Input
-              label="TL;DR"
-              showDot
-              id="shortDescription"
-              required
-              description={<InputDescription>A short, succinct summary of your proposal</InputDescription>}
-              placeholder="Taking ENS users to Mars and back, literally!"
-              validated={getFieldState('shortDescription', formState).isDirty}
-              {...register('shortDescription', { required: true })}
             />
             <Textarea
               label="Description"
