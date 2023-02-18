@@ -2,6 +2,7 @@ import { mq, Heading, Typography } from '@ensdomains/thorin';
 import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
 import styled, { css } from 'styled-components';
 
+import OpenGraphElements from '../components/OpenGraphElements';
 import { cardStyles } from '../components/atoms';
 
 const PageTitle = styled(Heading)(
@@ -189,6 +190,8 @@ const content: Content[] = [
 export default function Faq() {
   return (
     <>
+      <OpenGraphElements title="Frequently Asked Questions - ENS Small Grants" />
+
       <PageTitle level="2">Frequent Asked Questions</PageTitle>
 
       <FaqsWrapper>

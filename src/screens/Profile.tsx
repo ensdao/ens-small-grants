@@ -6,6 +6,7 @@ import { useEnsAvatar, useEnsName } from 'wagmi';
 import TwitterIcon from '../assets/twitter.svg';
 import { Description, Title } from '../components/GrantProposalCard';
 import { GrantsContainer } from '../components/GrantRoundSection';
+import OpenGraphElements from '../components/OpenGraphElements';
 import { cardStyles, HeadingContainer } from '../components/atoms';
 import { useRounds, useGrantsByUser, useEnsRecords, useSnapshotVotes } from '../hooks';
 import type { Grant } from '../types';
@@ -110,14 +111,18 @@ export default function Profile() {
   const twitter = ensRecords?.twitter;
   const twitterHandle = twitter?.includes('twitter.com/') ? twitter.split('twitter.com/')[1] : twitter;
 
+  const displayName = ensName || `${address.slice(0, 6)}..${address.slice(36, 40)}`;
+
   return (
     <>
+      <OpenGraphElements title={`${displayName} - ENS Small Grants`} />
+
       <HeadingContainer>
         <AvatarWrapper>
           <Avatar src={ensAvatar || undefined} label={ensName || 'label'} />
         </AvatarWrapper>
         <HeadingWrapper>
-          <Heading title={address}>{ensName || `${address.slice(0, 6)}..${address.slice(36, 40)}`}</Heading>
+          <Heading title={address}>{displayName}</Heading>
           {twitter && (
             <Icon>
               <a
