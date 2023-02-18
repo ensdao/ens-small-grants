@@ -6,6 +6,7 @@ import styled, { css } from 'styled-components';
 
 import BackButton, { BackButtonWithSpacing } from '../components/BackButton';
 import { GrantsFilterOptions } from '../components/GrantRoundSection';
+import OpenGraphElements from '../components/OpenGraphElements';
 import Profile from '../components/Profile';
 import VoteSection from '../components/VoteSection';
 import { useGrantIds, useGrants, useRounds, useStorage } from '../hooks';
@@ -193,6 +194,8 @@ function Proposal() {
 
   return (
     <>
+      <OpenGraphElements title={`${grant.title}`} description={grant.description} />
+
       <BackButtonWithSpacing to={`/rounds/${roundId}`} />
       <ContentGrid>
         <div>
