@@ -4,6 +4,7 @@ import styled, { css } from 'styled-components';
 
 import { BackButtonWithSpacing } from '../components/BackButton';
 import { EmptyHouse } from '../components/HouseCard';
+import OpenGraphElements from '../components/OpenGraphElements';
 import RoundCard from '../components/RoundCard';
 import { useHouses, useRounds } from '../hooks';
 
@@ -48,6 +49,8 @@ const Rounds = () => {
 
   return (
     <>
+      <OpenGraphElements title={`All Rounds - ENS Small Grants`} />
+
       <BackButtonWithSpacing to={house ? `/${house.slug}` : '/'} title={title} />
 
       {filteredRounds.length === 0 && (

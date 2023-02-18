@@ -6,6 +6,7 @@ import styled, { css } from 'styled-components';
 import { BackButtonWithSpacing } from '../components/BackButton';
 import { BannerContainer } from '../components/BannerContainer';
 import GrantRoundSection from '../components/GrantRoundSection';
+import OpenGraphElements from '../components/OpenGraphElements';
 import { useRounds } from '../hooks';
 import { ClickHandler } from '../types';
 import { formatFundingPerWinner, getTimeDifferenceString } from '../utils';
@@ -197,6 +198,8 @@ export const Round = () => {
 
   return (
     <>
+      <OpenGraphElements title={`${round.title} (Round ${round.round})`} description={round.description} />
+
       <Container scholarship={round.scholarship}>
         <BackButtonWithSpacing to="/" />
         {showHelper && <Helper type="info">Proposal submission recieved!</Helper>}

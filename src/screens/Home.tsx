@@ -2,6 +2,7 @@ import { Heading, Spinner } from '@ensdomains/thorin';
 
 import Anchor from '../components/Anchor';
 import { EmptyHouse } from '../components/HouseCard';
+import OpenGraphElements from '../components/OpenGraphElements';
 import RoundCard from '../components/RoundCard';
 import {
   ActiveTypography,
@@ -34,6 +35,8 @@ function Home() {
 
   return (
     <>
+      <OpenGraphElements />
+
       <HeadingContainer>
         <Heading>ENS Small Grants</Heading>
         <Subheading>
