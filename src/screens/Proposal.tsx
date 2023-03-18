@@ -115,7 +115,8 @@ const MarkdownWrapper = styled.div(
       font-size: ${theme.fontSizes.headingTwo};
     }
 
-    ul {
+    ul,
+    ol {
       list-style: inside;
       margin-inline-start: 1.5rem;
       line-height: ${theme.lineHeights['1.625']};
@@ -123,6 +124,10 @@ const MarkdownWrapper = styled.div(
       ${mq.md.min(css`
         list-style: disc;
       `)}
+    }
+
+    ol {
+      list-style: decimal;
     }
 
     a {
