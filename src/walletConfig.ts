@@ -1,8 +1,13 @@
+import { JsonRpcProvider } from '@ethersproject/providers';
 import { getDefaultWallets } from '@rainbow-me/rainbowkit';
 import { QueryClient } from '@tanstack/react-query';
 import { chain, configureChains, createClient } from 'wagmi';
 import { alchemyProvider } from 'wagmi/providers/alchemy';
 import { publicProvider } from 'wagmi/providers/public';
+
+export const jsonProvider = new JsonRpcProvider(
+  `https://eth-mainnet.g.alchemy.com/v2/${import.meta.env.VITE_ALCHEMY_API_KEY}`
+);
 
 export const { chains, provider } = configureChains(
   [chain.mainnet],
