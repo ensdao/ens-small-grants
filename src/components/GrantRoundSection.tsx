@@ -131,7 +131,7 @@ function GrantRoundSection({ round, createProposalHref, createProposalClick }: G
   // Batch resolve ENS names here
   const addressesOfGrantees = grants.map(grant => grant.proposer);
 
-  const ensProfiles = useFetch<string[]>(
+  const ensProfiles = useFetch<{ name: string; address: string }[]>(
     addressesOfGrantees.length > 0 ? 'https://api.gregskril.com/ens-resolve' : undefined,
     {
       method: 'POST',
@@ -208,7 +208,10 @@ function GrantRoundSection({ round, createProposalHref, createProposalClick }: G
               votingStarted={round.votingStart < new Date()}
               inProgress={round.votingEnd > new Date()}
               key={g.id}
-              ensName={ensProfiles.data?.[addressesOfGrantees.indexOf(g.proposer)]}
+              // match the grant proposer with the ENS name's address
+              ensName={
+                ensProfiles.data?.find(profile => profile.address.toLowerCase() === g.proposer.toLowerCase())?.name
+              }
               highlighted={
                 // In the voting stage, highlight the selected grants
                 // In the completed stage, highlight the winning grants
