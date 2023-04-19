@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import styled, { css } from 'styled-components';
 import { useAccount } from 'wagmi';
 
-import { useGrants, useStorage } from '../hooks';
+import { useFetch, useGrants, useStorage } from '../hooks';
 import type { ClickHandler, Grant, Round, SelectedPropVotes } from '../types';
 import { getRoundStatus } from '../utils';
 import { BannerContainer } from './BannerContainer';
@@ -108,7 +108,7 @@ function GrantRoundSection({ round, createProposalHref, createProposalClick }: G
 
     setItem('grants-filter', filter || 'random', 'session');
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [_grants, filter]);
+  }, [filter]);
 
   // Keep track of the selected prop ids for approval voting
   const [selectedProps, setSelectedProps] = useState<SelectedPropVotes>(
@@ -127,6 +127,20 @@ function GrantRoundSection({ round, createProposalHref, createProposalClick }: G
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedProps, round]);
+
+  // Batch resolve ENS names here
+  const addressesOfGrantees = grants.map(grant => grant.proposer);
+
+  const ensProfiles = useFetch<{ name: string; address: string }[]>(
+    addressesOfGrantees.length > 0 ? 'https://api.gregskril.com/ens-resolve' : undefined,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ addresses: addressesOfGrantees }),
+    }
+  );
 
   if (isLoading || (_grants && _grants.length > grants.length)) {
     return <Spinner size="large" />;
@@ -191,9 +205,14 @@ function GrantRoundSection({ round, createProposalHref, createProposalClick }: G
               selectedProps={selectedProps || { round: round.id, votes: [] }}
               setSelectedProps={setSelectedProps}
               round={round}
+              connectedAccount={address}
               votingStarted={round.votingStart < new Date()}
               inProgress={round.votingEnd > new Date()}
               key={g.id}
+              // match the grant proposer with the ENS name's address
+              ensName={
+                ensProfiles.data?.find(profile => profile.address.toLowerCase() === g.proposer.toLowerCase())?.name
+              }
               highlighted={
                 // In the voting stage, highlight the selected grants
                 // In the completed stage, highlight the winning grants

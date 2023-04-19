@@ -1,17 +1,19 @@
 import { Checkbox, mq, Typography } from '@ensdomains/thorin';
 import { Link } from 'react-router-dom';
 import styled, { css, DefaultTheme } from 'styled-components';
-import { useAccount, useEnsAddress, useEnsAvatar } from 'wagmi';
+import { useEnsAddress, useEnsAvatar } from 'wagmi';
 
 import { useStorage } from '../hooks';
 import { Grant, Round, SelectedPropVotes } from '../types';
 import { getTimeDifferenceString, voteCountFormatter } from '../utils';
-import Profile from './Profile';
+import { StaticProfile } from './Profile';
 import { cardStyles } from './atoms';
 
 export type GrantProposalCardProps = {
   round: Round;
   proposal: Grant;
+  connectedAccount?: string;
+  ensName?: string;
   selectedProps: SelectedPropVotes;
   setSelectedProps: (props: SelectedPropVotes) => void;
   votingStarted: boolean;
@@ -199,13 +201,14 @@ const NameVotes = styled.div(
 function GrantProposalCard({
   round,
   proposal,
+  connectedAccount: address,
+  ensName,
   selectedProps,
   setSelectedProps,
   votingStarted,
   inProgress,
   highlighted,
 }: GrantProposalCardProps) {
-  const { address } = useAccount();
   const { data: ensAddress } = useEnsAddress({ name: round.scholarship ? proposal.title : undefined });
   const { data: ensAvatar } = useEnsAvatar({ addressOrName: ensAddress || undefined });
   const { removeItem } = useStorage();
@@ -216,7 +219,8 @@ function GrantProposalCard({
       {!round.scholarship && (
         <Link to={`/profile/${proposal.proposer}`}>
           <ProfileWrapper>
-            <Profile
+            <StaticProfile
+              name={ensName}
               address={proposal.proposer}
               subtitle={`${getTimeDifferenceString(proposal.createdAt, new Date())} ago`}
             />

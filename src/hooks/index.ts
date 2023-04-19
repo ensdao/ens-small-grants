@@ -9,3 +9,4 @@ export * from './useSnapshotSpace';
 export * from './useLocalStorage';
 export * from './useEnsRecords';
 export * from './useSnapshotVotes';
+export * from './useFetch';
