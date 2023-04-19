@@ -1,8 +1,9 @@
-import { Avatar, Typography } from '@ensdomains/thorin';
+import { Typography } from '@ensdomains/thorin';
 import styled, { css } from 'styled-components';
 import { useEnsAvatar, useEnsName } from 'wagmi';
 
 import { shortenAddress } from '../utils';
+import { Avatar } from './Avatar';
 
 const AvatarWrapper = styled.div(
   ({ theme }) => css`

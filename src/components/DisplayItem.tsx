@@ -1,8 +1,9 @@
-import { Avatar, Typography } from '@ensdomains/thorin';
+import { Typography } from '@ensdomains/thorin';
 import { useMemo } from 'react';
 import styled, { css } from 'styled-components';
 import { useEnsAvatar, useEnsName } from 'wagmi';
 
+import { Avatar } from '../components/Avatar';
 import { shortenAddress } from '../utils';
 
 const DisplayItemContainer = styled.div<{ $shrink?: boolean; $fade?: boolean }>(

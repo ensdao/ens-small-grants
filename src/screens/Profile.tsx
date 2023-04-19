@@ -1,9 +1,10 @@
-import { mq, Avatar, Heading, Spinner, Tag } from '@ensdomains/thorin';
+import { mq, Heading, Spinner, Tag } from '@ensdomains/thorin';
 import { useParams } from 'react-router-dom';
 import styled, { css } from 'styled-components';
 import { useEnsAvatar, useEnsName } from 'wagmi';
 
 import TwitterIcon from '../assets/twitter.svg';
+import { Avatar } from '../components/Avatar';
 import { Description, Title } from '../components/GrantProposalCard';
 import { GrantsContainer } from '../components/GrantRoundSection';
 import OpenGraphElements from '../components/OpenGraphElements';
