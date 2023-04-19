@@ -123,12 +123,3 @@ export const dateToString = (date: Date): string => {
     hour12: true,
   }).format(date);
 };
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function breakIntoChunks(size: number, array: any[]) {
-  const chunks = [];
-  for (let i = 0; i < array.length; i += size) {
-    chunks.push(array.slice(i, i + size));
-  }
-  return chunks;
-}
