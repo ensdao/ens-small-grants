@@ -130,16 +130,17 @@ function GrantRoundSection({ round, createProposalHref, createProposalClick }: G
 
   // Batch resolve ENS names here
   const addressesOfGrantees = grants.map(grant => grant.proposer);
-  const ensProfiles = useFetch<string[]>('https://api.gregskril.com/ens-resolve', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ addresses: addressesOfGrantees }),
-  });
 
-  // eslint-disable-next-line no-console
-  console.log(ensProfiles);
+  const ensProfiles = useFetch<string[]>(
+    addressesOfGrantees.length > 0 ? 'https://api.gregskril.com/ens-resolve' : undefined,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ addresses: addressesOfGrantees }),
+    }
+  );
 
   if (isLoading || (_grants && _grants.length > grants.length)) {
     return <Spinner size="large" />;
