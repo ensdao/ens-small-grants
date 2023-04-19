@@ -108,7 +108,7 @@ function GrantRoundSection({ round, createProposalHref, createProposalClick }: G
 
     setItem('grants-filter', filter || 'random', 'session');
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [_grants, filter]);
+  }, [filter]);
 
   // Keep track of the selected prop ids for approval voting
   const [selectedProps, setSelectedProps] = useState<SelectedPropVotes>(
