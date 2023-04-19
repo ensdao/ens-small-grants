@@ -205,6 +205,7 @@ function GrantRoundSection({ round, createProposalHref, createProposalClick }: G
               selectedProps={selectedProps || { round: round.id, votes: [] }}
               setSelectedProps={setSelectedProps}
               round={round}
+              connectedAccount={address}
               votingStarted={round.votingStart < new Date()}
               inProgress={round.votingEnd > new Date()}
               key={g.id}
