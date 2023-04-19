@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import styled, { css } from 'styled-components';
 import { useAccount } from 'wagmi';
 
-import { useGrants, useStorage } from '../hooks';
+import { useFetch, useGrants, useStorage } from '../hooks';
 import type { ClickHandler, Grant, Round, SelectedPropVotes } from '../types';
 import { getRoundStatus } from '../utils';
 import { BannerContainer } from './BannerContainer';
@@ -128,6 +128,19 @@ function GrantRoundSection({ round, createProposalHref, createProposalClick }: G
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedProps, round]);
 
+  // Batch resolve ENS names here
+  const addressesOfGrantees = grants.map(grant => grant.proposer);
+  const ensProfiles = useFetch<string[]>('https://api.gregskril.com/ens-resolve', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ addresses: addressesOfGrantees }),
+  });
+
+  // eslint-disable-next-line no-console
+  console.log(ensProfiles);
+
   if (isLoading || (_grants && _grants.length > grants.length)) {
     return <Spinner size="large" />;
   }
@@ -194,6 +207,7 @@ function GrantRoundSection({ round, createProposalHref, createProposalClick }: G
               votingStarted={round.votingStart < new Date()}
               inProgress={round.votingEnd > new Date()}
               key={g.id}
+              ensName={ensProfiles.data?.[addressesOfGrantees.indexOf(g.proposer)]}
               highlighted={
                 // In the voting stage, highlight the selected grants
                 // In the completed stage, highlight the winning grants

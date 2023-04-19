@@ -15,7 +15,6 @@
     "postinstallDev": "husky install"
   },
   "dependencies": {
-    "@ensdomains/ensjs": "^3.0.0-alpha.59",
     "@ensdomains/thorin": "^0.6.12",
     "@rainbow-me/rainbowkit": "^0.5.0",
     "@snapshot-labs/snapshot.js": "^0.4.7",
