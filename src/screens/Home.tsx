@@ -1,6 +1,7 @@
 import { Heading, Spinner } from '@ensdomains/thorin';
 
 import Anchor from '../components/Anchor';
+import { Highlights } from '../components/Highlights';
 import { EmptyHouse } from '../components/HouseCard';
 import OpenGraphElements from '../components/OpenGraphElements';
 import RoundCard from '../components/RoundCard';
@@ -44,6 +45,9 @@ function Home() {
           Ecosystem Working Groups.
         </Subheading>
       </HeadingContainer>
+
+      <Highlights />
+
       <RoundItemsOuter>
         {activeRounds.length > 1 && (
           <SectionHeading className="desktop-only">
