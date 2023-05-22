@@ -4,8 +4,9 @@ import { Link } from 'react-router-dom';
 import styled, { css } from 'styled-components';
 import { useAccount } from 'wagmi';
 
-import { useFetch, useStorage } from '../hooks';
+import { useStorage } from '../hooks';
 import { useSnapshotProposal } from '../hooks';
+import { useEnsNames } from '../hooks/useEnsNames';
 import type { Grant, Round, SelectedPropVotes, SnapshotVote } from '../types';
 import { voteCountFormatter } from '../utils';
 import { StaticProfile } from './Profile';
@@ -125,17 +126,7 @@ function VoteInProgressSection({ round, snapshotProposalId, proposal }: VoteInPr
   }, [round.id, selectedProps]);
 
   const addressesOfVoters = snapshotGrant?.voteSamples.map(voter => voter.voter).slice(0, 5);
-
-  const ensProfiles = useFetch<{ name: string; address: string }[] | undefined>(
-    addressesOfVoters && addressesOfVoters.length > 0 ? 'https://api.gregskril.com/ens-resolve' : undefined,
-    {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ addresses: addressesOfVoters }),
-    }
-  );
+  const ensProfiles = useEnsNames(addressesOfVoters);
 
   if (round.votingStart > new Date()) {
     return <Typography>Voting has not started yet</Typography>;
@@ -265,17 +256,7 @@ function VotersModal({
   voters: SnapshotVote[];
 }) {
   const addressesOfVoters = voters.map(voter => voter.voter);
-
-  const ensProfiles = useFetch<{ name: string; address: string }[] | undefined>(
-    addressesOfVoters.length > 0 ? 'https://api.gregskril.com/ens-resolve' : undefined,
-    {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ addresses: addressesOfVoters }),
-    }
-  );
+  const ensProfiles = useEnsNames(addressesOfVoters);
 
   return (
     <Dialog open={isOpen} variant="blank" onDismiss={() => setIsOpen(false)}>
