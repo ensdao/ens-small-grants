@@ -112,3 +112,6 @@ docs/api
 # Hosting
 .netlify
 .vercel
+
+.next
+next-env.d.ts
