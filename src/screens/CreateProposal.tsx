@@ -259,7 +259,6 @@ export function CreateProposal() {
               showDot
               id="shortDescription"
               required
-              description={<InputDescription>Your project in 100 characters or less</InputDescription>}
               placeholder="Taking ENS users to Mars and back"
               validated={getFieldState('shortDescription', formState).isDirty}
               {...register('shortDescription', {
@@ -282,12 +281,8 @@ export function CreateProposal() {
               label="Payout Address"
               showDot
               id="payoutAddress"
-              description={
-                <InputDescription>
-                  The address or ENS name where the funds will be sent if you win. This will not be public.
-                </InputDescription>
-              }
               validated={getFieldState('payoutAddress', formState).isDirty}
+              required
               placeholder="ens.eth"
               {...register('payoutAddress', { required: false })}
             />
