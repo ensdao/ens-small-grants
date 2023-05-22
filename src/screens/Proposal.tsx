@@ -1,4 +1,5 @@
-import { Heading, mq, Spinner, Typography } from '@ensdomains/thorin';
+import { Button, Heading, mq, Spinner, Typography } from '@ensdomains/thorin';
+import { useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { Link, useParams } from 'react-router-dom';
 import remarkGfm from 'remark-gfm';
@@ -15,6 +16,8 @@ import { getTimeDifferenceString } from '../utils';
 
 const Title = styled(Heading)(
   ({ theme }) => css`
+    line-height: 1.1;
+
     font-size: ${theme.fontSizes.headingTwo};
     ${mq.md.min(css`
       font-size: ${theme.fontSizes.headingOne};
@@ -41,6 +44,10 @@ const TitleContainer = styled.div(
     align-items: flex-start;
     justify-content: center;
     gap: ${theme.space['2']};
+
+    ${mq.md.min(css`
+      gap: ${theme.space['3']};
+    `)}
   `
 );
 
@@ -164,6 +171,25 @@ const ProfileWrapper = styled(Link)(
   `
 );
 
+const ButtonsWrapper = styled.div(
+  ({ theme }) => css`
+    display: flex;
+    align-items: flex-start;
+    gap: ${theme.space['3']};
+    flex-direction: column-reverse;
+
+    ${mq.sm.min(css`
+      gap: ${theme.space['4']};
+      align-items: center;
+      flex-direction: row;
+    `)}
+
+    .visit-website {
+      width: fit-content;
+    }
+  `
+);
+
 function Proposal() {
   const { id, roundId } = useParams<{ id: string; roundId: string }>();
   const { round, isLoading: roundLoading } = useRounds(roundId!);
@@ -193,6 +219,11 @@ function Proposal() {
     nextGrantId = grantIds?.[currentIndex! + 1]?.id;
   }
 
+  // Scroll to the top of the page
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   if (isLoading || roundLoading || !grant || !round) {
     return <Spinner size="large" />;
   }
@@ -209,12 +240,26 @@ function Proposal() {
             {grant.description && <Description>{grant.description}</Description>}
           </TitleContainer>
           {!round.scholarship && (
-            <ProfileWrapper to={`/profile/${grant.proposer}`}>
-              <Profile
-                address={grant.proposer}
-                subtitle={`${getTimeDifferenceString(grant.createdAt, new Date())} ago`}
-              />
-            </ProfileWrapper>
+            <ButtonsWrapper>
+              <ProfileWrapper to={`/profile/${grant.proposer}`}>
+                <Profile
+                  address={grant.proposer}
+                  subtitle={`${getTimeDifferenceString(grant.createdAt, new Date())} ago`}
+                />
+              </ProfileWrapper>
+              {grant.twitter && (
+                <Button
+                  className="visit-website"
+                  as="a"
+                  target="_blank"
+                  rel="noopener"
+                  href={grant.twitter}
+                  size="small"
+                >
+                  Visit Website
+                </Button>
+              )}
+            </ButtonsWrapper>
           )}
 
           {/* apply onlyMobile styles */}
@@ -231,7 +276,11 @@ function Proposal() {
                 h4: ({ children }) => <Typography as="h4">{children}</Typography>,
                 h5: ({ children }) => <Typography as="h5">{children}</Typography>,
                 h6: ({ children }) => <Typography as="h6">{children}</Typography>,
-                p: ({ children }) => <Typography as="p">{children}</Typography>,
+                p: ({ children }) => (
+                  <Typography as="p" color="textSecondary">
+                    {children}
+                  </Typography>
+                ),
                 a: ({ children, href }) => (
                   <a href={href} target="_blank" rel="noreferrer">
                     {children}
