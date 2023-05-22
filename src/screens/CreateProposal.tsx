@@ -1,4 +1,4 @@
-import { Button, Dialog, FieldSet, Helper, Input, mq, Spinner, Textarea, Typography } from '@ensdomains/thorin';
+import { Button, Dialog, FieldSet, Helper, Input, mq, Select, Spinner, Textarea, Typography } from '@ensdomains/thorin';
 import { useMutation } from '@tanstack/react-query';
 import { useCallback, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
@@ -231,11 +231,20 @@ export function CreateProposal() {
         )}
         <form style={{ width: '100%' }} onSubmit={handleSubmit(onSubmit)}>
           <FieldSet legend="Submit a Proposal" disabled={isFormDisabled}>
+            <Select
+              label="Round"
+              disabled
+              description={
+                <InputDescription>
+                  If your proposal fits better in another category, <a href="/">return home</a> to select another round.
+                </InputDescription>
+              }
+              options={[{ label: `${round.title} Round ${round.round}`, value: '' }]}
+            />
             <Input
               label="Title"
               showDot
               id="title"
-              description={<InputDescription>The title of your proposal</InputDescription>}
               validated={getFieldState('title', formState).isDirty}
               required
               placeholder="ENS Spaceship"
