@@ -4,11 +4,11 @@ import { Link } from 'react-router-dom';
 import styled, { css } from 'styled-components';
 import { useAccount } from 'wagmi';
 
-import { useStorage } from '../hooks';
+import { useFetch, useStorage } from '../hooks';
 import { useSnapshotProposal } from '../hooks';
 import type { Grant, Round, SelectedPropVotes, SnapshotVote } from '../types';
 import { voteCountFormatter } from '../utils';
-import Profile from './Profile';
+import { StaticProfile } from './Profile';
 import VoteModal from './VoteModal';
 import { Card, TextWithHighlight } from './atoms';
 
@@ -124,6 +124,19 @@ function VoteInProgressSection({ round, snapshotProposalId, proposal }: VoteInPr
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [round.id, selectedProps]);
 
+  const addressesOfVoters = snapshotGrant?.voteSamples.map(voter => voter.voter).slice(0, 5);
+
+  const ensProfiles = useFetch<{ name: string; address: string }[] | undefined>(
+    addressesOfVoters && addressesOfVoters.length > 0 ? 'https://api.gregskril.com/ens-resolve' : undefined,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ addresses: addressesOfVoters }),
+    }
+  );
+
   if (round.votingStart > new Date()) {
     return <Typography>Voting has not started yet</Typography>;
   }
@@ -184,7 +197,11 @@ function VoteInProgressSection({ round, snapshotProposalId, proposal }: VoteInPr
         )}
         {snapshotGrant.voteSamples.slice(0, 5).map(voter => (
           <Link to={`/profile/${voter.voter}`} key={voter.voter}>
-            <Profile address={voter.voter} subtitle={`${voteCountFormatter.format(voter.vp)} votes`} />
+            <StaticProfile
+              name={ensProfiles?.data?.find(profile => profile.address === voter.voter)?.name}
+              address={voter.voter}
+              subtitle={`${voteCountFormatter.format(voter.vp)} votes`}
+            />
           </Link>
         ))}
         {snapshotGrant.voteSamples.length > 5 && (
@@ -247,12 +264,29 @@ function VotersModal({
   setIsOpen: (props: boolean) => void;
   voters: SnapshotVote[];
 }) {
+  const addressesOfVoters = voters.map(voter => voter.voter);
+
+  const ensProfiles = useFetch<{ name: string; address: string }[] | undefined>(
+    addressesOfVoters.length > 0 ? 'https://api.gregskril.com/ens-resolve' : undefined,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ addresses: addressesOfVoters }),
+    }
+  );
+
   return (
     <Dialog open={isOpen} variant="blank" onDismiss={() => setIsOpen(false)}>
       <VotersModalContent>
         {voters.map(voter => (
           <Link to={`/profile/${voter.voter}`} key={voter.voter}>
-            <Profile address={voter.voter} subtitle={`${voteCountFormatter.format(voter.vp)} votes`} />
+            <StaticProfile
+              name={ensProfiles?.data?.find(profile => profile.address === voter.voter)?.name}
+              address={voter.voter}
+              subtitle={`${voteCountFormatter.format(voter.vp)} votes`}
+            />
           </Link>
         ))}
       </VotersModalContent>

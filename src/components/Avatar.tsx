@@ -1,11 +1,15 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
-const Wrapper = styled.div`
-  background-color: rgba(0, 0, 0, 0.05);
-  border-radius: 100rem;
-  overflow: hidden;
-  line-height: 0;
-`;
+const Wrapper = styled.div(
+  ({ theme }) => css`
+    background: ${theme.colors.gradients.blue};
+    background-color: rgba(0, 0, 0, 0.1);
+    height: 100%;
+    border-radius: 100rem;
+    overflow: hidden;
+    line-height: 0;
+  `
+);
 
 const Image = styled.img`
   height: 100%;

@@ -68,15 +68,10 @@ export function StaticProfile({
   subtitle: string;
   name: string | undefined;
 }) {
-  const { data: avatar } = useEnsAvatar({
-    addressOrName: address,
-    chainId: 1,
-  });
-
   return (
     <ProfileContainer className="profile">
       <AvatarWrapper>
-        <Avatar src={avatar || undefined} label={name || shortenAddress(address)} />
+        <Avatar src={`https://metadata.ens.domains/mainnet/avatar/${name}`} label={name || shortenAddress(address)} />
       </AvatarWrapper>
       <div>
         <NameTypography>{name || shortenAddress(address)}</NameTypography>
