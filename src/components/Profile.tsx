@@ -1,7 +1,7 @@
 import { Typography } from '@ensdomains/thorin';
 import styled, { css } from 'styled-components';
-import { useEnsAvatar, useEnsName } from 'wagmi';
 
+import { useEnsRecords } from '../hooks';
 import { shortenAddress } from '../utils';
 import { Avatar } from './Avatar';
 
@@ -36,22 +36,15 @@ const TimeTypography = styled(Typography)(
 );
 
 function Profile({ address, subtitle }: { address: string; subtitle: string }) {
-  const { data: ensName } = useEnsName({
-    address: address,
-    chainId: 1,
-  });
-  const { data: ensAvatar } = useEnsAvatar({
-    addressOrName: address,
-    chainId: 1,
-  });
+  const { ensRecords } = useEnsRecords(address);
 
   return (
     <ProfileContainer className="profile">
       <AvatarWrapper>
-        <Avatar src={ensAvatar || undefined} label={ensName || shortenAddress(address)} />
+        <Avatar src={ensRecords?.avatar || undefined} label={ensRecords?.name || shortenAddress(address)} />
       </AvatarWrapper>
       <div>
-        <NameTypography>{ensName || shortenAddress(address)}</NameTypography>
+        <NameTypography>{ensRecords?.name || shortenAddress(address)}</NameTypography>
         <TimeTypography>{subtitle}</TimeTypography>
       </div>
     </ProfileContainer>

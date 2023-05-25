@@ -99,9 +99,8 @@ export default function Profile() {
     return <Spinner size="large" color="purple" />;
   }
 
-  const twitter = ensRecords?.twitter;
+  const twitter = ensRecords?.records.twitter;
   const twitterHandle = twitter?.includes('twitter.com/') ? twitter.split('twitter.com/')[1] : twitter;
-
   const displayName = ensName || shortenAddress(address);
 
   return (
@@ -110,10 +109,7 @@ export default function Profile() {
 
       <HeadingContainer>
         <AvatarWrapper>
-          <Avatar
-            src={`https://metadata.ens.domains/mainnet/avatar/${ensName}`}
-            label={ensName || shortenAddress(address)}
-          />
+          <Avatar src={ensRecords?.avatar || undefined} label={ensName || shortenAddress(address)} />
         </AvatarWrapper>
         <HeadingWrapper>
           <Heading title={address}>{displayName}</Heading>
