@@ -144,6 +144,18 @@ const MarkdownWrapper = styled.div(
     img {
       max-width: 100%;
     }
+
+    table {
+      border: 1px solid ${theme.colors.border};
+      border-collapse: collapse;
+      width: 100%;
+    }
+
+    th,
+    td {
+      border: 1px solid ${theme.colors.border};
+      padding: ${theme.space['2']};
+    }
   `
 );
 
