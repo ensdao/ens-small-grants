@@ -190,6 +190,20 @@ const ButtonsWrapper = styled.div(
   `
 );
 
+const StyledCode = styled.div`
+  background-color: #e4e9f0;
+  padding: 0.5rem 0.75rem 0.5rem 0.375rem;
+
+  code {
+    line-height: 1.2;
+  }
+
+  ${mq.sm.max(css`
+    max-width: 92vw;
+    overflow-x: auto;
+  `)}
+`;
+
 function Proposal() {
   const { id, roundId } = useParams<{ id: string; roundId: string }>();
   const { round, isLoading: roundLoading } = useRounds(roundId!);
@@ -285,6 +299,11 @@ function Proposal() {
                   <a href={href} target="_blank" rel="noreferrer">
                     {children}
                   </a>
+                ),
+                code: ({ children }) => (
+                  <StyledCode>
+                    <code>{children}</code>
+                  </StyledCode>
                 ),
               }}
               remarkPlugins={[remarkGfm]}
