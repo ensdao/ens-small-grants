@@ -198,7 +198,7 @@ const StyledCode = styled.div`
     line-height: 1.2;
   }
 
-  ${mq.sm.max(css`
+  ${mq.md.max(css`
     max-width: 92vw;
     overflow-x: auto;
   `)}
@@ -301,8 +301,25 @@ function Proposal() {
                   </a>
                 ),
                 code: ({ children }) => (
+                  <span
+                    style={{
+                      backgroundColor: '#e4e9f0',
+                      fontFamily: 'monospace',
+                      padding: '0 0.25rem',
+                    }}
+                  >
+                    {children}
+                  </span>
+                ),
+                pre: ({ children }) => (
                   <StyledCode>
-                    <code>{children}</code>
+                    <code
+                      style={{
+                        whiteSpace: 'pre',
+                      }}
+                    >
+                      {children}
+                    </code>
                   </StyledCode>
                 ),
               }}
