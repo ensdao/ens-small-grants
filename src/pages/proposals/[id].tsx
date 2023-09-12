@@ -2,7 +2,7 @@ import { client } from '@/supabase';
 import { Heading, mq, Spinner, Typography } from '@ensdomains/thorin';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { GetStaticPropsContext } from 'next/types';
+import { GetServerSidePropsContext, GetStaticPropsContext } from 'next/types';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import styled, { css } from 'styled-components';
@@ -267,23 +267,8 @@ export default function Proposal({
   );
 }
 
-export async function getStaticPaths() {
-  const { body, error } = await client.from('grants').select('id');
-
-  if (error) {
-    throw error;
-  }
-
-  const ids = body as { id: number }[];
-  const paths = ids.map(id => ({ params: { id: String(id.id) } }));
-
-  return {
-    paths,
-    fallback: true,
-  };
-}
-
-export async function getStaticProps({ params }: GetStaticPropsContext) {
+export async function getServerSideProps(context: GetServerSidePropsContext) {
+  const { res, params } = context;
   const { id } = params as { id: string | undefined };
 
   if (!id) {
@@ -308,11 +293,13 @@ export async function getStaticProps({ params }: GetStaticPropsContext) {
 
   const roundBody = round.body[0] as RoundInDatabase;
 
+  // Cache the server rendered page for 1 min then use stale-while-revalidate for 10 min
+  res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=600');
+
   return {
     props: {
       staticGrant: grantBody,
       staticRound: roundBody,
     },
-    revalidate: 60,
   };
 }

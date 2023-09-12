@@ -239,6 +239,7 @@ function GrantProposalCard({
 
       {round.scholarship && (
         <ScholarshipCardWrapper href={to}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <AvatarWrapper>{ensAvatar && <img src={ensAvatar} alt="" />}</AvatarWrapper>
           <NameVotes>
             <Title>{proposal.title}</Title>

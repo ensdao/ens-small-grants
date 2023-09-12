@@ -11,7 +11,7 @@ import OpenGraphElements from '../../components/OpenGraphElements';
 import { cardStyles, HeadingContainer } from '../../components/atoms';
 import { useRounds, useGrantsByUser, useEnsRecords, useSnapshotVotes } from '../../hooks';
 import type { Grant } from '../../types';
-import { getRoundStatus, voteCountFormatter } from '../../utils';
+import { getRoundStatus, shortenAddress, voteCountFormatter } from '../../utils';
 
 const StyledCard = styled('div')(
   cardStyles,
@@ -95,20 +95,11 @@ export default function Profile() {
   const { address } = router.query as { address: string | undefined };
   const { grants } = useGrantsByUser({ address: address });
   const { ensRecords } = useEnsRecords(address);
-
-  const { data: ensName } = useEnsName({
-    address: address,
-    chainId: 1,
-  });
-
-  const { data: ensAvatar } = useEnsAvatar({
-    addressOrName: address,
-    chainId: 1,
-  });
+  const ensName = ensRecords?.name;
 
   const twitter = ensRecords?.twitter;
   const twitterHandle = twitter?.includes('twitter.com/') ? twitter.split('twitter.com/')[1] : twitter;
-  const displayName = ensName || `${address?.slice(0, 6)}..${address?.slice(36, 40)}`;
+  const displayName = ensName || shortenAddress(address);
 
   const loadingContent = <Spinner size="large" color="purple" />;
 
@@ -116,7 +107,10 @@ export default function Profile() {
     <>
       <HeadingContainer>
         <AvatarWrapper>
-          <Avatar src={ensAvatar || undefined} label={ensName || 'label'} />
+          <Avatar
+            src={`https://metadata.ens.domains/mainnet/avatar/${ensName}`}
+            label={ensName || shortenAddress(address)}
+          />
         </AvatarWrapper>
         <HeadingWrapper>
           <Heading title={address}>{displayName}</Heading>

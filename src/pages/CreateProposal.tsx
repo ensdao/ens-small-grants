@@ -98,7 +98,7 @@ const DialogDescription = styled(Typography)(
   `
 );
 
-export function CreateProposal() {
+export default function CreateProposal() {
   const router = useRouter();
   const { _roundId } = router.query;
   const roundId = _roundId as string;

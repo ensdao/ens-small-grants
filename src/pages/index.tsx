@@ -1,3 +1,4 @@
+import { Highlights } from '@/components/Highlights';
 import { useIsMounted } from '@/hooks/useIsMounted';
 import { Heading, Spinner } from '@ensdomains/thorin';
 
@@ -47,6 +48,9 @@ function Home() {
                 Goods and Ecosystem Working Groups.
               </Subheading>
             </HeadingContainer>
+
+            <Highlights />
+
             <RoundItemsOuter>
               {activeRounds.length > 1 && (
                 <SectionHeading className="desktop-only">

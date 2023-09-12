@@ -3,7 +3,7 @@ import { useCallback, useState } from 'react';
 
 import { useCreateSnapshot } from '../hooks';
 
-export function CreateSnapshot() {
+export default function CreateSnapshot() {
   const router = useRouter();
   const { _roundId } = router.query;
   const roundId = _roundId as string;

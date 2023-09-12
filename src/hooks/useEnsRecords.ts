@@ -1,22 +1,32 @@
-import { useState, useEffect } from 'react';
+import { useFetch } from './useFetch';
 
 type EnsRecords = {
-  description: string;
-  twitter: string;
-  github: string;
+  name: string | undefined;
+  description: string | undefined;
+  twitter: string | undefined;
+  github: string | undefined;
 };
 
 export const useEnsRecords = (address?: string) => {
-  const [ensRecords, setEnsRecords] = useState<EnsRecords | null>(null);
+  const { data: response } = useFetch<{
+    records: {
+      texts: Array<{
+        key: 'description' | 'com.twitter' | 'com.github';
+        type: string;
+        value: string;
+      }>;
+    };
+    name: string;
+  }>(address ? `https://api.gregskril.com/ens-profile/${address}` : undefined);
 
-  useEffect(() => {
-    if (!address) return;
+  const records = response?.records;
 
-    fetch(`https://ens-records.vercel.app/${address}`)
-      .then(res => res.json())
-      .then(data => setEnsRecords(data))
-      .catch(() => null);
-  }, [address]);
+  const ensRecords: EnsRecords = {
+    name: response?.name,
+    description: records?.texts.find(text => text.key === 'description')?.value,
+    twitter: records?.texts.find(text => text.key === 'com.twitter')?.value,
+    github: records?.texts.find(text => text.key === 'com.github')?.value,
+  };
 
   return { ensRecords };
 };
