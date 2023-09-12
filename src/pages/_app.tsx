@@ -9,13 +9,13 @@ import { WagmiConfig } from 'wagmi';
 
 import '../index.css';
 import { thorinTheme } from '../theme';
-import { chains, wagmiClient } from '../walletConfig';
+import { chains, wagmiConfig } from '../walletConfig';
 
 export default function App({ Component, pageProps }: AppProps) {
   const isMounted = useIsMounted();
 
   return (
-    <WagmiConfig client={wagmiClient}>
+    <WagmiConfig config={wagmiConfig}>
       <ThemeProvider theme={thorinTheme}>
         <ThorinGlobalStyles />
         <RainbowKitProvider chains={chains} modalSize="compact">
