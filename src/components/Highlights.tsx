@@ -20,7 +20,7 @@ export function Highlights() {
   return (
     <HighlightsContainer>
       <Stat number="100+" label="ETH funded" />
-      <Stat number="450+" label="Proposals" />
+      <Stat number="600+" label="Proposals" />
       <Stat number="450+" label="Voters" />
     </HighlightsContainer>
   );
