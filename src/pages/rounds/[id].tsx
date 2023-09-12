@@ -1,15 +1,17 @@
-import { Helper, mq, Spinner, Typography } from '@ensdomains/thorin';
+import { client } from '@/supabase';
+import { Helper, mq, Typography } from '@ensdomains/thorin';
+import { GetStaticPropsContext } from 'next';
+import { useRouter } from 'next/router';
 import ReactMarkdown from 'react-markdown';
-import { useHref, useLinkClickHandler, useLocation, useParams } from 'react-router-dom';
 import styled, { css } from 'styled-components';
 
-import { BackButtonWithSpacing } from '../components/BackButton';
-import { BannerContainer } from '../components/BannerContainer';
-import GrantRoundSection from '../components/GrantRoundSection';
-import OpenGraphElements from '../components/OpenGraphElements';
-import { useRounds } from '../hooks';
-import { ClickHandler } from '../types';
-import { formatFundingPerWinner, getTimeDifferenceString } from '../utils';
+import { BackButtonWithSpacing } from '../../components/BackButton';
+import { BannerContainer } from '../../components/BannerContainer';
+import GrantRoundSection from '../../components/GrantRoundSection';
+import OpenGraphElements from '../../components/OpenGraphElements';
+import { useRounds } from '../../hooks';
+import type { Round as RoundType } from '../../types';
+import { formatFundingPerWinner, getTimeDifferenceString } from '../../utils';
 
 const Container = styled.div(
   ({ scholarship }: { scholarship?: boolean }) => css`
@@ -128,21 +130,25 @@ const RoundDescription = styled(Typography)(
   `
 );
 
-export const Round = () => {
-  const { id } = useParams<{ id: string }>();
-  const { state } = useLocation();
-  const showHelper = (((state as Record<string, boolean>) || {}).submission as boolean) || false;
+export default function Round({ staticRound }: { staticRound: RoundType }) {
+  const router = useRouter();
+  const { id: _id, success } = router.query;
+  const id = _id as string;
 
-  const { round, isLoading } = useRounds(id!);
+  const { round } = useRounds(id!);
+  const showHelper = success !== undefined || false;
 
+  return (
+    <>
+      <OpenGraphElements title={`${staticRound.title || ''} | ENS Small Grants`} />
+
+      <RoundContent round={round || staticRound} id={staticRound.id.toString()} showHelper={showHelper} />
+    </>
+  );
+}
+
+const RoundContent = ({ round, id, showHelper }: { round: RoundType; id: string; showHelper: boolean }) => {
   const to = `/rounds/${id}/proposals/create`;
-  const href = useHref(to);
-  const onClick = useLinkClickHandler(to);
-
-  if (isLoading || !round) {
-    return <Spinner size="large" />;
-  }
-
   const isActiveRound = round.proposalStart < new Date() && round.votingEnd > new Date();
   const isVotingRound = round.votingStart < new Date() && round.votingEnd > new Date();
   const isPropRound = round.proposalStart < new Date() && round.proposalEnd > new Date();
@@ -190,22 +196,25 @@ export const Round = () => {
     }
   }
 
-  const titleContent = (
-    <Title>
-      <b>{round.title}</b> {!round.scholarship && `Round ${round.round}`}
-    </Title>
-  );
-
   return (
     <>
-      <OpenGraphElements title={`${round.title} (Round ${round.round})`} description={round.description} />
-
       <Container scholarship={round.scholarship}>
-        <BackButtonWithSpacing to="/" />
-        {showHelper && <Helper type="info">Proposal submission recieved!</Helper>}
+        <BackButtonWithSpacing href="/" />
+        {showHelper && (
+          <Helper
+            type="info"
+            style={{
+              marginTop: '1rem',
+            }}
+          >
+            Proposal submission recieved!
+          </Helper>
+        )}
 
         <HeadingContainer>
-          {titleContent}
+          <Title>
+            <b>{round.title}</b> {!round.scholarship && `Round ${round.round}`}
+          </Title>
           <VoteDetailsContainer>
             <VotesTypography>{upperVoteMsg}</VotesTypography>
             <VoteTimeTypography>{lowerVoteMsg}</VoteTimeTypography>
@@ -237,8 +246,8 @@ export const Round = () => {
         ) : (
           <GrantRoundSection
             round={round}
-            createProposalHref={href}
-            createProposalClick={onClick as unknown as ClickHandler | (() => void)}
+            createProposalHref={to}
+            // createProposalClick={onClick as unknown as ClickHandler | (() => void)}
           />
         )}
       </Container>
@@ -247,3 +256,42 @@ export const Round = () => {
     </>
   );
 };
+
+export async function getStaticPaths() {
+  const rounds = await client.from('rounds').select('id');
+
+  if (rounds.error) {
+    throw rounds.error;
+  }
+
+  const ids = rounds.body as { id: number }[];
+  const paths = ids.map(({ id }) => ({
+    params: { id: id.toString() },
+  }));
+
+  return {
+    paths,
+    fallback: false,
+  };
+}
+
+export async function getStaticProps({ params }: GetStaticPropsContext) {
+  const { id } = params as { id: string | undefined };
+
+  if (!id) {
+    throw new Error('No id provided');
+  }
+
+  const round = await client.from('rounds').select().eq('id', id);
+
+  if (round.error) {
+    throw round.error;
+  }
+
+  return {
+    props: {
+      staticRound: round.body[0],
+    },
+    revalidate: 60,
+  };
+}

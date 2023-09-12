@@ -1,4 +1,4 @@
-import { Helmet } from 'react-helmet-async';
+import Head from 'next/head';
 
 const OpenGraphElements: React.FC<{
   title?: string | null;
@@ -16,14 +16,15 @@ const OpenGraphElements: React.FC<{
   }
 
   if (!imageUrl) {
-    imageUrl = 'https://smallgrants.eth.link/og-image.png';
+    imageUrl = 'https://ensgrants.xyz/sharing.jpg';
   }
 
   return (
-    <Helmet>
+    <Head>
       {/* SEO */}
       <title>{title}</title>
       <meta name="description" content={description} />
+      <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
 
       {/* <!-- Open Graph / Facebook --> */}
       <meta property="og:title" content={title} />
@@ -34,7 +35,8 @@ const OpenGraphElements: React.FC<{
       <meta name="twitter:title" content={title} />
       <meta name="twitter:description" content={description} />
       <meta name="twitter:image" content={imageUrl} />
-    </Helmet>
+      <meta name="twitter:card" content="summary_large_image" />
+    </Head>
   );
 };
 export default OpenGraphElements;

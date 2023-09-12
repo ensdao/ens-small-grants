@@ -21,6 +21,7 @@ export const roundTimestampsToDates = ({ proposalStart, proposalEnd, votingStart
 });
 
 export const getTimeDifference = (date1: Date, date2: Date) => {
+  console.log({ date1, date2 });
   const diff = date2.getTime() - date1.getTime();
   const days = Math.floor(diff / (1000 * 60 * 60 * 24));
   const hours = Math.floor(diff / (1000 * 60 * 60));

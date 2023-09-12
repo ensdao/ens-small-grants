@@ -33,6 +33,27 @@ export type SnapshotProposal = {
   grants: SnapshotGrant[];
 };
 
+export type RoundInDatabase = {
+  id: number;
+  creator: string;
+  title: string;
+  round: number;
+  houseId: number;
+  description?: string | null;
+  snapshot_space_id?: string | null;
+  snapshot_proposal_id?: string | null;
+  proposalStart: Date;
+  proposalEnd: Date;
+  votingStart: Date;
+  votingEnd: Date;
+  allocationTokenAmount: BigNumber;
+  allocationTokenAddress: string;
+  maxWinnerCount: number;
+  createdAt: Date;
+  updatedAt: Date;
+  scholarship: boolean;
+};
+
 export type Round = {
   id: number;
   creator: string;
@@ -51,6 +72,17 @@ export type Round = {
   updatedAt: Date;
   snapshot?: SnapshotProposal;
   scholarship: boolean;
+};
+
+export type GrantInDatabase = {
+  id: number;
+  round_id: number;
+  proposer: string;
+  title: string;
+  description: string;
+  full_text: string;
+  created_at: Date;
+  updated_at: Date;
 };
 
 export type Grant = {

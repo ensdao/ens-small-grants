@@ -1,8 +1,0 @@
-dist
-**/node_modules
-contracts
-generated
-data
-!.prettierrc.js
-!.storybook
-!.lint-staged.config.js

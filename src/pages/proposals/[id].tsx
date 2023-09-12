@@ -1,17 +1,20 @@
+import { client } from '@/supabase';
 import { Heading, mq, Spinner, Typography } from '@ensdomains/thorin';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
+import { GetStaticPropsContext } from 'next/types';
 import ReactMarkdown from 'react-markdown';
-import { Link, useParams } from 'react-router-dom';
 import remarkGfm from 'remark-gfm';
 import styled, { css } from 'styled-components';
 
-import BackButton, { BackButtonWithSpacing } from '../components/BackButton';
-import { GrantsFilterOptions } from '../components/GrantRoundSection';
-import OpenGraphElements from '../components/OpenGraphElements';
-import Profile from '../components/Profile';
-import VoteSection from '../components/VoteSection';
-import { useGrantIds, useGrants, useRounds, useStorage } from '../hooks';
-import type { Grant } from '../types';
-import { getTimeDifferenceString } from '../utils';
+import BackButton, { BackButtonWithSpacing } from '../../components/BackButton';
+import { GrantsFilterOptions } from '../../components/GrantRoundSection';
+import OpenGraphElements from '../../components/OpenGraphElements';
+import Profile from '../../components/Profile';
+import VoteSection from '../../components/VoteSection';
+import { SnapshotProposalResponse, useGrantIds, useGrants, useRounds, useStorage } from '../../hooks';
+import type { GrantInDatabase, Grant, Round, RoundInDatabase } from '../../types';
+import { getTimeDifferenceString } from '../../utils';
 
 const Title = styled(Heading)(
   ({ theme }) => css`
@@ -164,63 +167,64 @@ const ProfileWrapper = styled(Link)(
   `
 );
 
-function Proposal() {
-  const { id, roundId } = useParams<{ id: string; roundId: string }>();
-  const { round, isLoading: roundLoading } = useRounds(roundId!);
-  const { grant, isLoading } = useGrants(round, id!);
+export default function Proposal({
+  staticGrant,
+  staticRound,
+}: {
+  staticGrant: GrantInDatabase;
+  staticRound: RoundInDatabase;
+}) {
+  // const { round, isLoading: roundLoading } = useRounds(roundId.toString());
+  // const { grant, isLoading } = useGrants(round, id.toString());
+  // const { grants: grantIds, isLoading: grandIdsLoading } = useGrantIds(Number(roundId));
 
-  const { grants: grantIds, isLoading: grandIdsLoading } = useGrantIds(Number(roundId));
+  // const { getItem } = useStorage();
+  // const _grantsFilter = getItem('grants-filter', 'session');
+  // const grantsFilter = _grantsFilter as GrantsFilterOptions | undefined;
 
-  const { getItem } = useStorage();
-  const _grantsFilter = getItem('grants-filter', 'session');
-  const grantsFilter = _grantsFilter as GrantsFilterOptions | undefined;
+  // const _storedGrants = getItem(`round-${roundId}-grants`, 'session');
+  // const storedGrants: Grant[] | undefined = _storedGrants && JSON.parse(_storedGrants);
 
-  const _storedGrants = getItem(`round-${roundId}-grants`, 'session');
-  const storedGrants: Grant[] | undefined = _storedGrants && JSON.parse(_storedGrants);
-
-  let currentIndex: number | undefined;
-  let previousGrantId: number | undefined;
-  let nextGrantId: number | undefined;
+  // let currentIndex: number | undefined;
+  // let previousGrantId: number | undefined;
+  // let nextGrantId: number | undefined;
 
   // If grants are stored in session storage, use that to calculate the previous and next grant
-  if (grantsFilter === 'random' && storedGrants) {
-    currentIndex = storedGrants.findIndex(storedGrant => storedGrant.id === grant?.id);
-    previousGrantId = storedGrants[currentIndex - 1]?.id;
-    nextGrantId = storedGrants[currentIndex + 1]?.id;
-  } else {
-    currentIndex = grantIds?.findIndex(grantId => grantId.id === grant?.id);
-    previousGrantId = grantIds?.[currentIndex! - 1]?.id;
-    nextGrantId = grantIds?.[currentIndex! + 1]?.id;
-  }
-
-  if (isLoading || roundLoading || !grant || !round) {
-    return <Spinner size="large" />;
-  }
+  // if (grantsFilter === 'random' && storedGrants) {
+  //   currentIndex = storedGrants.findIndex(storedGrant => storedGrant.id === grant?.id);
+  //   previousGrantId = storedGrants[currentIndex - 1]?.id;
+  //   nextGrantId = storedGrants[currentIndex + 1]?.id;
+  // } else {
+  //   currentIndex = grantIds?.findIndex(grantId => grantId.id === grant?.id);
+  //   previousGrantId = grantIds?.[currentIndex! - 1]?.id;
+  //   nextGrantId = grantIds?.[currentIndex! + 1]?.id;
+  // }
 
   return (
     <>
-      <OpenGraphElements title={`${grant.title}`} description={grant.description} />
+      <OpenGraphElements title={`${staticGrant.title}`} description={staticGrant.description} />
 
-      <BackButtonWithSpacing to={`/rounds/${roundId}`} />
+      <BackButtonWithSpacing href={`/rounds/${staticGrant.round_id}`} />
       <ContentGrid>
         <div>
           <TitleContainer>
-            <Title>{grant.title}</Title>
-            {grant.description && <Description>{grant.description}</Description>}
+            <Title>{staticGrant.title}</Title>
+            {staticGrant.description && <Description>{staticGrant.description}</Description>}
           </TitleContainer>
-          {!round.scholarship && (
-            <ProfileWrapper to={`/profile/${grant.proposer}`}>
+
+          {!staticRound.scholarship && (
+            <ProfileWrapper href={`/profile/${staticGrant.proposer}`}>
               <Profile
-                address={grant.proposer}
-                subtitle={`${getTimeDifferenceString(grant.createdAt, new Date())} ago`}
+                address={staticGrant.proposer}
+                subtitle={`${getTimeDifferenceString(new Date(staticGrant.created_at), new Date())} ago`}
               />
             </ProfileWrapper>
           )}
 
           {/* apply onlyMobile styles */}
-          <OnlyMobile>
+          {/* <OnlyMobile>
             <VoteSection round={round} proposal={grant} />
-          </OnlyMobile>
+          </OnlyMobile> */}
 
           <MarkdownWrapper>
             <ReactMarkdown
@@ -240,26 +244,75 @@ function Proposal() {
               }}
               remarkPlugins={[remarkGfm]}
             >
-              {grant.fullText}
+              {staticGrant.full_text}
             </ReactMarkdown>
           </MarkdownWrapper>
-          {!grandIdsLoading && (
+
+          {/* {!grandIdsLoading && (
             <ProposalNavigator>
               {previousGrantId && (
-                <BackButton to={`/rounds/${round.id}/proposals/${previousGrantId}`} text="Previous" />
+                <BackButton href={`/rounds/${round.id}/proposals/${previousGrantId}`} text="Previous" />
               )}
-              {nextGrantId && <BackButton to={`/rounds/${round.id}/proposals/${nextGrantId}`} text="Next" reverse />}
+              {nextGrantId && <BackButton href={`/rounds/${round.id}/proposals/${nextGrantId}`} text="Next" reverse />}
             </ProposalNavigator>
-          )}
+          )} */}
         </div>
 
-        <OnlyDesktop>
+        {/* <OnlyDesktop>
           <VoteSection round={round} proposal={grant} />
-        </OnlyDesktop>
+        </OnlyDesktop> */}
       </ContentGrid>
       <div style={{ flexGrow: 1 }} />
     </>
   );
 }
 
-export default Proposal;
+export async function getStaticPaths() {
+  const { body, error } = await client.from('grants').select('id');
+
+  if (error) {
+    throw error;
+  }
+
+  const ids = body as { id: number }[];
+  const paths = ids.map(id => ({ params: { id: String(id.id) } }));
+
+  return {
+    paths,
+    fallback: true,
+  };
+}
+
+export async function getStaticProps({ params }: GetStaticPropsContext) {
+  const { id } = params as { id: string | undefined };
+
+  if (!id) {
+    throw new Error('No id provided');
+  }
+
+  const grant = await client
+    .from('grants')
+    .select('id, round_id, proposer, title, description, full_text, created_at')
+    .eq('id', id);
+
+  if (grant.error) {
+    throw grant.error;
+  }
+
+  const grantBody = grant.body[0] as GrantInDatabase;
+  const round = await client.from('rounds').select('*').eq('id', grantBody.round_id);
+
+  if (round.error) {
+    throw round.error;
+  }
+
+  const roundBody = round.body[0] as RoundInDatabase;
+
+  return {
+    props: {
+      staticGrant: grantBody,
+      staticRound: roundBody,
+    },
+    revalidate: 60,
+  };
+}

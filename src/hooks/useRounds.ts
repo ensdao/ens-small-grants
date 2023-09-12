@@ -5,7 +5,7 @@ import { client } from '../supabase';
 import type { Round } from '../types';
 import { camelCaseToUpperCase, replaceKeysWithFunc, roundTimestampsToDates } from '../utils';
 
-type SnapshotProposalResponse = {
+export type SnapshotProposalResponse = {
   data: {
     proposals: {
       id: string;

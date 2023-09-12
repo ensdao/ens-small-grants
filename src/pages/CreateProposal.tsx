@@ -1,8 +1,8 @@
 import { Button, Dialog, FieldSet, Helper, Input, mq, Spinner, Textarea, Typography } from '@ensdomains/thorin';
 import { useMutation } from '@tanstack/react-query';
+import { useRouter } from 'next/router';
 import { useCallback, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { Navigate, useNavigate, useParams } from 'react-router-dom';
 import styled, { css } from 'styled-components';
 import { useAccount } from 'wagmi';
 
@@ -99,7 +99,9 @@ const DialogDescription = styled(Typography)(
 );
 
 export function CreateProposal() {
-  const { roundId } = useParams<{ roundId: string }>();
+  const router = useRouter();
+  const { _roundId } = router.query;
+  const roundId = _roundId as string;
   const to = `/rounds/${roundId}`;
 
   const { round, isLoading } = useRounds(roundId!);
@@ -108,7 +110,6 @@ export function CreateProposal() {
   });
   const { address } = useAccount();
   const { createGrant } = useCreateGrant();
-  const navigate = useNavigate();
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogData, setDialogData] = useState({
@@ -147,7 +148,7 @@ export function CreateProposal() {
             console.error(res);
             setPublishError(`Error ${res.status}. ${res.statusText}`);
           } else {
-            navigate(to, { state: { submission: true } });
+            router.push({ pathname: to, query: { success: true } });
           }
         })
         .catch(error_ => {
@@ -164,22 +165,22 @@ export function CreateProposal() {
     setPublishError(typeof _publishError?.message === 'string' ? _publishError?.message : 'Error signing message');
   }
 
-  const onCancel = useCallback(() => {
-    navigate(to);
-  }, [navigate, to]);
+  const onCancel = () => {
+    router.push(to);
+  };
 
   if (isLoading) {
     return <Spinner />;
   }
 
   if (!round) {
-    return <Navigate to="/" />;
+    return router.push('/');
   }
 
   // Redirect to round page if it is not accepting proposals
   const isPropRound = round.proposalStart < new Date() && round.proposalEnd > new Date();
   if (!isPropRound) {
-    return <Navigate to={to} />;
+    return router.push(to);
   }
 
   const _description = dialogData.shortDescription;
@@ -192,7 +193,7 @@ export function CreateProposal() {
         {publishError && <Helper type="error">{publishError.toString()}</Helper>}
         <InnerModal>
           <DialogDescription>
-            Make sure everything is correct, proposal submissions are public and can't be undone.
+            Make sure everything is correct, proposal submissions are public and can&apos;t be undone.
           </DialogDescription>
           <DisplayItems>
             <DisplayItem label="Title" value={dialogData.title} />
@@ -216,7 +217,7 @@ export function CreateProposal() {
         />
       </Dialog>
       <BackButton
-        to={`/rounds/${roundId}`}
+        href={`/rounds/${roundId}`}
         title={
           <Title>
             <b>{round.title}</b> Round {round.round}

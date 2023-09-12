@@ -1,5 +1,5 @@
 import { Checkbox, mq, Typography } from '@ensdomains/thorin';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import styled, { css, DefaultTheme } from 'styled-components';
 import { useEnsAddress, useEnsAvatar } from 'wagmi';
 
@@ -217,7 +217,7 @@ function GrantProposalCard({
   const styledCardContents = (
     <>
       {!round.scholarship && (
-        <Link to={`/profile/${proposal.proposer}`}>
+        <Link href={`/profile/${proposal.proposer}`}>
           <ProfileWrapper>
             <StaticProfile
               name={ensName}
@@ -230,7 +230,7 @@ function GrantProposalCard({
 
       {!round.scholarship && (
         <ContentWrapper>
-          <Link to={to}>
+          <Link href={to}>
             <Title>{proposal.title}</Title>
             <Description>{proposal.description}</Description>
           </Link>
@@ -238,7 +238,7 @@ function GrantProposalCard({
       )}
 
       {round.scholarship && (
-        <ScholarshipCardWrapper to={to}>
+        <ScholarshipCardWrapper href={to}>
           <AvatarWrapper>{ensAvatar && <img src={ensAvatar} alt="" />}</AvatarWrapper>
           <NameVotes>
             <Title>{proposal.title}</Title>

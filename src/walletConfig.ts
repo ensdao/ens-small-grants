@@ -4,15 +4,10 @@ import { chain, configureChains, createClient } from 'wagmi';
 import { alchemyProvider } from 'wagmi/providers/alchemy';
 import { publicProvider } from 'wagmi/providers/public';
 
-export const { chains, provider } = configureChains(
-  [chain.mainnet],
-  [
-    alchemyProvider({
-      apiKey: import.meta.env.VITE_ALCHEMY_API_KEY,
-    }),
-    publicProvider(),
-  ]
-);
+const ALCHEMY_ID = process.env.NEXT_PUBLIC_ALCHEMY_ID;
+const providers = ALCHEMY_ID ? [alchemyProvider({ apiKey: ALCHEMY_ID }), publicProvider()] : [publicProvider()];
+
+export const { chains, provider } = configureChains([chain.mainnet], providers);
 
 export const { connectors } = getDefaultWallets({
   appName: 'ENS Small Grants',

@@ -1,0 +1,31 @@
+import { useIsMounted } from '@/hooks/useIsMounted';
+import BasicLayout from '@/layouts/BasicLayout';
+import { ThorinGlobalStyles } from '@ensdomains/thorin';
+import { RainbowKitProvider } from '@rainbow-me/rainbowkit';
+import '@rainbow-me/rainbowkit/styles.css';
+import type { AppProps } from 'next/app';
+import { ThemeProvider } from 'styled-components';
+import { WagmiConfig } from 'wagmi';
+
+import '../index.css';
+import { thorinTheme } from '../theme';
+import { chains, wagmiClient } from '../walletConfig';
+
+export default function App({ Component, pageProps }: AppProps) {
+  const isMounted = useIsMounted();
+
+  return (
+    <WagmiConfig client={wagmiClient}>
+      <ThemeProvider theme={thorinTheme}>
+        <ThorinGlobalStyles />
+        <RainbowKitProvider chains={chains} modalSize="compact">
+          {isMounted && (
+            <BasicLayout>
+              <Component {...pageProps} />
+            </BasicLayout>
+          )}
+        </RainbowKitProvider>
+      </ThemeProvider>
+    </WagmiConfig>
+  );
+}

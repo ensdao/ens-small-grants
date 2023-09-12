@@ -1,17 +1,17 @@
 import { mq, Heading, Spinner, Tag } from '@ensdomains/thorin';
-import { useParams } from 'react-router-dom';
+import { useRouter } from 'next/router';
 import styled, { css } from 'styled-components';
 import { useEnsAvatar, useEnsName } from 'wagmi';
 
-import TwitterIcon from '../assets/twitter.svg';
-import { Avatar } from '../components/Avatar';
-import { Description, Title } from '../components/GrantProposalCard';
-import { GrantsContainer } from '../components/GrantRoundSection';
-import OpenGraphElements from '../components/OpenGraphElements';
-import { cardStyles, HeadingContainer } from '../components/atoms';
-import { useRounds, useGrantsByUser, useEnsRecords, useSnapshotVotes } from '../hooks';
-import type { Grant } from '../types';
-import { getRoundStatus, voteCountFormatter } from '../utils';
+import TwitterIcon from '../../assets/twitter.svg';
+import { Avatar } from '../../components/Avatar';
+import { Description, Title } from '../../components/GrantProposalCard';
+import { GrantsContainer } from '../../components/GrantRoundSection';
+import OpenGraphElements from '../../components/OpenGraphElements';
+import { cardStyles, HeadingContainer } from '../../components/atoms';
+import { useRounds, useGrantsByUser, useEnsRecords, useSnapshotVotes } from '../../hooks';
+import type { Grant } from '../../types';
+import { getRoundStatus, voteCountFormatter } from '../../utils';
 
 const StyledCard = styled('div')(
   cardStyles,
@@ -91,7 +91,8 @@ const Ul = styled.ul`
 `;
 
 export default function Profile() {
-  const { address } = useParams<{ address: string }>();
+  const router = useRouter();
+  const { address } = router.query as { address: string | undefined };
   const { grants } = useGrantsByUser({ address: address });
   const { ensRecords } = useEnsRecords(address);
 
@@ -105,19 +106,14 @@ export default function Profile() {
     chainId: 1,
   });
 
-  if (!address) {
-    return <Spinner size="large" color="purple" />;
-  }
-
   const twitter = ensRecords?.twitter;
   const twitterHandle = twitter?.includes('twitter.com/') ? twitter.split('twitter.com/')[1] : twitter;
+  const displayName = ensName || `${address?.slice(0, 6)}..${address?.slice(36, 40)}`;
 
-  const displayName = ensName || `${address.slice(0, 6)}..${address.slice(36, 40)}`;
+  const loadingContent = <Spinner size="large" color="purple" />;
 
-  return (
+  const loadedContent = (
     <>
-      <OpenGraphElements title={`${displayName} - ENS Small Grants`} />
-
       <HeadingContainer>
         <AvatarWrapper>
           <Avatar src={ensAvatar || undefined} label={ensName || 'label'} />
@@ -148,6 +144,14 @@ export default function Profile() {
       <GrantsContainer>
         <VotingHistory address={address} />
       </GrantsContainer>
+    </>
+  );
+
+  return (
+    <>
+      <OpenGraphElements title={`${displayName} - ENS Small Grants`} />
+      {!address ? loadingContent : loadedContent}
+      {}
     </>
   );
 }

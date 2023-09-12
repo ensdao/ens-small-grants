@@ -1,10 +1,13 @@
+import { useRouter } from 'next/router';
 import { useCallback, useState } from 'react';
-import { useParams } from 'react-router-dom';
 
 import { useCreateSnapshot } from '../hooks';
 
 export function CreateSnapshot() {
-  const { roundId } = useParams<{ roundId: string }>();
+  const router = useRouter();
+  const { _roundId } = router.query;
+  const roundId = _roundId as string;
+
   const { createSnapshot } = useCreateSnapshot();
   const [_, setLoading] = useState(false);
 

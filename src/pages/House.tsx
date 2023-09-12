@@ -1,5 +1,5 @@
 import { Heading, Spinner } from '@ensdomains/thorin';
-import { useParams } from 'react-router-dom';
+import { useRouter } from 'next/router';
 
 import { EmptyHouse } from '../components/HouseCard';
 import RoundCard from '../components/RoundCard';
@@ -17,7 +17,10 @@ import { useHouses, useRounds } from '../hooks';
 import { getRoundStatus } from '../utils';
 
 export default function House() {
-  const { slug } = useParams<{ slug: string }>();
+  const router = useRouter();
+  const { _slug } = router.query;
+  const slug = _slug as string;
+
   const { house } = useHouses({ slug });
   const { rounds } = useRounds();
 
@@ -39,7 +42,7 @@ export default function House() {
       <RoundItemsOuter>
         <SectionHeading className="desktop-only">
           <ActiveTypography>Showing all active rounds</ActiveTypography>
-          <MobileHiddenAnchor to={`/${slug}/rounds`}>See all rounds</MobileHiddenAnchor>
+          <MobileHiddenAnchor href={`/${slug}/rounds`}>See all rounds</MobileHiddenAnchor>
         </SectionHeading>
 
         {activeHouseRounds.length === 0 && (
@@ -58,7 +61,7 @@ export default function House() {
           ))}
         </RoundGrid>
         <SectionHeading>
-          <DesktopHiddenAnchor to="/rounds">See all rounds</DesktopHiddenAnchor>
+          <DesktopHiddenAnchor href="/rounds">See all rounds</DesktopHiddenAnchor>
         </SectionHeading>
       </RoundItemsOuter>
     </>

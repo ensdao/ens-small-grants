@@ -1,5 +1,5 @@
 import { ArrowCircleSVG, mq, Typography } from '@ensdomains/thorin';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import styled, { css } from 'styled-components';
 
 const Container = styled.div(
