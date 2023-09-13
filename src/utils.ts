@@ -97,23 +97,27 @@ export const getRoundStatus = (round: Round): Status => {
 export const formatFundingPerWinner = (round: Round): string => {
   const tokenName = round.allocationTokenAddress === '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48' ? 'USDC' : 'ETH';
 
-  // TODO: re-add logic for prize per winner
-  const number =
-    tokenName === 'USDC'
-      ? Math.floor(round.allocationTokenAmount / 1e6).toString()
-      : formatEther(BigInt(round.allocationTokenAmount));
+  if (round.allocationTokenAmount) {
+    // TODO: re-add logic for prize per winner
+    const number =
+      tokenName === 'USDC'
+        ? Math.floor(round.allocationTokenAmount / 1e6).toString()
+        : formatEther(BigInt(round.allocationTokenAmount));
 
-  const endNote = round.scholarship ? '/mo' : '';
+    const endNote = round.scholarship ? '/mo' : '';
 
-  return (
-    new Intl.NumberFormat('en-US', {
-      notation: 'compact',
-      maximumFractionDigits: 2,
-    }).format(Number(number)) +
-    ' ' +
-    tokenName +
-    endNote
-  );
+    return (
+      new Intl.NumberFormat('en-US', {
+        notation: 'compact',
+        maximumFractionDigits: 2,
+      }).format(Number(number)) +
+      ' ' +
+      tokenName +
+      endNote
+    );
+  } else {
+    return 'n/a';
+  }
 };
 
 export const dateToString = (date: Date): string => {
