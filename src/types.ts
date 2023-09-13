@@ -1,4 +1,3 @@
-import { BigNumber } from 'ethers';
 import React from 'react';
 
 export type ClickHandler = React.MouseEventHandler<HTMLButtonElement>;
@@ -42,15 +41,15 @@ export type RoundInDatabase = {
   description?: string | null;
   snapshot_space_id?: string | null;
   snapshot_proposal_id?: string | null;
-  proposalStart: Date;
-  proposalEnd: Date;
-  votingStart: Date;
-  votingEnd: Date;
-  allocationTokenAmount: BigNumber;
-  allocationTokenAddress: string;
-  maxWinnerCount: number;
-  createdAt: Date;
-  updatedAt: Date;
+  proposal_start: Date;
+  proposal_end: Date;
+  voting_start: Date;
+  voting_end: Date;
+  allocation_token_amount: string;
+  allocation_token_address: string;
+  max_winner_count: number;
+  created_at: Date;
+  updated_at: Date;
   scholarship: boolean;
 };
 
@@ -65,7 +64,7 @@ export type Round = {
   proposalEnd: Date;
   votingStart: Date;
   votingEnd: Date;
-  allocationTokenAmount: BigNumber;
+  allocationTokenAmount: number;
   allocationTokenAddress: string;
   maxWinnerCount: number;
   createdAt: Date;

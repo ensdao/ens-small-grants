@@ -1,4 +1,3 @@
-import { BigNumber } from 'ethers';
 import { useQuery } from 'wagmi';
 
 import { client } from '../supabase';
@@ -52,9 +51,11 @@ export function useRounds(selection?: string) {
         return;
       }
 
+      const data = _data;
+
       // Filter down to only the rounds that have started (proposal_start < now)
-      const now = new Date();
-      const data = _data.filter(round => new Date(round.proposal_start) < now);
+      // const now = new Date();
+      // const data = _data.filter(round => new Date(round.proposal_start) < now);
 
       const selectedRound = data.find(round => round.id === (selection ? Number(selection) : 0)) || data[0];
 
@@ -101,7 +102,7 @@ export function useRounds(selection?: string) {
         votingEnd: new Date(r.voting_end),
         createdAt: new Date(r.created_at),
         updatedAt: new Date(r.updated_at),
-        allocationTokenAmount: BigNumber.from(r.allocation_token_amount),
+        allocationTokenAmount: r.allocation_token_amount,
         houseId: Number.parseInt(r.house_id),
       })) as Round[];
     },

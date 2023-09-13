@@ -162,7 +162,8 @@ const BaseRoundCard = ({ id, title, round, status, children, grants }: BaseProps
       </div>
 
       <RoundMeta>
-        <MetaItem name="Funding" value={`${formatFundingPerWinner(round)} x ${round.maxWinnerCount}`} />
+        {/* <MetaItem name="Funding" value={`${formatFundingPerWinner(round)} x ${round.maxWinnerCount}`} /> */}
+        <MetaItem name="Funding" value={formatFundingPerWinner(round)} />
 
         {status === 'proposals' && (
           <MetaItem

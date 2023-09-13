@@ -26,7 +26,7 @@ const singleRoundCss = {
   maxWidth: '37rem',
 };
 
-function Home() {
+export default function Home() {
   const { rounds, isLoading: roundsAreLoading } = useRounds();
   const activeRounds = rounds?.filter(r => isActiveRound(r));
 
@@ -100,5 +100,3 @@ function Home() {
     </>
   );
 }
-
-export default Home;

@@ -1,10 +1,10 @@
 import { mq, Typography } from '@ensdomains/thorin';
-import { ConnectButton } from '@rainbow-me/rainbowkit';
 import Link from 'next/link';
 import styled, { css } from 'styled-components';
 
 import Logo from '../assets/Logo';
 import ShortLogo from '../assets/ShortLogo';
+import { ConnectButton } from './ConnectButton';
 
 const HeaderContainer = styled.div(
   () => css`
@@ -113,7 +113,7 @@ const Header = () => {
       </LogoAndText>
       <NavButtons>
         <Link href="/faq">FAQ</Link>
-        <ConnectButton chainStatus="none" showBalance={false} />
+        <ConnectButton />
       </NavButtons>
     </HeaderContainer>
   );

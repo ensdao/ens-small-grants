@@ -1,4 +1,5 @@
-import { formatEther, formatUnits } from 'ethers/lib/utils';
+// import { formatEther, formatUnits } from 'ethers/lib/utils';
+import { formatEther } from 'viem';
 
 import { Round, Status } from './types';
 
@@ -21,7 +22,6 @@ export const roundTimestampsToDates = ({ proposalStart, proposalEnd, votingStart
 });
 
 export const getTimeDifference = (date1: Date, date2: Date) => {
-  console.log({ date1, date2 });
   const diff = date2.getTime() - date1.getTime();
   const days = Math.floor(diff / (1000 * 60 * 60 * 24));
   const hours = Math.floor(diff / (1000 * 60 * 60));
@@ -99,8 +99,8 @@ export const formatFundingPerWinner = (round: Round): string => {
 
   const number =
     tokenName === 'USDC'
-      ? formatUnits(Math.floor(Number(round.allocationTokenAmount) / round.maxWinnerCount), 6).toString()
-      : formatEther((Number(round.allocationTokenAmount) / round.maxWinnerCount).toString());
+      ? Math.floor(Number(round.allocationTokenAmount) / round.maxWinnerCount).toString()
+      : formatEther(BigInt(round.allocationTokenAmount)); // TODO: improve logic for prize per winner
 
   const endNote = round.scholarship ? '/mo' : '';
 

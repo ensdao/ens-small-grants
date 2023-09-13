@@ -21,7 +21,7 @@ export function Highlights() {
     <HighlightsContainer>
       <Stat number="100+" label="ETH funded" />
       <Stat number="600+" label="Proposals" />
-      <Stat number="450+" label="Voters" />
+      <Stat number="500+" label="Voters" />
     </HighlightsContainer>
   );
 }

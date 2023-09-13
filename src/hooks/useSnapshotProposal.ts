@@ -1,8 +1,7 @@
 import snapshot from '@snapshot-labs/snapshot.js';
-import { useQueryClient } from '@tanstack/react-query';
 import { ethers } from 'ethers';
 import { useCallback } from 'react';
-import { useAccount, useQuery, useSigner } from 'wagmi';
+import { useAccount, useQuery, useQueryClient, useWalletClient } from 'wagmi';
 
 import { SnapshotGrant, SnapshotProposal, SnapshotVote } from '../types';
 import { camelCaseToUpperCase, replaceKeysWithFunc } from '../utils';
@@ -70,7 +69,7 @@ const snapshotClient = new snapshot.Client712('https://hub.snapshot.org');
 export function useSnapshotProposal(proposalId: string) {
   const queryClient = useQueryClient();
 
-  const { data: signer } = useSigner();
+  const { data: signer } = useWalletClient();
   const { address } = useAccount();
 
   const { data: proposal, isLoading } = useQuery(['proposal', proposalId, address], async () => {

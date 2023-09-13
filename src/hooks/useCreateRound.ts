@@ -1,4 +1,3 @@
-import { BigNumber } from 'ethers';
 import { useCallback, useState } from 'react';
 
 import { functionRequest } from '../supabase';
@@ -11,12 +10,12 @@ export type CreateRoundArgs = {
   proposalEnd: Date;
   votingStart: Date;
   votingEnd: Date;
-  allocationTokenAmount: BigNumber;
+  allocationTokenAmount: number;
   allocationTokenAddress: string;
   maxWinnerCount: number;
 };
 
-const dateToTimestamp = (d: Date) => BigNumber.from(Math.floor(d.getTime() / 1000)).toString();
+const dateToTimestamp = (d: Date) => Math.floor(d.getTime() / 1000).toString();
 
 export function useCreateRound() {
   const [loading, setLoading] = useState(false);

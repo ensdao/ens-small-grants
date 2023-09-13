@@ -148,7 +148,7 @@ export default function Round({ staticRound }: { staticRound: RoundType }) {
 }
 
 const RoundContent = ({ round, id, showHelper }: { round: RoundType; id: string; showHelper: boolean }) => {
-  const to = `/rounds/${id}/proposals/create`;
+  const to = `/create?round=${id}`;
   const isActiveRound = round.proposalStart < new Date() && round.votingEnd > new Date();
   const isVotingRound = round.votingStart < new Date() && round.votingEnd > new Date();
   const isPropRound = round.proposalStart < new Date() && round.proposalEnd > new Date();
@@ -166,10 +166,10 @@ const RoundContent = ({ round, id, showHelper }: { round: RoundType; id: string;
 
     upperVoteMsg = (
       <>
-        <b>{fundingPerWinnerStr}</b> x{' '}
-        <b>
+        <b>{fundingPerWinnerStr}</b>
+        {/* <b>
           {round.maxWinnerCount} {round.scholarship ? 'people' : 'projects'}
-        </b>
+        </b> */}
       </>
     );
 

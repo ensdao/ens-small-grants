@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { useAccount, useSigner } from 'wagmi';
+import { useAccount, useWalletClient } from 'wagmi';
 
 import { functionRequest } from '../supabase';
 
@@ -31,7 +31,7 @@ export type CreateGrantArgs = {
 };
 
 export function useCreateGrant() {
-  const { data: signer } = useSigner();
+  const { data: signer } = useWalletClient();
   const { address } = useAccount();
   const [loading, setLoading] = useState(false);
 
@@ -51,8 +51,8 @@ export function useCreateGrant() {
         try {
           setLoading(true);
 
-          // @ts-ignore
-          const signature = await signer._signTypedData(domain, types, grantData);
+          // const signature = await signer._signTypedData(domain, types, grantData);
+          const signature = await signer.signTypedData({ domain, types, message: grantData, primaryType: 'Grant' });
 
           return functionRequest('create_grant', {
             grantData,

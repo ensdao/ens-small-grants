@@ -1,9 +1,9 @@
 import { Button, Dialog, FieldSet, Helper, Input, mq, Spinner, Textarea, Typography } from '@ensdomains/thorin';
-import { useMutation } from '@tanstack/react-query';
 import { useRouter } from 'next/router';
 import { useCallback, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import styled, { css } from 'styled-components';
+import { useMutation } from 'wagmi';
 import { useAccount } from 'wagmi';
 
 import BackButton from '../components/BackButton';
@@ -100,15 +100,18 @@ const DialogDescription = styled(Typography)(
 
 export default function CreateProposal() {
   const router = useRouter();
-  const { _roundId } = router.query;
+  const { round: _roundId } = router.query;
   const roundId = _roundId as string;
   const to = `/rounds/${roundId}`;
 
-  const { round, isLoading } = useRounds(roundId!);
+  const { address } = useAccount();
+  const isFormDisabled = !address;
+  const { round, isLoading } = useRounds(roundId);
+
   const { handleSubmit, register, getFieldState, formState } = useForm<FormInput>({
     mode: 'onBlur',
   });
-  const { address } = useAccount();
+
   const { createGrant } = useCreateGrant();
 
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -119,8 +122,6 @@ export default function CreateProposal() {
     twitter: '',
     payoutAddress: '',
   });
-
-  const isFormDisabled = !address;
 
   const onSubmit: SubmitHandler<FormInput> = useCallback(data => {
     setDialogOpen(true);
@@ -174,7 +175,7 @@ export default function CreateProposal() {
   }
 
   if (!round) {
-    return router.push('/');
+    return <Spinner />;
   }
 
   // Redirect to round page if it is not accepting proposals
