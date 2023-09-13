@@ -94,6 +94,7 @@ export type Grant = {
   fullText: string;
   createdAt: Date;
   updatedAt: Date;
+  twitter?: string | undefined;
   voteCount: number | null;
   voteStatus?: boolean | null;
   voteSamples?: SnapshotVote[];

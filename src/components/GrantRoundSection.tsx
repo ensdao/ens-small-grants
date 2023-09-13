@@ -4,7 +4,8 @@ import { useEffect, useState } from 'react';
 import styled, { css } from 'styled-components';
 import { useAccount } from 'wagmi';
 
-import { useFetch, useGrants, useStorage } from '../hooks';
+import { useGrants, useStorage } from '../hooks';
+import { useEnsNames } from '../hooks/useEnsNames';
 import type { ClickHandler, Grant, Round, SelectedPropVotes } from '../types';
 import { getRoundStatus } from '../utils';
 import { BannerContainer } from './BannerContainer';
@@ -130,17 +131,7 @@ function GrantRoundSection({ round, createProposalHref, createProposalClick }: G
 
   // Batch resolve ENS names here
   const addressesOfGrantees = grants.map(grant => grant.proposer);
-
-  const ensProfiles = useFetch<{ name: string; address: string }[]>(
-    addressesOfGrantees.length > 0 ? 'https://api.gregskril.com/ens-resolve' : undefined,
-    {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ addresses: addressesOfGrantees }),
-    }
-  );
+  const ensProfiles = useEnsNames(addressesOfGrantees);
 
   if (isLoading || (_grants && _grants.length > grants.length)) {
     return <Spinner size="large" />;

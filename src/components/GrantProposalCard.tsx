@@ -47,7 +47,7 @@ const StyledCard = styled('div')(
       border: ${theme.borderWidths['0.5']} solid ${theme.colors.blue};
     }
 
-    ${mq.xs.min(css`
+    ${mq.sm.min(css`
       grid-template-columns: 1fr 1fr;
       grid-template-areas:
         'profile votes'
@@ -121,7 +121,7 @@ const Votes = styled(Typography)(
 
     ${!scholarship &&
     css`
-      ${mq.xs.max(css`
+      ${mq.sm.max(css`
         justify-content: flex-start;
         padding-top: ${theme.space['2']};
         border-top: ${theme.borderWidths['0.5']} solid ${theme.colors.borderTertiary};
