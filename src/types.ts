@@ -37,7 +37,7 @@ export type RoundInDatabase = {
   creator: string;
   title: string;
   round: number;
-  houseId: number;
+  house_id: number;
   description?: string | null;
   snapshot_space_id?: string | null;
   snapshot_proposal_id?: string | null;

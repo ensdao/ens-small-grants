@@ -1,7 +1,7 @@
 // import { formatEther, formatUnits } from 'ethers/lib/utils';
 import { formatEther } from 'viem';
 
-import { Round, Status } from './types';
+import { Round, RoundInDatabase, Status } from './types';
 
 export const voteCountFormatter = new Intl.NumberFormat('en', {
   notation: 'compact',
@@ -125,3 +125,21 @@ export const dateToString = (date: Date): string => {
     hour12: true,
   }).format(date);
 };
+
+export function camelCaseRound(r: RoundInDatabase): Round {
+  return {
+    ...r,
+    title: r.title.replace(/ Round.*/, ''),
+    round: Number.parseInt(r.title.replace(/.*Round /, '')),
+    proposalStart: r.proposal_start,
+    proposalEnd: r.proposal_end,
+    votingStart: r.voting_start,
+    votingEnd: r.voting_end,
+    createdAt: r.created_at,
+    updatedAt: r.updated_at,
+    allocationTokenAmount: Number(r.allocation_token_amount),
+    allocationTokenAddress: r.allocation_token_address,
+    maxWinnerCount: Number(r.max_winner_count),
+    houseId: r.house_id,
+  };
+}

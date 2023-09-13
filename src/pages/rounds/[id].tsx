@@ -10,8 +10,8 @@ import { BannerContainer } from '../../components/BannerContainer';
 import GrantRoundSection from '../../components/GrantRoundSection';
 import OpenGraphElements from '../../components/OpenGraphElements';
 import { useRounds } from '../../hooks';
-import type { Round as RoundType } from '../../types';
-import { formatFundingPerWinner, getTimeDifferenceString } from '../../utils';
+import type { Round, RoundInDatabase, Round as RoundType } from '../../types';
+import { camelCaseRound, formatFundingPerWinner, getTimeDifferenceString } from '../../utils';
 
 const Container = styled.div(
   ({ scholarship }: { scholarship?: boolean }) => css`
@@ -130,12 +130,16 @@ const RoundDescription = styled(Typography)(
   `
 );
 
-export default function Round({ staticRound }: { staticRound: RoundType }) {
+export default function Round({ staticRound }: { staticRound: Round }) {
   const router = useRouter();
-  const { id: _id, success } = router.query;
-  const id = _id as string;
+  const { success } = router.query;
+  const id = staticRound.id;
 
-  const { round } = useRounds(id!);
+  if (!id) {
+    router.push('/rounds');
+  }
+
+  const { round } = useRounds(id.toString());
   const showHelper = success !== undefined || false;
 
   return (
@@ -271,12 +275,15 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     throw round.error;
   }
 
+  const roundData = round.data[0] as RoundInDatabase;
+  const flattenedRound = camelCaseRound(roundData);
+
   // Cache the server rendered page for 1 min then use stale-while-revalidate for 1 hour
   res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=3600');
 
   return {
     props: {
-      staticRound: round.body[0],
+      staticRound: flattenedRound,
     },
   };
 }
