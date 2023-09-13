@@ -1,6 +1,6 @@
 import { client } from '@/supabase';
 import { Helper, mq, Typography } from '@ensdomains/thorin';
-import { GetStaticPropsContext } from 'next';
+import { GetServerSidePropsContext, GetStaticPropsContext } from 'next';
 import { useRouter } from 'next/router';
 import ReactMarkdown from 'react-markdown';
 import styled, { css } from 'styled-components';
@@ -257,25 +257,8 @@ const RoundContent = ({ round, id, showHelper }: { round: RoundType; id: string;
   );
 };
 
-export async function getStaticPaths() {
-  const rounds = await client.from('rounds').select('id');
-
-  if (rounds.error) {
-    throw rounds.error;
-  }
-
-  const ids = rounds.body as { id: number }[];
-  const paths = ids.map(({ id }) => ({
-    params: { id: id.toString() },
-  }));
-
-  return {
-    paths,
-    fallback: false,
-  };
-}
-
-export async function getStaticProps({ params }: GetStaticPropsContext) {
+export async function getServerSideProps(context: GetServerSidePropsContext) {
+  const { res, params } = context;
   const { id } = params as { id: string | undefined };
 
   if (!id) {
@@ -288,10 +271,12 @@ export async function getStaticProps({ params }: GetStaticPropsContext) {
     throw round.error;
   }
 
+  // Cache the server rendered page for 1 min then use stale-while-revalidate for 1 hour
+  res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=3600');
+
   return {
     props: {
       staticRound: round.body[0],
     },
-    revalidate: 60,
   };
 }

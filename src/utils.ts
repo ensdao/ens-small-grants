@@ -97,10 +97,11 @@ export const getRoundStatus = (round: Round): Status => {
 export const formatFundingPerWinner = (round: Round): string => {
   const tokenName = round.allocationTokenAddress === '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48' ? 'USDC' : 'ETH';
 
+  // TODO: re-add logic for prize per winner
   const number =
     tokenName === 'USDC'
-      ? Math.floor(Number(round.allocationTokenAmount) / round.maxWinnerCount).toString()
-      : formatEther(BigInt(round.allocationTokenAmount)); // TODO: improve logic for prize per winner
+      ? Math.floor(round.allocationTokenAmount / 1e6).toString()
+      : formatEther(BigInt(round.allocationTokenAmount));
 
   const endNote = round.scholarship ? '/mo' : '';
 
