@@ -37,11 +37,11 @@ const TimeTypography = styled(Typography)(
 
 function Profile({ address, subtitle }: { address: string; subtitle: string }) {
   const { data: ensName } = useEnsName({
-    address: address,
+    address: address as `0x${string}`,
     chainId: 1,
   });
   const { data: ensAvatar } = useEnsAvatar({
-    addressOrName: address,
+    name: ensName,
     chainId: 1,
   });
 
@@ -62,17 +62,14 @@ function Profile({ address, subtitle }: { address: string; subtitle: string }) {
 export function StaticProfile({
   address,
   name,
+  avatar,
   subtitle,
 }: {
   address: string;
   subtitle: string;
+  avatar: string | null | undefined;
   name: string | undefined;
 }) {
-  const { data: avatar } = useEnsAvatar({
-    addressOrName: address,
-    chainId: 1,
-  });
-
   return (
     <ProfileContainer className="profile">
       <AvatarWrapper>

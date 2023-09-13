@@ -209,8 +209,7 @@ function GrantProposalCard({
   inProgress,
   highlighted,
 }: GrantProposalCardProps) {
-  const { data: ensAddress } = useEnsAddress({ name: round.scholarship ? proposal.title : undefined });
-  const { data: ensAvatar } = useEnsAvatar({ addressOrName: ensAddress || undefined });
+  const { data: ensAvatar } = useEnsAvatar({ name: ensName || undefined });
   const { removeItem } = useStorage();
   const to = `/rounds/${round.id}/proposals/${proposal.id}`;
 
@@ -221,6 +220,7 @@ function GrantProposalCard({
           <ProfileWrapper>
             <StaticProfile
               name={ensName}
+              avatar={ensAvatar}
               address={proposal.proposer}
               subtitle={`${getTimeDifferenceString(proposal.createdAt, new Date())} ago`}
             />
