@@ -23,9 +23,9 @@ export const useEnsRecords = (address?: string) => {
 
   const ensRecords: EnsRecords = {
     name: response?.name,
-    description: records?.texts.find(text => text.key === 'description')?.value,
-    twitter: records?.texts.find(text => text.key === 'com.twitter')?.value,
-    github: records?.texts.find(text => text.key === 'com.github')?.value,
+    description: records?.texts?.find(text => text.key === 'description')?.value,
+    twitter: records?.texts?.find(text => text.key === 'com.twitter')?.value,
+    github: records?.texts?.find(text => text.key === 'com.github')?.value,
   };
 
   return { ensRecords };
