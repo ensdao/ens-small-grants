@@ -1,5 +1,4 @@
 import { Button, mq, Tag, Typography } from '@ensdomains/thorin';
-import { useHref, useLinkClickHandler } from 'react-router-dom';
 import styled, { css } from 'styled-components';
 
 import { useGrants } from '../hooks';
@@ -140,9 +139,7 @@ const StatusTag = ({ status }: { status: Status }) => {
 };
 
 const BaseRoundCard = ({ id, title, round, status, children, grants }: BaseProps) => {
-  const to = `/rounds/${id}`;
-  const href = useHref(to);
-  const handleClick = useLinkClickHandler(to);
+  const href = `/rounds/${id}`;
 
   return (
     <StyledCard hasPadding={false}>
@@ -159,19 +156,14 @@ const BaseRoundCard = ({ id, title, round, status, children, grants }: BaseProps
           width: '100%',
         }}
       >
-        <Button
-          shadowless
-          as="a"
-          href={href}
-          variant={status === 'closed' ? 'secondary' : 'primary'}
-          onClick={handleClick as unknown as ClickHandler}
-        >
+        <Button shadowless as="a" href={href} variant={status === 'closed' ? 'secondary' : 'primary'}>
           {status === 'voting' ? 'Vote' : 'View'}
         </Button>
       </div>
 
       <RoundMeta>
-        <MetaItem name="Funding" value={`${formatFundingPerWinner(round)} x ${round.maxWinnerCount}`} />
+        {/* <MetaItem name="Funding" value={`${formatFundingPerWinner(round)} x ${round.maxWinnerCount}`} /> */}
+        <MetaItem name="Funding" value={formatFundingPerWinner(round)} />
 
         {status === 'proposals' && (
           <MetaItem

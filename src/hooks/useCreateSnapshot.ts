@@ -2,7 +2,7 @@ import snapshot from '@snapshot-labs/snapshot.js';
 import Arweave from 'arweave';
 import { ethers } from 'ethers';
 import { useCallback, useState } from 'react';
-import { useAccount, useBlockNumber, useSigner } from 'wagmi';
+import { useAccount, useBlockNumber, useWalletClient } from 'wagmi';
 
 import { client, functionRequest } from '../supabase';
 
@@ -26,7 +26,7 @@ export type CreateSnapshotArgs = {
 };
 
 export function useCreateSnapshot() {
-  const { data: signer } = useSigner();
+  const { data: signer } = useWalletClient();
   const { address } = useAccount();
   const { data: blockNumber } = useBlockNumber();
   const [loading, setLoading] = useState(false);
@@ -100,7 +100,7 @@ export function useCreateSnapshot() {
               discussion: '',
               start: Math.floor(new Date(round.voting_start).getTime() / 1000),
               end: Math.floor(new Date(round.voting_end).getTime() / 1000),
-              snapshot: blockNumber,
+              snapshot: Number(blockNumber),
               plugins: '{}',
             }
           )) as { id: string };

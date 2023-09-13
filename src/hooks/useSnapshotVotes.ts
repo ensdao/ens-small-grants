@@ -51,7 +51,15 @@ export function useSnapshotVotes(address: string | undefined): {
       },
     })
       .then(res => res.json())
-      .then(data => data.data.votes)
+      .then(data => {
+        const d = data as {
+          data: {
+            votes: SnapshotVotes[];
+          };
+        };
+
+        return d.data.votes;
+      })
       .then(setVotes)
       .then(() => setIsLoading(false))
       .catch(() => null);

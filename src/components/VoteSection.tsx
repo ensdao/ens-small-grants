@@ -1,15 +1,14 @@
 import { Button, Checkbox, Dialog, mq, Spinner, Typography } from '@ensdomains/thorin';
+import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
 import styled, { css } from 'styled-components';
 import { useAccount } from 'wagmi';
 
 import { useStorage } from '../hooks';
 import { useSnapshotProposal } from '../hooks';
-import { useEnsNames } from '../hooks/useEnsNames';
 import type { Grant, Round, SelectedPropVotes, SnapshotVote } from '../types';
 import { voteCountFormatter } from '../utils';
-import { StaticProfile } from './Profile';
+import Profile from './Profile';
 import VoteModal from './VoteModal';
 import { Card, TextWithHighlight } from './atoms';
 
@@ -125,9 +124,6 @@ function VoteInProgressSection({ round, snapshotProposalId, proposal }: VoteInPr
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [round.id, selectedProps]);
 
-  const addressesOfVoters = snapshotGrant?.voteSamples.map(voter => voter.voter).slice(0, 5);
-  const ensProfiles = useEnsNames(addressesOfVoters);
-
   if (round.votingStart > new Date()) {
     return <Typography>Voting has not started yet</Typography>;
   }
@@ -187,12 +183,8 @@ function VoteInProgressSection({ round, snapshotProposalId, proposal }: VoteInPr
           </Button>
         )}
         {snapshotGrant.voteSamples.slice(0, 5).map(voter => (
-          <Link to={`/profile/${voter.voter}`} key={voter.voter}>
-            <StaticProfile
-              name={ensProfiles?.data?.find(profile => profile.address === voter.voter)?.name}
-              address={voter.voter}
-              subtitle={`${voteCountFormatter.format(voter.vp)} votes`}
-            />
+          <Link href={`/profile/${voter.voter}`} key={voter.voter}>
+            <Profile address={voter.voter} subtitle={`${voteCountFormatter.format(voter.vp)} votes`} />
           </Link>
         ))}
         {snapshotGrant.voteSamples.length > 5 && (
@@ -255,19 +247,12 @@ function VotersModal({
   setIsOpen: (props: boolean) => void;
   voters: SnapshotVote[];
 }) {
-  const addressesOfVoters = voters.map(voter => voter.voter);
-  const ensProfiles = useEnsNames(addressesOfVoters);
-
   return (
     <Dialog open={isOpen} variant="blank" onDismiss={() => setIsOpen(false)}>
       <VotersModalContent>
         {voters.map(voter => (
-          <Link to={`/profile/${voter.voter}`} key={voter.voter}>
-            <StaticProfile
-              name={ensProfiles?.data?.find(profile => profile.address === voter.voter)?.name}
-              address={voter.voter}
-              subtitle={`${voteCountFormatter.format(voter.vp)} votes`}
-            />
+          <Link href={`/profile/${voter.voter}`} key={voter.voter}>
+            <Profile address={voter.voter} subtitle={`${voteCountFormatter.format(voter.vp)} votes`} />
           </Link>
         ))}
       </VotersModalContent>

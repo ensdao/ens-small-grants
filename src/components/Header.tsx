@@ -1,10 +1,10 @@
 import { mq, Typography } from '@ensdomains/thorin';
-import { ConnectButton } from '@rainbow-me/rainbowkit';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import styled, { css } from 'styled-components';
 
-import Logo from '../assets/Logo.svg';
-import ShortLogo from '../assets/ShortLogo.svg';
+import Logo from '../assets/Logo';
+import ShortLogo from '../assets/ShortLogo';
+import { ConnectButton } from './ConnectButton';
 
 const HeaderContainer = styled.div(
   () => css`
@@ -25,7 +25,7 @@ const LogoAndText = styled(Link)(
   `
 );
 
-const FullLogoIcon = styled(Logo)(
+const FullLogoIconWrapper = styled.div(
   ({ theme }) => css`
     width: ${theme.space['32']};
     display: none;
@@ -35,7 +35,7 @@ const FullLogoIcon = styled(Logo)(
   `
 );
 
-const ShortLogoIcon = styled(ShortLogo)(
+const ShortLogoIconWrapper = styled.div(
   ({ theme }) => css`
     width: ${theme.space['16']};
     ${mq.md.min(css`
@@ -100,16 +100,20 @@ const NavButtons = styled.nav(
 const Header = () => {
   return (
     <HeaderContainer>
-      <LogoAndText to="/">
-        <FullLogoIcon />
-        <ShortLogoIcon />
+      <LogoAndText href="/">
+        <FullLogoIconWrapper>
+          <Logo />
+        </FullLogoIconWrapper>
+        <ShortLogoIconWrapper>
+          <ShortLogo />
+        </ShortLogoIconWrapper>
         <Title>
           <i>Small</i> Grants
         </Title>
       </LogoAndText>
       <NavButtons>
-        <Link to="/faq">FAQ</Link>
-        <ConnectButton chainStatus="none" showBalance={false} />
+        <Link href="/faq">FAQ</Link>
+        <ConnectButton />
       </NavButtons>
     </HeaderContainer>
   );

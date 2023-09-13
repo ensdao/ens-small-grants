@@ -1,7 +1,7 @@
 import { Typography } from '@ensdomains/thorin';
 import styled, { css } from 'styled-components';
+import { useEnsAvatar, useEnsName } from 'wagmi';
 
-import { useEnsRecords } from '../hooks';
 import { shortenAddress } from '../utils';
 import { Avatar } from './Avatar';
 
@@ -36,15 +36,22 @@ const TimeTypography = styled(Typography)(
 );
 
 function Profile({ address, subtitle }: { address: string; subtitle: string }) {
-  const { ensRecords } = useEnsRecords(address);
+  const { data: ensName } = useEnsName({
+    address: address as `0x${string}`,
+    chainId: 1,
+  });
+  const { data: ensAvatar } = useEnsAvatar({
+    name: ensName,
+    chainId: 1,
+  });
 
   return (
     <ProfileContainer className="profile">
       <AvatarWrapper>
-        <Avatar src={ensRecords?.avatar || undefined} label={ensRecords?.name || shortenAddress(address)} />
+        <Avatar src={ensAvatar || undefined} label={ensName || shortenAddress(address)} />
       </AvatarWrapper>
       <div>
-        <NameTypography>{ensRecords?.name || shortenAddress(address)}</NameTypography>
+        <NameTypography>{ensName || shortenAddress(address)}</NameTypography>
         <TimeTypography>{subtitle}</TimeTypography>
       </div>
     </ProfileContainer>
@@ -55,16 +62,18 @@ function Profile({ address, subtitle }: { address: string; subtitle: string }) {
 export function StaticProfile({
   address,
   name,
+  avatar,
   subtitle,
 }: {
   address: string;
   subtitle: string;
+  avatar: string | null | undefined;
   name: string | undefined;
 }) {
   return (
     <ProfileContainer className="profile">
       <AvatarWrapper>
-        <Avatar src={`https://metadata.ens.domains/mainnet/avatar/${name}`} label={name || shortenAddress(address)} />
+        <Avatar src={avatar || undefined} label={name || shortenAddress(address)} />
       </AvatarWrapper>
       <div>
         <NameTypography>{name || shortenAddress(address)}</NameTypography>

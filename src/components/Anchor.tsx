@@ -1,7 +1,7 @@
-import { NavLink } from 'react-router-dom';
+import Link from 'next/link';
 import styled, { css } from 'styled-components';
 
-const Anchor = styled(NavLink)(
+const Anchor = styled(Link)(
   ({ theme }) => css`
     color: ${theme.colors.accent};
     font-weight: bold;

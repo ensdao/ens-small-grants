@@ -1,5 +1,5 @@
 import { Checkbox, mq, Typography } from '@ensdomains/thorin';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import styled, { css, DefaultTheme } from 'styled-components';
 import { useEnsAddress, useEnsAvatar } from 'wagmi';
 
@@ -209,18 +209,18 @@ function GrantProposalCard({
   inProgress,
   highlighted,
 }: GrantProposalCardProps) {
-  const { data: ensAddress } = useEnsAddress({ name: round.scholarship ? proposal.title : undefined });
-  const { data: ensAvatar } = useEnsAvatar({ addressOrName: ensAddress || undefined });
+  const { data: ensAvatar } = useEnsAvatar({ name: ensName || undefined });
   const { removeItem } = useStorage();
   const to = `/rounds/${round.id}/proposals/${proposal.id}`;
 
   const styledCardContents = (
     <>
       {!round.scholarship && (
-        <Link to={`/profile/${proposal.proposer}`}>
+        <Link href={`/profile/${proposal.proposer}`}>
           <ProfileWrapper>
             <StaticProfile
               name={ensName}
+              avatar={ensAvatar}
               address={proposal.proposer}
               subtitle={`${getTimeDifferenceString(proposal.createdAt, new Date())} ago`}
             />
@@ -230,7 +230,7 @@ function GrantProposalCard({
 
       {!round.scholarship && (
         <ContentWrapper>
-          <Link to={to}>
+          <Link href={to}>
             <Title>{proposal.title}</Title>
             <Description>{proposal.description}</Description>
           </Link>
@@ -238,7 +238,8 @@ function GrantProposalCard({
       )}
 
       {round.scholarship && (
-        <ScholarshipCardWrapper to={to}>
+        <ScholarshipCardWrapper href={to}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <AvatarWrapper>{ensAvatar && <img src={ensAvatar} alt="" />}</AvatarWrapper>
           <NameVotes>
             <Title>{proposal.title}</Title>

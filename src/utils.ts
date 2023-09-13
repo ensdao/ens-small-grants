@@ -1,6 +1,7 @@
-import { formatEther, formatUnits } from 'ethers/lib/utils';
+// import { formatEther, formatUnits } from 'ethers/lib/utils';
+import { formatEther } from 'viem';
 
-import { Round, Status } from './types';
+import { Round, RoundInDatabase, Status } from './types';
 
 export const voteCountFormatter = new Intl.NumberFormat('en', {
   notation: 'compact',
@@ -96,10 +97,11 @@ export const getRoundStatus = (round: Round): Status => {
 export const formatFundingPerWinner = (round: Round): string => {
   const tokenName = round.allocationTokenAddress === '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48' ? 'USDC' : 'ETH';
 
+  // TODO: re-add logic for prize per winner
   const number =
     tokenName === 'USDC'
-      ? formatUnits(Math.floor(Number(round.allocationTokenAmount) / round.maxWinnerCount), 6).toString()
-      : formatEther((Number(round.allocationTokenAmount) / round.maxWinnerCount).toString());
+      ? Math.floor(round.allocationTokenAmount / 1e6).toString()
+      : formatEther(BigInt(round.allocationTokenAmount));
 
   const endNote = round.scholarship ? '/mo' : '';
 
@@ -123,3 +125,21 @@ export const dateToString = (date: Date): string => {
     hour12: true,
   }).format(date);
 };
+
+export function camelCaseRound(r: RoundInDatabase): Round {
+  return {
+    ...r,
+    title: r.title.replace(/ Round.*/, ''),
+    round: Number.parseInt(r.title.replace(/.*Round /, '')),
+    proposalStart: r.proposal_start,
+    proposalEnd: r.proposal_end,
+    votingStart: r.voting_start,
+    votingEnd: r.voting_end,
+    createdAt: r.created_at,
+    updatedAt: r.updated_at,
+    allocationTokenAmount: Number(r.allocation_token_amount),
+    allocationTokenAddress: r.allocation_token_address,
+    maxWinnerCount: Number(r.max_winner_count),
+    houseId: r.house_id,
+  };
+}

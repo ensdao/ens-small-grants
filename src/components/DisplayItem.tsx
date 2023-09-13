@@ -82,8 +82,8 @@ const AddressSubtitle = styled(Typography)(
 );
 
 const AddressValue = ({ value }: { value: string }) => {
-  const { data: primary } = useEnsName({ address: value, chainId: 1 });
-  const { data: avatar } = useEnsAvatar({ addressOrName: value, chainId: 1 });
+  const { data: primary } = useEnsName({ address: value as `0x${string}`, chainId: 1 });
+  const { data: avatar } = useEnsAvatar({ name: primary, chainId: 1 });
 
   const AddressTypography = useMemo(
     () =>

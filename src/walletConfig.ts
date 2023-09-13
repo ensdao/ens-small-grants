@@ -1,35 +1,27 @@
 import { getDefaultWallets } from '@rainbow-me/rainbowkit';
-import { QueryClient } from '@tanstack/react-query';
-import { chain, configureChains, createClient } from 'wagmi';
-import { alchemyProvider } from 'wagmi/providers/alchemy';
+import { configureChains, createConfig } from 'wagmi';
+import { mainnet } from 'wagmi/chains';
 import { publicProvider } from 'wagmi/providers/public';
 
-export const { chains, provider } = configureChains(
-  [chain.mainnet],
-  [
-    alchemyProvider({
-      apiKey: import.meta.env.VITE_ALCHEMY_API_KEY,
-    }),
-    publicProvider(),
-  ]
-);
+const WALLETCONNECT_ID = process.env.NEXT_PUBLIC_WALLETCONNECT_ID;
+
+if (!WALLETCONNECT_ID) {
+  throw new Error('Missing NEXT_PUBLIC_WALLETCONNECT_ID');
+}
+
+export const chains = [mainnet];
+
+const { publicClient, webSocketPublicClient } = configureChains(chains, [publicProvider()]);
 
 export const { connectors } = getDefaultWallets({
   appName: 'ENS Small Grants',
+  projectId: WALLETCONNECT_ID,
   chains,
 });
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      refetchOnWindowFocus: false,
-    },
-  },
-});
-
-export const wagmiClient = createClient({
+export const wagmiConfig = createConfig({
   autoConnect: true,
   connectors,
-  provider,
-  queryClient,
+  publicClient,
+  webSocketPublicClient,
 });
