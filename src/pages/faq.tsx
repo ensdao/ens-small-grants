@@ -89,7 +89,7 @@ const content: Content[] = [
       {
         question: 'What are ENS Small Grants?',
         answer:
-          'ENS Small Grants allow $ENS holders to vote on projects to receive funding. Sponsored by the Public Goods and Ecosystem working group, these recurring small grants award 1Ξ to your favorite projects.',
+          'ENS Small Grants allow the community to vote on projects to receive funding, sponsored by the Public Goods and Ecosystem Working Groups.',
       },
       {
         question: 'What is eligible for Public Goods?',
