@@ -133,18 +133,12 @@ const content: Content[] = [
       },
       {
         question: 'When does voting close?',
-        answer:
-          'The end of the voting period is displayed on each round’s page. This generally is the last day of the month at 11:59 GMT',
+        answer: 'The end of the voting period is displayed on each round’s page.',
       },
       {
-        question: 'What voting strategy is used?',
+        question: 'When is the next round?',
         answer:
-          'Small grants use an approval voting strategy. One ENS is one vote. We also implement an ERC-20 with override that allows you to vote even if you have delegated your votes.',
-      },
-      {
-        question: 'Will there be additional rounds?',
-        answer:
-          'Additional rounds may be added in the future. The goal of small grants is to be an interactive and creative process. We hope to add rounds and scale the funding amounts in the future.',
+          'The intention of both the Ecosystem and Public Goods Working Groups is to run one round per quarter. The exact dates will be announced on [discuss.ens.domains](https://discuss.ens.domains/).',
       },
     ],
   },
@@ -154,7 +148,7 @@ const content: Content[] = [
       {
         question: 'What if I submitted to the wrong round?',
         answer:
-          'Please get in touch with [coltron.eth](https://twitter.com/Coltron_eth). Administrators can move your proposal before voting is submitted to snapshot.',
+          'Please get in touch with [gregskril.eth](https://twitter.com/gregskril). Administrators can move your proposal before voting is submitted to snapshot.',
       },
       {
         question: 'Is there a proposal template?',
@@ -162,16 +156,12 @@ const content: Content[] = [
           'There is no required template. We encourage creativity. Consider the use of markdown to craft a well-organized proposal. [A short guide can be found here](https://www.markdownguide.org/basic-syntax/).',
       },
       {
-        question: 'How do I receive winnings?',
-        answer: 'Your winnings will be paid to the address that submitted the small grant proposal.',
-      },
-      {
         question: 'Can I submit more than one project?',
         answer: 'Yes, you can submit more than one project.',
       },
       {
-        question: 'Can I submit the same project next month?',
-        answer: 'Yes, you may submit the same project again in a subsequent round.',
+        question: 'Can I submit the same project in multiple rounds?',
+        answer: 'Yes, you may submit the same project again in subsequent rounds.',
       },
     ],
   },
@@ -181,7 +171,7 @@ const content: Content[] = [
       {
         question: 'I’m having an issue. Who do I contact?',
         answer:
-          'Please get in touch with [coltron.eth](https://twitter.com/Coltron_eth), [gregskril.eth](https://twitter.com/gregskril) or a DAO steward.',
+          'Please get in touch with [gregskril.eth](https://twitter.com/gregskril) or any [Working Group steward](https://basics.ensdao.org/working-groups#ca018f3e6c944825b0e58985d060e29c).',
       },
     ],
   },
