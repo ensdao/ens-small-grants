@@ -44,7 +44,7 @@ export default function Home() {
             <HeadingContainer>
               <Heading>ENS Small Grants</Heading>
               <Subheading>
-                ENS Small Grants allow $ENS holders to vote on projects to receive funding, sponsored by the Public
+                ENS Small Grants allow the community to vote on projects to receive funding, sponsored by the Public
                 Goods and Ecosystem Working Groups.
               </Subheading>
             </HeadingContainer>
