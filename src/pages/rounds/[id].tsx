@@ -163,7 +163,8 @@ const RoundContent = ({ round, id, showHelper }: { round: RoundType; id: string;
 
   if (isActiveRound && !isPropRound && !isVotingRound) {
     // Time between submissions closed and voting starts
-    upperVoteMsg = <p>Voting starts in {getTimeDifferenceString(new Date(), round.votingStart)}</p>;
+    // upperVoteMsg = <p>Voting starts in {getTimeDifferenceString(new Date(), round.votingStart)}</p>;
+    upperVoteMsg = <p>Voting starts soon</p>;
     lowerVoteMsg = <p>Submissions closed</p>;
   } else {
     const fundingPerWinnerStr = formatFundingPerWinner(round);
