@@ -1,23 +1,9 @@
+import { Round } from '@/kysely/db';
 import snapshot from '@snapshot-labs/snapshot.js';
 import Arweave from 'arweave';
 import { ethers } from 'ethers';
 import { useCallback, useState } from 'react';
 import { useAccount, useBlockNumber, useWalletClient } from 'wagmi';
-
-import { client, functionRequest } from '../supabase';
-
-const domain = {
-  name: 'ENS Grants',
-  version: '1',
-  chainId: 1,
-};
-
-const types = {
-  Snapshot: [
-    { name: 'roundId', type: 'uint256' },
-    { name: 'snapshotProposalId', type: 'string' },
-  ],
-};
 
 const snapshotClient = new snapshot.Client712('https://hub.snapshot.org');
 
@@ -47,30 +33,33 @@ export function useCreateSnapshot() {
             protocol: 'https',
           });
 
-          const { data: grants, error } = await client
-            .from('grants')
-            .select()
-            .eq('round_id', args.roundId)
-            .eq('deleted', false)
-            .order('created_at', { ascending: true });
+          const round = (await fetch(`/api/round/${args.roundId}`).then(res => res.json())) as Round;
 
-          if (error || !grants) {
-            throw new Error('failed to fetch grants');
-          }
+          // const grants = await kysely
+          //   .selectFrom('grants')
+          //   .select(['id', 'proposer', 'title', 'description', 'fullText'])
+          //   .where('roundId', '=', args.roundId)
+          //   .where('deleted', '=', false)
+          //   .orderBy('createdAt', 'asc')
+          //   .execute();
 
-          const { data: rounds, error: roundsError } = await client.from('rounds').select().eq('id', args.roundId);
-
-          if (roundsError || !rounds || rounds.length !== 1) {
+          if (!round) {
             throw new Error('failed to fetch round data');
           }
 
-          const round = rounds[0];
+          const { grants } = round;
+
+          if (!grants) {
+            throw new Error('failed to fetch grants');
+          }
+
+          // const round = await kysely.selectFrom('rounds').selectAll().where('id', '=', args.roundId).executeTakeFirst();
 
           const grantsData = grants.map(grant => ({
             proposer: grant.proposer,
             title: grant.title,
             description: grant.description,
-            fullText: grant.full_text,
+            fullText: grant.fullText,
           }));
 
           const transaction = await arweave.createTransaction({
@@ -91,32 +80,21 @@ export function useCreateSnapshot() {
             signer as unknown as ethers.providers.Web3Provider,
             address || '',
             {
-              space: round.snapshot_space_id,
+              space: round.snapshotSpaceId,
               type: 'approval',
               title: round.title,
               body: `https://arweave.net/${transaction.id}`,
               choices: grants.map(g => `${g.id} - ${g.title}`),
               // todo(carlos): insert link to round
               discussion: '',
-              start: Math.floor(new Date(round.voting_start).getTime() / 1000),
-              end: Math.floor(new Date(round.voting_end).getTime() / 1000),
+              start: Math.floor(new Date(round.votingStart).getTime() / 1000),
+              end: Math.floor(new Date(round.votingEnd).getTime() / 1000),
               snapshot: Number(blockNumber),
               plugins: '{}',
             }
           )) as { id: string };
 
-          const snapshotData = {
-            roundId: args.roundId,
-            snapshotProposalId: receipt.id,
-          };
-
-          // @ts-ignore
-          const signature = await signer._signTypedData(domain, types, snapshotData);
-
-          return functionRequest('attach_snapshot', {
-            snapshotData,
-            signature,
-          });
+          console.log(receipt);
         } finally {
           setLoading(false);
         }

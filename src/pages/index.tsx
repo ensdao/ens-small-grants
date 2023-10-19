@@ -1,5 +1,5 @@
 import { Highlights } from '@/components/Highlights';
-import { useIsMounted } from '@/hooks/useIsMounted';
+import { Round } from '@/kysely/db';
 import { Heading, Spinner } from '@ensdomains/thorin';
 
 import Anchor from '../components/Anchor';
@@ -16,10 +16,11 @@ import {
   SectionHeading,
   Subheading,
 } from '../components/atoms';
-import { useRounds } from '../hooks';
-import type { Round as RoundType } from '../types';
+import { useFetch } from '../hooks';
+import { AllRounds } from './api/rounds';
 
-const isActiveRound = (round: RoundType) => round.votingEnd > new Date() && round.proposalStart < new Date();
+const isActiveRound = (round: Round) =>
+  new Date(round.votingEnd) > new Date() && new Date(round.proposalStart) < new Date();
 
 const singleRoundCss = {
   gridTemplateColumns: '1fr',
@@ -27,7 +28,7 @@ const singleRoundCss = {
 };
 
 export default function Home() {
-  const { rounds, isLoading: roundsAreLoading } = useRounds();
+  const { data: rounds } = useFetch<AllRounds[]>('/api/rounds');
   const activeRounds = rounds?.filter(r => isActiveRound(r));
 
   return (
@@ -35,7 +36,7 @@ export default function Home() {
       <OpenGraphElements />
 
       {(() => {
-        if (roundsAreLoading || !rounds || !activeRounds) {
+        if (!rounds || !activeRounds) {
           return <Spinner size="large" color="purple" />;
         }
 

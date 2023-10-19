@@ -1,6 +1,5 @@
-import { client } from '@/supabase';
 import { Helper, mq, Typography } from '@ensdomains/thorin';
-import { GetServerSidePropsContext, GetStaticPropsContext } from 'next';
+import { GetServerSidePropsContext } from 'next';
 import { useRouter } from 'next/router';
 import ReactMarkdown from 'react-markdown';
 import styled, { css } from 'styled-components';
@@ -9,9 +8,10 @@ import { BackButtonWithSpacing } from '../../components/BackButton';
 import { BannerContainer } from '../../components/BannerContainer';
 import GrantRoundSection from '../../components/GrantRoundSection';
 import OpenGraphElements from '../../components/OpenGraphElements';
-import { useRounds } from '../../hooks';
-import type { Round, RoundInDatabase, Round as RoundType } from '../../types';
-import { camelCaseRound, formatFundingPerWinner, getTimeDifferenceString } from '../../utils';
+import { formatFundingPerWinner, getTimeDifferenceString, serializeGrant, serializeRound } from '../../utils';
+import { getRound } from '../api/round/[id]';
+import { z } from 'zod';
+import { Round } from '@/kysely/db';
 
 const Container = styled.div(
   ({ scholarship }: { scholarship?: boolean }) => css`
@@ -133,29 +133,23 @@ const RoundDescription = styled(Typography)(
 export default function Round({ staticRound }: { staticRound: Round }) {
   const router = useRouter();
   const { success } = router.query;
-  const id = staticRound.id;
 
-  if (!id) {
-    router.push('/rounds');
-  }
-
-  const { round } = useRounds(id.toString());
   const showHelper = success !== undefined || false;
 
   return (
     <>
       <OpenGraphElements title={`${staticRound.title || ''} | ENS Small Grants`} />
 
-      <RoundContent round={round || staticRound} id={staticRound.id.toString()} showHelper={showHelper} />
+      <RoundContent round={staticRound} showHelper={showHelper} />
     </>
   );
 }
 
-const RoundContent = ({ round, id, showHelper }: { round: RoundType; id: string; showHelper: boolean }) => {
-  const to = `/create?round=${id}`;
-  const isActiveRound = round.proposalStart < new Date() && round.votingEnd > new Date();
-  const isVotingRound = round.votingStart < new Date() && round.votingEnd > new Date();
-  const isPropRound = round.proposalStart < new Date() && round.proposalEnd > new Date();
+const RoundContent = ({ round, showHelper }: { round: Round; showHelper: boolean }) => {
+  const to = `/create?round=${round.id}`;
+  const isActiveRound = new Date(round.proposalStart) < new Date() && new Date(round.votingEnd) > new Date();
+  const isVotingRound = new Date(round.votingStart) < new Date() && new Date(round.votingEnd) > new Date();
+  const isPropRound = new Date(round.proposalStart) < new Date() && new Date(round.proposalEnd) > new Date();
 
   let upperVoteMsg: React.ReactNode;
   let lowerVoteMsg: React.ReactNode;
@@ -169,14 +163,7 @@ const RoundContent = ({ round, id, showHelper }: { round: RoundType; id: string;
   } else {
     const fundingPerWinnerStr = formatFundingPerWinner(round);
 
-    upperVoteMsg = (
-      <>
-        <b>{fundingPerWinnerStr}</b>
-        {/* <b>
-          {round.maxWinnerCount} {round.scholarship ? 'people' : 'projects'}
-        </b> */}
-      </>
-    );
+    upperVoteMsg = (<b>{fundingPerWinnerStr}</b>);
 
     if (!round.snapshot && (!isActiveRound || isVotingRound)) {
       noSnapshotWhenNeeded = true;
@@ -203,8 +190,9 @@ const RoundContent = ({ round, id, showHelper }: { round: RoundType; id: string;
 
   return (
     <>
-      <Container scholarship={round.scholarship}>
+      <Container scholarship={round.scholarship || false}>
         <BackButtonWithSpacing href="/" />
+
         {showHelper && (
           <Helper
             type="info"
@@ -218,13 +206,14 @@ const RoundContent = ({ round, id, showHelper }: { round: RoundType; id: string;
 
         <HeadingContainer>
           <Title>
-            <b>{round.title}</b> {!round.scholarship && `Round ${round.round}`}
+            <b>{round.title.split('Round')[0]}</b> {!round.scholarship && `Round ${round.title.split('Round')[1]}`}
           </Title>
           <VoteDetailsContainer>
             <VotesTypography>{upperVoteMsg}</VotesTypography>
             <VoteTimeTypography>{lowerVoteMsg}</VoteTimeTypography>
           </VoteDetailsContainer>
         </HeadingContainer>
+
         {round.description && (
           <RoundDescription>
             <ReactMarkdown
@@ -243,7 +232,7 @@ const RoundContent = ({ round, id, showHelper }: { round: RoundType; id: string;
         )}
       </Container>
 
-      <Container scholarship={round.scholarship}>
+      <Container scholarship={round.scholarship || false}>
         {noSnapshotWhenNeeded ? (
           <BannerContainer>
             <Typography>Looks like something went wrong, try again later.</Typography>
@@ -252,7 +241,6 @@ const RoundContent = ({ round, id, showHelper }: { round: RoundType; id: string;
           <GrantRoundSection
             round={round}
             createProposalHref={to}
-            // createProposalClick={onClick as unknown as ClickHandler | (() => void)}
           />
         )}
       </Container>
@@ -264,27 +252,27 @@ const RoundContent = ({ round, id, showHelper }: { round: RoundType; id: string;
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const { res, params } = context;
-  const { id } = params as { id: string | undefined };
+  const schema = z.object({ id: z.coerce.number()});
+  const { id } = schema.parse(params);
 
-  if (!id) {
+  if (!schema.safeParse(params).success) {
     throw new Error('No id provided');
   }
 
-  const round = await client.from('rounds').select().eq('id', id);
-
-  if (round.error) {
-    throw round.error;
-  }
-
-  const roundData = round.data[0] as RoundInDatabase;
-  const flattenedRound = camelCaseRound(roundData);
+  const { grants, snapshot, ...rest } = await getRound(id);
+  const serializedRound = serializeRound(rest);
+  const serializedGrants = grants.map((grant) => serializeGrant(grant))
 
   // Cache the server rendered page for 1 min then use stale-while-revalidate for 1 hour
   res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=3600');
 
   return {
     props: {
-      staticRound: flattenedRound,
+      staticRound: {
+        ...serializedRound,
+        grants: serializedGrants,
+        snapshot: snapshot || null
+      },
     },
   };
 }

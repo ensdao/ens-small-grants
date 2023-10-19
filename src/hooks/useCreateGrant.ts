@@ -1,8 +1,6 @@
 import { useCallback, useState } from 'react';
 import { useAccount, useWalletClient } from 'wagmi';
 
-import { functionRequest } from '../supabase';
-
 const domain = {
   name: 'ENS Grants',
   version: '1',
@@ -54,10 +52,13 @@ export function useCreateGrant() {
           // const signature = await signer._signTypedData(domain, types, grantData);
           const signature = await signer.signTypedData({ domain, types, message: grantData, primaryType: 'Grant' });
 
-          return functionRequest('create_grant', {
-            grantData,
-            signature,
-          });
+          // TODO: write API to save a proposal to the database instead of relying on Supabase functions
+          return new Response();
+
+          // return functionRequest('create_grant', {
+          //   grantData,
+          //   signature,
+          // });
         } finally {
           setLoading(false);
         }

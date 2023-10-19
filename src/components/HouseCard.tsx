@@ -4,7 +4,7 @@ import styled, { css } from 'styled-components';
 
 import CheckIcon from '../assets/check_green.svg';
 import VotingIcon from '../assets/voting.svg';
-import { House, Round } from '../types';
+import type { House, Round } from '../kysely/db';
 import { getRoundStatus } from '../utils';
 import { StyledCard, Subtitle, Title, HeadingContainer } from './RoundCard';
 
@@ -95,7 +95,7 @@ export default function HouseCard({ house, rounds }: HouseCardProps) {
               <RoundName>
                 <Icon>{getRoundStatus(round) === 'voting' ? <VotingIcon /> : <CheckIcon />}</Icon>
                 <Typography weight="semiBold">
-                  {round.title} <AccentText>Round {round.round}</AccentText>
+                  {round.title} <AccentText>Round {round.id}</AccentText>
                 </Typography>
               </RoundName>
               <p>Ξ {Number(formatEther(round.allocationTokenAmount)).toFixed(0)}</p>

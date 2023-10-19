@@ -1,3 +1,4 @@
+import type { Grant, Round } from '@/kysely/db';
 import { Button, Checkbox, Dialog, mq, Spinner, Typography } from '@ensdomains/thorin';
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
@@ -6,7 +7,7 @@ import { useAccount } from 'wagmi';
 
 import { useStorage } from '../hooks';
 import { useSnapshotProposal } from '../hooks';
-import type { Grant, Round, SelectedPropVotes, SnapshotVote } from '../types';
+import type { SelectedPropVotes, SnapshotVote } from '../types';
 import { voteCountFormatter } from '../utils';
 import Profile from './Profile';
 import VoteModal from './VoteModal';
@@ -137,7 +138,7 @@ function VoteInProgressSection({ round, snapshotProposalId, proposal }: VoteInPr
   }
 
   const preVoting = new Date() < round.votingStart;
-  const votingOver = round.votingEnd < new Date();
+  const votingOver = new Date(round.votingEnd) < new Date();
 
   if (preVoting) {
     return <Typography>Voting has not started</Typography>;
@@ -154,19 +155,25 @@ function VoteInProgressSection({ round, snapshotProposalId, proposal }: VoteInPr
             <Checkbox
               label=""
               variant="regular"
-              checked={selectedProps.votes.includes(proposal.snapshotId)}
+              checked={
+                proposal.snapshot?.choiceId ? selectedProps.votes.includes(proposal.snapshot.choiceId) : undefined
+              }
               onChange={e => {
                 // if target is checked, push the proposal id to the array
                 if (e.target.checked) {
+                  if (!proposal.snapshot?.choiceId) return alert('Proposal choice id not found');
+
                   setSelectedProps({
                     round: Number(round.id),
-                    votes: [...(selectedProps.votes || []), proposal.snapshotId],
+                    votes: [...(selectedProps.votes || []), proposal.snapshot.choiceId],
                   });
                 } else {
+                  if (!proposal.snapshot?.choiceId) return alert('Proposal choice id not found');
+
                   // if target is unchecked, remove the proposal id from the array
                   setSelectedProps({
                     round: Number(round.id),
-                    votes: (selectedProps.votes || []).filter(vote => vote !== proposal.snapshotId),
+                    votes: (selectedProps.votes || []).filter(vote => vote !== proposal?.snapshot?.choiceId),
                   });
                 }
               }}
@@ -175,7 +182,8 @@ function VoteInProgressSection({ round, snapshotProposalId, proposal }: VoteInPr
         </TopSection>
         {address && selectedProps.votes.length > 0 && (
           <Button
-            variant={selectedProps.votes.includes(proposal.snapshotId) ? 'primary' : 'secondary'}
+            variant={selectedProps.votes.includes(proposal.snapshot?.choiceId || 0) ? 'primary' : 'secondary'}
+            disabled={!proposal.snapshot?.choiceId || votingOver}
             size="small"
             onClick={() => setVotingModalOpen(true)}
           >
@@ -196,11 +204,11 @@ function VoteInProgressSection({ round, snapshotProposalId, proposal }: VoteInPr
 
       <VotersModal isOpen={votersModalOpen} setIsOpen={setVotersModalOpen} voters={snapshotGrant.voteSamples} />
 
-      {address && round.snapshot?.id && (
+      {address && round.snapshotProposalId && (
         <VoteModal
           open={votingModalOpen}
           onClose={() => setVotingModalOpen(false)}
-          proposalId={round.snapshot.id}
+          proposalId={round.snapshotProposalId}
           grantIds={selectedProps?.votes.map(id => id + 1) || []}
           address={address}
         />
@@ -217,10 +225,10 @@ const StyledCard = styled(Card)(
 );
 
 function VoteSection({ round, proposal }: GrantProposalCardProps) {
-  const innerContent: React.ReactNode = !round.snapshot?.id ? (
+  const innerContent: React.ReactNode = !round.snapshotProposalId ? (
     <Typography>Voting has not started</Typography>
   ) : (
-    <VoteInProgressSection round={round} snapshotProposalId={round.snapshot.id} proposal={proposal} />
+    <VoteInProgressSection round={round} snapshotProposalId={round.snapshotProposalId} proposal={proposal} />
   );
 
   return <StyledCard hasPadding={true}>{innerContent}</StyledCard>;

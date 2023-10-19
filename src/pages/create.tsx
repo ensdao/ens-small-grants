@@ -1,3 +1,4 @@
+import { Round } from '@/kysely/db';
 import { Button, Dialog, FieldSet, Helper, Input, mq, Spinner, Textarea, Typography } from '@ensdomains/thorin';
 import { useRouter } from 'next/router';
 import { useCallback, useState } from 'react';
@@ -9,7 +10,7 @@ import { useAccount } from 'wagmi';
 import BackButton from '../components/BackButton';
 import DisplayItem from '../components/DisplayItem';
 import { Card, InnerModal, DisplayItems } from '../components/atoms';
-import { useCreateGrant, useRounds } from '../hooks';
+import { useCreateGrant, useFetch } from '../hooks';
 
 type FormInput = {
   title: string;
@@ -106,7 +107,8 @@ export default function CreateProposal() {
 
   const { address } = useAccount();
   const isFormDisabled = !address;
-  const { round, isLoading } = useRounds(roundId);
+  const { data: round } = useFetch<Round>(roundId ? `/api/round/${roundId}` : undefined);
+  const isLoading = !round;
 
   const { handleSubmit, register, getFieldState, formState } = useForm<FormInput>({
     mode: 'onBlur',
@@ -221,7 +223,7 @@ export default function CreateProposal() {
         href={`/rounds/${roundId}`}
         title={
           <Title>
-            <b>{round.title}</b> Round {round.round}
+            <b>{round.title.split('Round')[0]}</b> Round ${round.title.split('Round')[1]}
           </Title>
         }
       />

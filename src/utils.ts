@@ -1,7 +1,8 @@
-// import { formatEther, formatUnits } from 'ethers/lib/utils';
+import { SetOptional } from 'type-fest';
 import { formatEther } from 'viem';
 
-import { Round, RoundInDatabase, Status } from './types';
+import { Grant, Round } from './kysely/db';
+import { Status } from './types';
 
 export const voteCountFormatter = new Intl.NumberFormat('en', {
   notation: 'compact',
@@ -21,8 +22,8 @@ export const roundTimestampsToDates = ({ proposalStart, proposalEnd, votingStart
   votingEnd: new Date(votingEnd),
 });
 
-export const getTimeDifference = (date1: Date, date2: Date) => {
-  const diff = date2.getTime() - date1.getTime();
+export const getTimeDifference = (date1: Date | string, date2: Date | string) => {
+  const diff = new Date(date2).getTime() - new Date(date1).getTime();
   const days = Math.floor(diff / (1000 * 60 * 60 * 24));
   const hours = Math.floor(diff / (1000 * 60 * 60));
   const minutes = Math.floor(diff / (1000 * 60));
@@ -81,13 +82,13 @@ export const shortenAddress = (address = '', maxLength = 10, leftSlice = 5, righ
 export const getRoundStatus = (round: Round): Status => {
   const now = new Date();
 
-  if (now < round.proposalStart) {
+  if (now < new Date(round.proposalStart)) {
     return 'queued';
-  } else if (now < round.proposalEnd) {
+  } else if (now < new Date(round.proposalEnd)) {
     return 'proposals';
-  } else if (now < round.votingStart) {
+  } else if (now < new Date(round.votingStart)) {
     return 'pending-voting';
-  } else if (now < round.votingEnd) {
+  } else if (now < new Date(round.votingEnd)) {
     return 'voting';
   } else {
     return 'closed';
@@ -101,7 +102,7 @@ export const formatFundingPerWinner = (round: Round): string => {
     // TODO: re-add logic for prize per winner
     const number =
       tokenName === 'USDC'
-        ? Math.floor(round.allocationTokenAmount / 1e6).toString()
+        ? Math.floor(Number(round.allocationTokenAmount) / 1e6).toString()
         : formatEther(BigInt(round.allocationTokenAmount));
 
     const endNote = round.scholarship ? '/mo' : '';
@@ -130,20 +131,24 @@ export const dateToString = (date: Date): string => {
   }).format(date);
 };
 
-export function camelCaseRound(r: RoundInDatabase): Round {
+export function serializeRound(round: Round) {
   return {
-    ...r,
-    title: r.title.replace(/ Round.*/, ''),
-    round: Number.parseInt(r.title.replace(/.*Round /, '')),
-    proposalStart: r.proposal_start,
-    proposalEnd: r.proposal_end,
-    votingStart: r.voting_start,
-    votingEnd: r.voting_end,
-    createdAt: r.created_at,
-    updatedAt: r.updated_at,
-    allocationTokenAmount: Number(r.allocation_token_amount),
-    allocationTokenAddress: r.allocation_token_address,
-    maxWinnerCount: Number(r.max_winner_count),
-    houseId: r.house_id,
+    ...round,
+    snapshot: round.snapshot || null,
+    proposalStart: round.proposalStart.toISOString(),
+    proposalEnd: round.proposalEnd.toISOString(),
+    votingStart: round.votingStart.toISOString(),
+    votingEnd: round.votingEnd.toISOString(),
+    createdAt: round.createdAt.toISOString(),
+    updatedAt: round.updatedAt.toISOString(),
+  };
+}
+
+export function serializeGrant(grant: SetOptional<Grant, 'payoutAddress'>) {
+  return {
+    ...grant,
+    createdAt: grant.createdAt.toISOString(),
+    updatedAt: grant.updatedAt.toISOString(),
+    snapshot: grant.snapshot || null,
   };
 }

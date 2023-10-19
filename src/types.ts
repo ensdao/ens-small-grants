@@ -115,3 +115,27 @@ export type SelectedPropVotes = {
 };
 
 export type Status = 'queued' | 'proposals' | 'pending-voting' | 'voting' | 'closed';
+
+export type SnapshotProposalsResponse = {
+  data: {
+    proposals: {
+      id: string;
+      choices: string[];
+      scores_total: number;
+      scores_state: string;
+      scores: number[];
+    }[];
+  };
+};
+
+export type SnapshotProposalResponse = {
+  data: {
+    proposal: {
+      id: string;
+      choices: string[];
+      scores_total: number;
+      scores_state: string;
+      scores: number[];
+    };
+  };
+};

@@ -1,5 +1,5 @@
-import { client } from '@/supabase';
-import { Heading, mq, Spinner, Typography } from '@ensdomains/thorin';
+import { Grant, Round } from '@/kysely/db';
+import { Button, Heading, mq, Spinner, Typography } from '@ensdomains/thorin';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { GetServerSidePropsContext, GetStaticPropsContext } from 'next/types';
@@ -12,9 +12,8 @@ import { GrantsFilterOptions } from '../../components/GrantRoundSection';
 import OpenGraphElements from '../../components/OpenGraphElements';
 import Profile from '../../components/Profile';
 import VoteSection from '../../components/VoteSection';
-import { SnapshotProposalResponse, useGrantIds, useGrants, useRounds, useStorage } from '../../hooks';
-import type { GrantInDatabase, Grant, Round, RoundInDatabase } from '../../types';
-import { getTimeDifferenceString } from '../../utils';
+import { getTimeDifferenceString, serializeGrant, serializeRound } from '../../utils';
+import { getGrant } from '../api/grant/[id]';
 
 const Title = styled(Heading)(
   ({ theme }) => css`
@@ -167,14 +166,27 @@ const ProfileWrapper = styled(Link)(
   `
 );
 
-export default function Proposal({
-  staticGrant,
-  staticRound,
-}: {
-  staticGrant: GrantInDatabase;
-  staticRound: RoundInDatabase;
-}) {
-  // const { round, isLoading: roundLoading } = useRounds(roundId.toString());
+const ButtonsWrapper = styled.div(
+  ({ theme }) => css`
+    display: flex;
+    align-items: flex-start;
+    gap: ${theme.space['3']};
+    flex-direction: column-reverse;
+
+    ${mq.sm.min(css`
+      gap: ${theme.space['4']};
+      align-items: center;
+      flex-direction: row;
+    `)}
+
+    .visit-website {
+      width: fit-content;
+    }
+  `
+);
+
+export default function Proposal({ grant, round }: { grant: Grant; round: Round }) {
+  // const round = round;
   // const { grant, isLoading } = useGrants(round, id.toString());
   // const { grants: grantIds, isLoading: grandIdsLoading } = useGrantIds(Number(roundId));
 
@@ -202,29 +214,44 @@ export default function Proposal({
 
   return (
     <>
-      <OpenGraphElements title={`${staticGrant.title}`} description={staticGrant.description} />
+      <OpenGraphElements title={`${grant.title}`} description={grant.description} />
 
-      <BackButtonWithSpacing href={`/rounds/${staticGrant.round_id}`} />
+      <BackButtonWithSpacing href={`/rounds/${grant.roundId}`} />
       <ContentGrid>
         <div>
           <TitleContainer>
-            <Title>{staticGrant.title}</Title>
-            {staticGrant.description && <Description>{staticGrant.description}</Description>}
+            <Title>{grant.title}</Title>
+            {grant.description && <Description>{grant.description}</Description>}
           </TitleContainer>
 
-          {!staticRound.scholarship && (
-            <ProfileWrapper href={`/profile/${staticGrant.proposer}`}>
-              <Profile
-                address={staticGrant.proposer}
-                subtitle={`${getTimeDifferenceString(new Date(staticGrant.created_at), new Date())} ago`}
-              />
-            </ProfileWrapper>
+          {!round.scholarship && (
+            <ButtonsWrapper>
+              <ProfileWrapper href={`/profile/${grant.proposer}`}>
+                <Profile
+                  address={grant.proposer}
+                  subtitle={`${getTimeDifferenceString(new Date(grant.createdAt), new Date())} ago`}
+                />
+              </ProfileWrapper>
+
+              {grant.twitter && (
+                <Button
+                  className="visit-website"
+                  as="a"
+                  target="_blank"
+                  rel="noopener"
+                  href={grant.twitter}
+                  size="small"
+                >
+                  Visit Website
+                </Button>
+              )}
+            </ButtonsWrapper>
           )}
 
           {/* apply onlyMobile styles */}
-          {/* <OnlyMobile>
+          <OnlyMobile>
             <VoteSection round={round} proposal={grant} />
-          </OnlyMobile> */}
+          </OnlyMobile>
 
           <MarkdownWrapper>
             <ReactMarkdown
@@ -244,7 +271,7 @@ export default function Proposal({
               }}
               remarkPlugins={[remarkGfm]}
             >
-              {staticGrant.full_text}
+              {grant.fullText}
             </ReactMarkdown>
           </MarkdownWrapper>
 
@@ -258,9 +285,9 @@ export default function Proposal({
           )} */}
         </div>
 
-        {/* <OnlyDesktop>
+        <OnlyDesktop>
           <VoteSection round={round} proposal={grant} />
-        </OnlyDesktop> */}
+        </OnlyDesktop>
       </ContentGrid>
       <div style={{ flexGrow: 1 }} />
     </>
@@ -275,31 +302,16 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     throw new Error('No id provided');
   }
 
-  const grant = await client
-    .from('grants')
-    .select('id, round_id, proposer, title, description, full_text, created_at')
-    .eq('id', id);
-
-  if (grant.error) {
-    throw grant.error;
-  }
-
-  const grantBody = grant.body[0] as GrantInDatabase;
-  const round = await client.from('rounds').select('*').eq('id', grantBody.round_id);
-
-  if (round.error) {
-    throw round.error;
-  }
-
-  const roundBody = round.body[0] as RoundInDatabase;
+  const enhancedGrant = await getGrant(Number(id));
+  const { round, ...rest } = enhancedGrant;
 
   // Cache the server rendered page for 1 min then use stale-while-revalidate for 10 min
   res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=600');
 
   return {
     props: {
-      staticGrant: grantBody,
-      staticRound: roundBody,
+      grant: serializeGrant(rest),
+      round: serializeRound(round),
     },
   };
 }
