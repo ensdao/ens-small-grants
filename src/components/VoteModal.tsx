@@ -113,7 +113,7 @@ function VoteModal({ open, onClose, grantIds, proposalId, address }: VoteModalPr
 
         {!voted && !error && (
           <Message>
-            You are about to vote for ${grantIds.length > 1 ? 'these proposals' : 'this proposal'}, please confirm the
+            You are about to vote for {grantIds.length > 1 ? 'these proposals' : 'this proposal'}, please confirm the
             details below.
           </Message>
         )}

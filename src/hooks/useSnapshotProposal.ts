@@ -131,12 +131,17 @@ export function useSnapshotProposal(proposalId: string) {
 
   const vote = useCallback(
     async (choiceId: number[]) => {
+      const percentagePerChoice = 100 / choiceId.length;
+
+      // create an object with the choiceId as key and the percentage as value
+      const choice = choiceId.reduce((acc, choiceId) => ({ ...acc, [choiceId]: percentagePerChoice }), {});
+
       if (address && proposal?.space.id) {
         await snapshotClient.vote(signer as unknown as ethers.providers.Web3Provider, address, {
           space: proposal?.space.id,
           proposal: proposalId,
-          type: 'approval',
-          choice: choiceId,
+          type: 'weighted',
+          choice,
         });
         queryClient.invalidateQueries(['proposal', proposalId, address]);
       }
