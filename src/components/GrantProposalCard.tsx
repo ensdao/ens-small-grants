@@ -246,7 +246,10 @@ function GrantProposalCard({
             <Title>{proposal.title}</Title>
             {votingStarted && (
               <span>
-                {proposal.snapshot?.score ? voteCountFormatter.format(proposal.snapshot?.score) : 'Unknown'} votes
+                {proposal.snapshot?.score !== undefined
+                  ? voteCountFormatter.format(proposal.snapshot?.score)
+                  : 'Unknown'}{' '}
+                votes
               </span>
             )}
           </NameVotes>
@@ -257,7 +260,12 @@ function GrantProposalCard({
         <Votes scholarship={round.scholarship || false}>
           {!round.scholarship && (
             <>
-              <b>{proposal.snapshot?.score ? voteCountFormatter.format(proposal.snapshot?.score) : 'Unknown'}</b>votes
+              <b>
+                {proposal.snapshot?.score !== undefined
+                  ? voteCountFormatter.format(proposal.snapshot?.score)
+                  : 'Unknown'}
+              </b>
+              votes
             </>
           )}
           {inProgress && address && (

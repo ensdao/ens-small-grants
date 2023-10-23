@@ -90,7 +90,8 @@ function GrantRoundSection({ round, createProposalHref }: GrantRoundSectionProps
           votes: [],
         }
   );
-  // const [votingModalOpen, setVotingModalOpen] = useState<boolean>(false);
+
+  const [votingModalOpen, setVotingModalOpen] = useState<boolean>(false);
 
   // useEffect(() => {
   //   if (selectedProps) {
@@ -135,24 +136,28 @@ function GrantRoundSection({ round, createProposalHref }: GrantRoundSectionProps
           {filter !== 'votes' ? 'Sort by votes' : 'Shuffle order'}
         </FilterButton>
       )} */}
+
       {isPropsOpen && (
         <Button as="a" href={createProposalHref}>
           Submit Proposal
         </Button>
       )}
+
       {!address && randomiseGrants && (
         <Button variant="secondary" onClick={openConnectModal}>
           Connect wallet to vote
         </Button>
       )}
-      {/* {address && randomiseGrants && selectedProps && selectedProps.votes.length === 0 && (
+
+      {address && randomiseGrants && selectedProps && selectedProps.votes.length === 0 && (
         <Button variant="secondary">Check your favorite proposals</Button>
       )}
+
       {address && randomiseGrants && selectedProps && selectedProps.votes.length > 0 && (
         <Button onClick={() => setVotingModalOpen(true)}>
           Vote for {selectedProps.votes.length} proposal{selectedProps.votes.length > 1 && 's'}
         </Button>
-      )} */}
+      )}
 
       <ProposalWrapper scholarship={round.scholarship || false}>
         {grants &&
@@ -163,8 +168,8 @@ function GrantRoundSection({ round, createProposalHref }: GrantRoundSectionProps
               setSelectedProps={setSelectedProps}
               round={round}
               connectedAccount={address}
-              votingStarted={round.votingStart < new Date()}
-              inProgress={round.votingEnd > new Date()}
+              votingStarted={new Date(round.votingStart) < new Date()}
+              inProgress={new Date(round.votingEnd) > new Date()}
               key={g.id}
               // match the grant proposer with the ENS name's address
               ensName={
@@ -175,7 +180,7 @@ function GrantRoundSection({ round, createProposalHref }: GrantRoundSectionProps
                 // In the completed stage, highlight the winning grants
                 randomiseGrants
                   ? selectedProps && selectedProps.votes.includes(g.snapshot?.choiceId || 0)
-                  : round.votingStart < new Date()
+                  : new Date(round.votingStart) < new Date()
                   ? grants.findIndex(grant => grant.id === g.id) < round.maxWinnerCount
                   : false
               }
@@ -183,15 +188,15 @@ function GrantRoundSection({ round, createProposalHref }: GrantRoundSectionProps
           ))}
       </ProposalWrapper>
 
-      {/* {address && round?.snapshot?.id && (
+      {address && round?.snapshotProposalId && (
         <VoteModal
           open={votingModalOpen}
           onClose={() => setVotingModalOpen(false)}
-          proposalId={round.snapshot.id}
+          proposalId={round.snapshotProposalId}
           grantIds={selectedProps?.votes.map(id => id + 1) || []}
           address={address}
         />
-      )} */}
+      )}
     </GrantsContainer>
   );
 }
