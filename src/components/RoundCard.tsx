@@ -216,7 +216,6 @@ const MetaItem = ({ name, value, tooltip }: { name: string; value: string; toolt
 
 export const RoundCard = (round: AllRounds) => {
   const status = getRoundStatus(round);
-  const { grants } = useGrants(round);
 
   const baseProps = {
     id: round.id,
