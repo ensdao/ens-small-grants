@@ -1,9 +1,10 @@
 import { Round } from '@/kysely/db';
+import { useEthersSigner } from '@/wagmi-adapters';
 import snapshot from '@snapshot-labs/snapshot.js';
 import Arweave from 'arweave';
 import { ethers } from 'ethers';
 import { useCallback, useState } from 'react';
-import { useAccount, useBlockNumber, useWalletClient } from 'wagmi';
+import { useAccount, useBlockNumber } from 'wagmi';
 
 const snapshotClient = new snapshot.Client712('https://hub.snapshot.org');
 
@@ -12,16 +13,17 @@ export type CreateSnapshotArgs = {
 };
 
 export function useCreateSnapshot() {
-  const { data: signer } = useWalletClient();
+  const signer = useEthersSigner();
   const { address } = useAccount();
   const { data: blockNumber } = useBlockNumber();
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [receipt, setReceipt] = useState<string | null>(null);
 
   const createSnapshot = useCallback(
     async (args: CreateSnapshotArgs) => {
       if (signer && address) {
         try {
-          setLoading(true);
+          setIsLoading(true);
 
           if (!blockNumber) {
             return new Error('no block number');
@@ -35,14 +37,6 @@ export function useCreateSnapshot() {
 
           const round = (await fetch(`/api/round/${args.roundId}`).then(res => res.json())) as Round;
 
-          // const grants = await kysely
-          //   .selectFrom('grants')
-          //   .select(['id', 'proposer', 'title', 'description', 'fullText'])
-          //   .where('roundId', '=', args.roundId)
-          //   .where('deleted', '=', false)
-          //   .orderBy('createdAt', 'asc')
-          //   .execute();
-
           if (!round) {
             throw new Error('failed to fetch round data');
           }
@@ -53,9 +47,9 @@ export function useCreateSnapshot() {
             throw new Error('failed to fetch grants');
           }
 
-          // const round = await kysely.selectFrom('rounds').selectAll().where('id', '=', args.roundId).executeTakeFirst();
+          const grantsOrdered = grants.sort((a, b) => a.id - b.id);
 
-          const grantsData = grants.map(grant => ({
+          const grantsData = grantsOrdered.map(grant => ({
             proposer: grant.proposer,
             title: grant.title,
             description: grant.description,
@@ -84,24 +78,24 @@ export function useCreateSnapshot() {
               type: 'approval',
               title: round.title,
               body: `https://arweave.net/${transaction.id}`,
-              choices: grants.map(g => `${g.id} - ${g.title}`),
-              // todo(carlos): insert link to round
+              choices: grantsOrdered.map(g => `${g.id} - ${g.title}`),
               discussion: '',
               start: Math.floor(new Date(round.votingStart).getTime() / 1000),
               end: Math.floor(new Date(round.votingEnd).getTime() / 1000),
               snapshot: Number(blockNumber),
-              plugins: '{}',
+              plugins: JSON.stringify({}),
             }
           )) as { id: string };
 
+          setReceipt(receipt.id);
           console.log(receipt);
         } finally {
-          setLoading(false);
+          setIsLoading(false);
         }
       }
     },
     [address, signer, blockNumber]
   );
 
-  return { createSnapshot, loading };
+  return { createSnapshot, isLoading, receipt };
 }

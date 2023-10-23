@@ -1,30 +1,41 @@
 import { useCreateSnapshot } from '@/hooks';
-import { Button } from '@ensdomains/thorin';
+import { Button, Helper } from '@ensdomains/thorin';
 import { GetServerSidePropsContext } from 'next/types';
 import { useCallback, useState } from 'react';
 import z from 'zod';
 
 export default function Page({ roundId }: { roundId: number }) {
-  const { createSnapshot } = useCreateSnapshot();
-  const [_, setLoading] = useState(false);
+  const { createSnapshot, isLoading, receipt } = useCreateSnapshot();
 
   const create = useCallback(() => {
     if (roundId) {
       (async () => {
         try {
-          setLoading(true);
+          // setLoading(true);
           await createSnapshot({ roundId });
         } finally {
-          setLoading(false);
+          // setLoading(false);
         }
       })();
     }
   }, [createSnapshot, roundId]);
 
   return (
-    <Button onClick={create} style={{ width: 'fit-content' }}>
-      Create Snapshot
-    </Button>
+    <>
+      <Button onClick={create} loading={isLoading} style={{ width: 'fit-content' }}>
+        Create Snapshot
+      </Button>
+
+      {receipt && (
+        <Helper
+          style={{
+            maxWidth: 'fit-content',
+          }}
+        >
+          {receipt}
+        </Helper>
+      )}
+    </>
   );
 }
 
