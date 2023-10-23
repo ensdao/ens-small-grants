@@ -177,8 +177,7 @@ const BaseRoundCard = ({ id, title, round, status, children, grantsCount }: Base
         {status === 'pending-voting' && (
           <MetaItem
             name="Voting starts"
-            // value={getTimeDifferenceString(new Date(), round.votingStart)}
-            value="Soon"
+            value={getTimeDifferenceString(new Date(), round.votingStart)}
             tooltip={round.votingStart.toLocaleString()}
           />
         )}

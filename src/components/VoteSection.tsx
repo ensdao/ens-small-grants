@@ -137,7 +137,7 @@ function VoteInProgressSection({ round, snapshotProposalId, proposal }: VoteInPr
     return <Typography>Voting has not started yet</Typography>;
   }
 
-  const preVoting = new Date() < round.votingStart;
+  const preVoting = new Date() < new Date(round.votingStart);
   const votingOver = new Date(round.votingEnd) < new Date();
 
   if (preVoting) {
@@ -151,6 +151,7 @@ function VoteInProgressSection({ round, snapshotProposalId, proposal }: VoteInPr
           <VotesTypography>
             <b>{voteCountFormatter.format(snapshotGrant.voteCount)}</b> Votes
           </VotesTypography>
+
           {!votingOver && address && (
             <Checkbox
               label=""
