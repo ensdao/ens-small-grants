@@ -214,7 +214,11 @@ export default function Proposal({ grant, round }: { grant: Grant; round: Round 
 
   return (
     <>
-      <OpenGraphElements title={`${grant.title}`} description={grant.description} />
+      <OpenGraphElements
+        title={`${grant.title}`}
+        description={grant.description}
+        imageUrl={`https://ensgrants.xyz/api/og/grant?id=${grant.id}`}
+      />
 
       <BackButtonWithSpacing href={`/rounds/${grant.roundId}`} />
       <ContentGrid>
