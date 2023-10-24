@@ -1,4 +1,3 @@
-import { useIsMounted } from '@/hooks/useIsMounted';
 import BasicLayout from '@/layouts/BasicLayout';
 import { ThorinGlobalStyles } from '@ensdomains/thorin';
 import { RainbowKitProvider } from '@rainbow-me/rainbowkit';
@@ -12,18 +11,14 @@ import { thorinTheme } from '../theme';
 import { chains, wagmiConfig } from '../walletConfig';
 
 export default function App({ Component, pageProps }: AppProps) {
-  const isMounted = useIsMounted();
-
   return (
     <WagmiConfig config={wagmiConfig}>
       <ThemeProvider theme={thorinTheme}>
         <ThorinGlobalStyles />
         <RainbowKitProvider chains={chains} modalSize="compact">
-          {isMounted && (
-            <BasicLayout>
-              <Component {...pageProps} />
-            </BasicLayout>
-          )}
+          <BasicLayout>
+            <Component {...pageProps} />
+          </BasicLayout>
         </RainbowKitProvider>
       </ThemeProvider>
     </WagmiConfig>
