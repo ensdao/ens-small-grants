@@ -89,6 +89,8 @@ function VoteModal({ open, onClose, grantIds, proposalId, address }: VoteModalPr
     setError(null);
   }
 
+  const votingPower = snapshotProposal?.votesAvailable ?? 0;
+
   return (
     <Dialog open={open} onDismiss={handleDismiss} variant="blank">
       <Dialog.CloseButton onClick={handleDismiss} />
@@ -120,10 +122,7 @@ function VoteModal({ open, onClose, grantIds, proposalId, address }: VoteModalPr
 
         <DisplayItems>
           <DisplayItem label="Connected address" address value={address} />
-          <DisplayItem
-            label="Voting Power"
-            value={`${voteCountFormatter.format(snapshotProposal?.votesAvailable ?? 0)}`}
-          />
+          <DisplayItem label="Voting Power" value={`${voteCountFormatter.format(votingPower)}`} />
           <DisplayItem label={`Selected proposal${grantIds.length > 1 ? 's' : ''}`} value={grantIds.join(', ')} />
         </DisplayItems>
       </InnerModal>
@@ -135,7 +134,7 @@ function VoteModal({ open, onClose, grantIds, proposalId, address }: VoteModalPr
         }
         trailing={
           !voted && (
-            <Button shadowless disabled={waiting} onClick={onPressAddVote} loading={waiting}>
+            <Button shadowless disabled={waiting || votingPower === 0} onClick={onPressAddVote} loading={waiting}>
               Vote
             </Button>
           )
