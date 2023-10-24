@@ -103,6 +103,10 @@ export function useSnapshotProposal(proposalId: string) {
       if (body.data.currentVote?.length === 0) body.data.currentVote = undefined;
     }
 
+    const currentVoteChoices = body.data.currentVote?.[0].choice
+      ? (Object.keys(body.data.currentVote?.[0].choice) as unknown as number[])
+      : [];
+
     const grants: SnapshotGrant[] =
       body.data.proposal.choices.map((choice, i) => ({
         choiceId: i,
@@ -111,13 +115,17 @@ export function useSnapshotProposal(proposalId: string) {
         voteStatus: body.data.proposal.scores_state === 'final',
         voteSamples: body.data.votes
           // Only show the voters who voted for this grant
-          .filter(voter => voter.choice.includes(i + 1))
+          .filter(vote => {
+            // the keys are the choiceIds which are always numbers, but javascript's Object.keys always returns string so we need to cast it
+            const voterChoices = Object.keys(vote.choice).map(choice => Number(choice));
+            return voterChoices.includes(i + 1);
+          })
           .sort((a, b) => {
             if (a.voter === address) return -1;
             if (b.voter === address) return 1;
             return b.vp - a.vp;
           }),
-        currentVotes: body.data.currentVote?.[0].choice.includes(i + 1) ? body.data.currentVote[0].vp : 0,
+        currentVotes: currentVoteChoices.includes(i + 1) ? body.data.currentVote?.[0].vp || 0 : 0,
       })) || [];
 
     return {

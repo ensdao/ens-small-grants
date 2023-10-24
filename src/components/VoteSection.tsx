@@ -125,7 +125,7 @@ function VoteInProgressSection({ round, snapshotProposalId, proposal }: VoteInPr
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [round.id, selectedProps]);
 
-  if (round.votingStart > new Date()) {
+  if (new Date(round.votingStart) > new Date()) {
     return <Typography>Voting has not started yet</Typography>;
   }
 
@@ -149,7 +149,10 @@ function VoteInProgressSection({ round, snapshotProposalId, proposal }: VoteInPr
       <Container>
         <TopSection>
           <VotesTypography>
-            <b>{voteCountFormatter.format(snapshotGrant.voteCount)}</b> Votes
+            <b>
+              {proposal.snapshot?.score !== undefined ? voteCountFormatter.format(proposal.snapshot?.score) : 'Unknown'}
+            </b>{' '}
+            Votes
           </VotesTypography>
 
           {!votingOver && address && (

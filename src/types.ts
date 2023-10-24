@@ -6,7 +6,7 @@ export type SnapshotVote = {
   id: string;
   voter: string;
   vp: number;
-  choice: number[];
+  choice: { [key: number]: number };
 };
 
 export type SnapshotGrant = {
