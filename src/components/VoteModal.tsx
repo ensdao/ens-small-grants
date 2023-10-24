@@ -1,6 +1,7 @@
 import { Button, Dialog, Helper, Typography, lightTheme } from '@ensdomains/thorin';
 import { useState } from 'react';
 import styled, { css } from 'styled-components';
+import { Address, useContractRead } from 'wagmi';
 
 import { useSnapshotProposal } from '../hooks';
 import { voteCountFormatter } from '../utils';
@@ -91,6 +92,27 @@ function VoteModal({ open, onClose, grantIds, proposalId, address }: VoteModalPr
 
   const votingPower = snapshotProposal?.votesAvailable ?? 0;
 
+  const { data: balanceOf } = useContractRead({
+    address: '0xfb03372a30E173A8998f732dDfeA0138144B468e',
+    abi: [
+      {
+        inputs: [
+          { internalType: 'address', name: 'account', type: 'address' },
+          { internalType: 'uint256', name: 'id', type: 'uint256' },
+        ],
+        name: 'balanceOf',
+        outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+        stateMutability: 'view',
+        type: 'function',
+      },
+    ] as const,
+    functionName: 'balanceOf',
+    args: [address as Address, 1n],
+    chainId: 10,
+  });
+
+  const hasVoterCard = balanceOf && balanceOf > 0n;
+
   return (
     <Dialog open={open} onDismiss={handleDismiss} variant="blank">
       <Dialog.CloseButton onClick={handleDismiss} />
@@ -125,6 +147,12 @@ function VoteModal({ open, onClose, grantIds, proposalId, address }: VoteModalPr
           <DisplayItem label="Voting Power" value={`${voteCountFormatter.format(votingPower)}`} />
           <DisplayItem label={`Selected proposal${grantIds.length > 1 ? 's' : ''}`} value={grantIds.join(', ')} />
         </DisplayItems>
+
+        {votingPower === 0 && !!hasVoterCard && (
+          <Helper type="warning">
+            You should have voting power but there seems to be an error with Snapshot. Try again later.
+          </Helper>
+        )}
       </InnerModal>
       <Dialog.Footer
         leading={
