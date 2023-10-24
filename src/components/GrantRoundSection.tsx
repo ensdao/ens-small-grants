@@ -1,6 +1,6 @@
 import { Button, Typography } from '@ensdomains/thorin';
 import { useConnectModal } from '@rainbow-me/rainbowkit';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import styled, { css } from 'styled-components';
 import { useAccount } from 'wagmi';
 
@@ -93,12 +93,13 @@ function GrantRoundSection({ round, createProposalHref }: GrantRoundSectionProps
 
   const [votingModalOpen, setVotingModalOpen] = useState<boolean>(false);
 
-  // useEffect(() => {
-  //   if (selectedProps) {
-  //     setItem(`round-${round.id}-votes`, JSON.stringify(selectedProps), 'local');
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [selectedProps, round]);
+  // Keep track of the selected prop ids in local storage
+  useEffect(() => {
+    if (selectedProps) {
+      setItem(`round-${round.id}-votes`, JSON.stringify(selectedProps), 'local');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedProps]);
 
   // Batch resolve ENS names here
   const addressesOfGrantees = grants?.map(grant => grant.proposer);
