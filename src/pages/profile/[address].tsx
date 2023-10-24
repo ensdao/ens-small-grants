@@ -1,7 +1,7 @@
+import type { Grant } from '@/kysely/db';
 import { mq, Heading, Spinner, Tag } from '@ensdomains/thorin';
 import { useRouter } from 'next/router';
 import styled, { css } from 'styled-components';
-import { useEnsAvatar, useEnsName } from 'wagmi';
 
 import TwitterIcon from '../../assets/twitter.svg';
 import { Avatar } from '../../components/Avatar';
@@ -9,9 +9,9 @@ import { Description, Title } from '../../components/GrantProposalCard';
 import { GrantsContainer } from '../../components/GrantRoundSection';
 import OpenGraphElements from '../../components/OpenGraphElements';
 import { cardStyles, HeadingContainer } from '../../components/atoms';
-import { useRounds, useGrantsByUser, useEnsRecords, useSnapshotVotes } from '../../hooks';
-import type { Grant } from '../../types';
-import { getRoundStatus, shortenAddress, voteCountFormatter } from '../../utils';
+import { useGrantsByUser, useEnsRecords, useSnapshotVotes, useFetch } from '../../hooks';
+import { getRoundStatus, shortenAddress } from '../../utils';
+import { AllRounds } from '../api/rounds';
 
 const StyledCard = styled('div')(
   cardStyles,
@@ -93,7 +93,7 @@ const Ul = styled.ul`
 export default function Profile() {
   const router = useRouter();
   const { address } = router.query as { address: string | undefined };
-  const { grants } = useGrantsByUser({ address: address });
+  const { data: grants } = useGrantsByUser({ address: address });
   const { ensRecords } = useEnsRecords(address);
   const ensName = ensRecords?.name;
 
@@ -151,7 +151,7 @@ export default function Profile() {
 }
 
 function ProposalHistory({ grants }: { grants: Grant[] | undefined }) {
-  const { rounds } = useRounds();
+  const { data: rounds } = useFetch<AllRounds[]>('/api/rounds');
 
   if (!grants || !rounds || grants.length === 0) return null;
 
@@ -161,18 +161,13 @@ function ProposalHistory({ grants }: { grants: Grant[] | undefined }) {
       {grants?.map((grant: Grant) => {
         const round = rounds.find(r => r.id === grant.roundId);
         const roundStatus = round && getRoundStatus(round);
-        const snapshotChoiceIndex = round?.snapshot?.choices.findIndex(c => Number(c.split(' - ')[0]) === grant.id);
-        const votes = round?.snapshot?.scores[snapshotChoiceIndex || 0] || 0;
 
         return (
           <StyledCard as="a" href={`/rounds/${grant.roundId}/proposals/${grant.id}`} key={grant.id} hasPadding={true}>
             <RoundMeta>
-              <Tag tone="accent">
-                {round?.title} Round {round?.round}
-              </Tag>
+              <Tag tone="accent">{round?.title}</Tag>
 
               {roundStatus !== 'closed' && <Tag tone="green">Active</Tag>}
-              {roundStatus !== 'proposals' && <Tag>{voteCountFormatter.format(votes)} votes</Tag>}
             </RoundMeta>
 
             <Title>{grant.title}</Title>

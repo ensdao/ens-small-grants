@@ -38,7 +38,7 @@ const CustomHelper = styled(Helper)(
 function VoteModal({ open, onClose, grantIds, proposalId, address }: VoteModalProps) {
   const [waiting, setWaiting] = useState(false);
   const [voted, setVoted] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<React.ReactNode | string | null>(null);
   const { proposal: snapshotProposal, vote } = useSnapshotProposal(proposalId);
 
   // If any of the grandIds are NaN for some reason, set the error message
@@ -58,8 +58,25 @@ function VoteModal({ open, onClose, grantIds, proposalId, address }: VoteModalPr
 
         if (error_.error_description) {
           setError(`Snapshot error: ${error_.error_description}`);
+        } else if (error_?.message?.includes('user rejected signing')) {
+          setError('Rejected the signature');
         } else {
-          setError('Unknown error. Refresh the page and try again.');
+          setError(
+            <div>
+              <span>Unknown error. </span>
+              <a
+                href={`https://snapshot.org/#/small-grants.eth/proposal/${proposalId}`}
+                target="_blank"
+                rel="noreferrer"
+                style={{
+                  color: lightTheme.colors.accent,
+                  fontWeight: '500',
+                }}
+              >
+                Vote on Snapshot directly
+              </a>
+            </div>
+          );
         }
       });
 
@@ -86,35 +103,26 @@ function VoteModal({ open, onClose, grantIds, proposalId, address }: VoteModalPr
             {error}
           </Helper>
         ) : null}
-        <Message>
-          {voted ? (
-            <>
-              <Typography>
-                <b style={{ color: lightTheme.colors.red }}>The vote count may take a few minutes to update.</b>
-              </Typography>
-              <Typography>Voting again will override your previous vote.</Typography>
-            </>
-          ) : error ? (
-            <a
-              href={`https://snapshot.org/#/small-grants.eth/proposal/${proposalId}`}
-              target="_blank"
-              rel="noreferrer"
-              style={{
-                color: lightTheme.colors.accent,
-              }}
-            >
-              Vote on Snapshot directly
-            </a>
-          ) : (
-            `You are about to vote for ${grantIds.length > 1 ? 'these proposals' : 'this proposal'}, please confirm the
-          details below.`
-          )}
-        </Message>
+
+        {voted ? (
+          <Helper type="warning" style={{ minWidth: '100%' }}>
+            <Typography weight="semiBold">The vote count may take a few minutes to update.</Typography>
+            <Typography>Voting again will override your previous vote.</Typography>
+          </Helper>
+        ) : null}
+
+        {!voted && !error && (
+          <Message>
+            You are about to vote for {grantIds.length > 1 ? 'these proposals' : 'this proposal'}, please confirm the
+            details below.
+          </Message>
+        )}
+
         <DisplayItems>
           <DisplayItem label="Connected address" address value={address} />
           <DisplayItem
             label="Voting Power"
-            value={`${voteCountFormatter.format(snapshotProposal?.votesAvailable ?? 0)} $ENS`}
+            value={`${voteCountFormatter.format(snapshotProposal?.votesAvailable ?? 0)}`}
           />
           <DisplayItem label={`Selected proposal${grantIds.length > 1 ? 's' : ''}`} value={grantIds.join(', ')} />
         </DisplayItems>

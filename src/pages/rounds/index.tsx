@@ -6,7 +6,8 @@ import { BackButtonWithSpacing } from '../../components/BackButton';
 import { EmptyHouse } from '../../components/HouseCard';
 import OpenGraphElements from '../../components/OpenGraphElements';
 import RoundCard from '../../components/RoundCard';
-import { useHouses, useRounds } from '../../hooks';
+import { useFetch } from '../../hooks';
+import { AllRounds } from '../api/rounds';
 
 const RoundGrid = styled.div(
   ({ theme }) => css`
@@ -37,28 +38,22 @@ export default function Rounds() {
   const query = router.query;
   const slug = query.slug as string | undefined;
 
-  const { house } = useHouses({ slug });
-  const { rounds } = useRounds();
-
-  const filteredRounds = slug ? rounds?.filter(round => round.houseId === house?.id) : rounds;
+  const { data: rounds } = useFetch<AllRounds[]>('/api/rounds');
 
   return (
     <>
       <OpenGraphElements title={`All Rounds - ENS Small Grants`} />
 
       {(() => {
-        if (!rounds || !filteredRounds || (slug && !house)) {
+        if (!rounds) {
           return <Spinner />;
         }
 
         return (
           <>
-            <BackButtonWithSpacing
-              href={house ? `/${house.slug}` : '/'}
-              title={<Title>{house ? house.title : 'All'} Rounds</Title>}
-            />
+            <BackButtonWithSpacing href={'/'} title={<Title>All Rounds</Title>} />
 
-            {filteredRounds.length === 0 && (
+            {rounds.length === 0 && (
               <div
                 style={{
                   padding: '2rem 0',
@@ -69,7 +64,7 @@ export default function Rounds() {
             )}
 
             <RoundGrid>
-              {filteredRounds.map(r => (
+              {rounds.map(r => (
                 <RoundCard key={r.id} {...r} />
               ))}
             </RoundGrid>

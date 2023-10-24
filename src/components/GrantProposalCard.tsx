@@ -4,7 +4,8 @@ import styled, { css, DefaultTheme } from 'styled-components';
 import { useEnsAddress, useEnsAvatar } from 'wagmi';
 
 import { useStorage } from '../hooks';
-import { Grant, Round, SelectedPropVotes } from '../types';
+import type { Grant, Round } from '../kysely/db';
+import { SelectedPropVotes } from '../types';
 import { getTimeDifferenceString, voteCountFormatter } from '../utils';
 import { StaticProfile } from './Profile';
 import { cardStyles } from './atoms';
@@ -243,16 +244,28 @@ function GrantProposalCard({
           <AvatarWrapper>{ensAvatar && <img src={ensAvatar} alt="" />}</AvatarWrapper>
           <NameVotes>
             <Title>{proposal.title}</Title>
-            {votingStarted && <span>{voteCountFormatter.format(proposal.voteCount!)} votes</span>}
+            {votingStarted && (
+              <span>
+                {proposal.snapshot?.score !== undefined
+                  ? voteCountFormatter.format(proposal.snapshot?.score)
+                  : 'Unknown'}{' '}
+                votes
+              </span>
+            )}
           </NameVotes>
         </ScholarshipCardWrapper>
       )}
 
       {votingStarted && (
-        <Votes scholarship={round.scholarship}>
+        <Votes scholarship={round.scholarship || false}>
           {!round.scholarship && (
             <>
-              <b>{voteCountFormatter.format(proposal.voteCount!)}</b>votes
+              <b>
+                {proposal.snapshot?.score !== undefined
+                  ? voteCountFormatter.format(proposal.snapshot?.score)
+                  : 'Unknown'}
+              </b>
+              votes
             </>
           )}
           {inProgress && address && (
@@ -260,25 +273,25 @@ function GrantProposalCard({
               <Checkbox
                 label=""
                 variant="regular"
-                checked={selectedProps.votes.includes(proposal.snapshotId)}
+                checked={selectedProps.votes.includes(proposal.snapshot?.choiceId || 0)}
                 onChange={e => {
                   // if target is checked, push the proposal id to the array
                   if (e.target.checked) {
                     // Clear session storage and refresh page if the Snapshot ID is not available
-                    if (!proposal.snapshotId && proposal.snapshotId !== 0) {
+                    if (!proposal.snapshot?.choiceId && proposal.snapshot?.choiceId !== 0) {
                       removeItem(`round-${round.id}-grants`, 'session');
                       window.location.reload();
                     }
 
                     setSelectedProps({
                       round: Number(round.id),
-                      votes: [...(selectedProps.votes || []), proposal.snapshotId],
+                      votes: [...(selectedProps.votes || []), proposal.snapshot?.choiceId || 0],
                     });
                   } else {
                     // if target is unchecked, remove the proposal id from the array
                     setSelectedProps({
                       round: Number(round.id),
-                      votes: (selectedProps.votes || []).filter(vote => vote !== proposal.snapshotId),
+                      votes: (selectedProps.votes || []).filter(vote => vote !== proposal.snapshot?.choiceId),
                     });
                   }
                 }}

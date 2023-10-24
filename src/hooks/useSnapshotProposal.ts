@@ -1,7 +1,8 @@
+import { useEthersSigner } from '@/wagmi-adapters';
 import snapshot from '@snapshot-labs/snapshot.js';
 import { ethers } from 'ethers';
 import { useCallback } from 'react';
-import { useAccount, useQuery, useQueryClient, useWalletClient } from 'wagmi';
+import { useAccount, useQuery, useQueryClient } from 'wagmi';
 
 import { SnapshotGrant, SnapshotProposal, SnapshotVote } from '../types';
 import { camelCaseToUpperCase, replaceKeysWithFunc } from '../utils';
@@ -69,7 +70,7 @@ const snapshotClient = new snapshot.Client712('https://hub.snapshot.org');
 export function useSnapshotProposal(proposalId: string) {
   const queryClient = useQueryClient();
 
-  const { data: signer } = useWalletClient();
+  const signer = useEthersSigner();
   const { address } = useAccount();
 
   const { data: proposal, isLoading } = useQuery(['proposal', proposalId, address], async () => {
@@ -130,12 +131,17 @@ export function useSnapshotProposal(proposalId: string) {
 
   const vote = useCallback(
     async (choiceId: number[]) => {
+      const percentagePerChoice = 100 / choiceId.length;
+
+      // create an object with the choiceId as key and the percentage as value
+      const choice = choiceId.reduce((acc, choiceId) => ({ ...acc, [choiceId]: percentagePerChoice }), {});
+
       if (address && proposal?.space.id) {
         await snapshotClient.vote(signer as unknown as ethers.providers.Web3Provider, address, {
           space: proposal?.space.id,
           proposal: proposalId,
-          type: 'approval',
-          choice: choiceId,
+          type: 'weighted',
+          choice,
         });
         queryClient.invalidateQueries(['proposal', proposalId, address]);
       }

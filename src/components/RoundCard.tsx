@@ -1,8 +1,9 @@
+import { Round } from '@/kysely/db';
+import { AllRounds } from '@/pages/api/rounds';
 import { Button, mq, Tag, Typography } from '@ensdomains/thorin';
 import styled, { css } from 'styled-components';
 
-import { useGrants } from '../hooks';
-import { ClickHandler, Grant, Round, Status } from '../types';
+import { Status } from '../types';
 import { formatFundingPerWinner, getRoundStatus, getTimeDifferenceString } from '../utils';
 import { Card } from './atoms';
 
@@ -122,7 +123,7 @@ type BaseProps = {
   round: Round;
   status: Status;
   children: React.ReactNode;
-  grants: Grant[] | undefined;
+  grantsCount: number;
 };
 
 const StatusTag = ({ status }: { status: Status }) => {
@@ -138,15 +139,15 @@ const StatusTag = ({ status }: { status: Status }) => {
   return <Tag tone="secondary">Closed</Tag>;
 };
 
-const BaseRoundCard = ({ id, title, round, status, children, grants }: BaseProps) => {
+const BaseRoundCard = ({ id, title, round, status, children, grantsCount }: BaseProps) => {
   const href = `/rounds/${id}`;
 
   return (
     <StyledCard hasPadding={false}>
       <HeadingContainer>
         <HeadingTextContainer>
-          <Title>{title}</Title>
-          <Subtitle>Round {round.round}</Subtitle>
+          <Title>{title.split('Round')[0]}</Title>
+          <Subtitle>Round {title.split('Round')[1]}</Subtitle>
         </HeadingTextContainer>
         <StatusTag status={status} />
       </HeadingContainer>
@@ -176,8 +177,7 @@ const BaseRoundCard = ({ id, title, round, status, children, grants }: BaseProps
         {status === 'pending-voting' && (
           <MetaItem
             name="Voting starts"
-            // value={getTimeDifferenceString(new Date(), round.votingStart)}
-            value="Soon"
+            value={getTimeDifferenceString(new Date(), round.votingStart)}
             tooltip={round.votingStart.toLocaleString()}
           />
         )}
@@ -198,7 +198,7 @@ const BaseRoundCard = ({ id, title, round, status, children, grants }: BaseProps
           />
         )}
 
-        {grants ? <MetaItem name="Proposals" value={grants.length.toString()} /> : <MetaItem name="" value="" />}
+        {grantsCount ? <MetaItem name="Proposals" value={grantsCount.toString()} /> : <MetaItem name="" value="" />}
       </RoundMeta>
     </StyledCard>
   );
@@ -213,30 +213,35 @@ const MetaItem = ({ name, value, tooltip }: { name: string; value: string; toolt
   );
 };
 
-export const RoundCard = (round: Round) => {
+export const RoundCard = (round: AllRounds) => {
   const status = getRoundStatus(round);
-  const { grants } = useGrants(round);
 
   const baseProps = {
     id: round.id,
     round: round,
     status,
     title: round.title,
-    grants,
+    grantsCount: round.grantsCount,
   };
 
   return (
     <BaseRoundCard {...baseProps}>
       <InfoContainer>
-        {round.title === 'Ecosystem' && (
-          <Typography>Projects that specifically build on or improve the ENS Ecosystem.</Typography>
-        )}
-        {round.title === 'Public Goods' && (
-          <Typography>Projects that benefit the entire Ethereum or Web3 space.</Typography>
-        )}
-        {round.title === 'Public Goods Scholarships' && (
-          <Typography>Individuals who have projects that benefit the entire Ethereum or Web3 space.</Typography>
-        )}
+        {(() => {
+          if (round.title.includes('Ecosystem')) {
+            return <Typography>Projects that specifically build on or improve the ENS Ecosystem.</Typography>;
+          }
+
+          if (round.title.includes('Public Goods Scholarships')) {
+            return (
+              <Typography>Individuals who have projects that benefit the entire Ethereum or Web3 space.</Typography>
+            );
+          }
+
+          if (round.title.includes('Public Goods')) {
+            return <Typography>Projects that benefit the entire Ethereum or Web3 space.</Typography>;
+          }
+        })()}
       </InfoContainer>
     </BaseRoundCard>
   );
