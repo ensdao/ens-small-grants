@@ -18,7 +18,8 @@ const fontBlack = fetch(new URL('../../../assets/fonts/Satoshi-Black.otf', impor
   res.arrayBuffer()
 );
 
-const baseUrl = 'https://ensgrants.xyz';
+const VERCEL_URL = process.env.VERCEL_URL;
+const baseUrl = VERCEL_URL ? `https://${VERCEL_URL}` : 'http://localhost:3000';
 
 export default async function handler(request: NextRequest) {
   const fontMediumData = await fontMedium;
