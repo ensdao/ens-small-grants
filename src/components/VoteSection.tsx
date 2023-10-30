@@ -210,7 +210,7 @@ function VoteInProgressSection({ round, snapshotProposalId, proposal }: VoteInPr
             <Link href={`/profile/${voter.voter}`} key={voter.voter}>
               <Profile
                 address={voter.voter}
-                subtitle={`${voteCountFormatter.format(proposal.roundId >= 30 ? votesForChoice : voter.vp)} votes`}
+                // subtitle={`${voteCountFormatter.format(proposal.roundId >= 30 ? votesForChoice : voter.vp)} votes`}
               />
             </Link>
           );
@@ -297,7 +297,7 @@ function VotersModal({
             <Link href={`/profile/${voter.voter}`} key={voter.voter}>
               <Profile
                 address={voter.voter}
-                subtitle={`${voteCountFormatter.format(proposal.id >= 30 ? votesForChoice : voter.vp)} votes`}
+                // subtitle={`${voteCountFormatter.format(proposal.id >= 30 ? votesForChoice : voter.vp)} votes`}
               />
             </Link>
           );

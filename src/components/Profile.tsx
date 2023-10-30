@@ -35,7 +35,7 @@ const TimeTypography = styled(Typography)(
   `
 );
 
-function Profile({ address, subtitle }: { address: string; subtitle: string }) {
+function Profile({ address, subtitle }: { address: string; subtitle?: string }) {
   const { data: ensName } = useEnsName({
     address: address as `0x${string}`,
     chainId: 1,
@@ -52,7 +52,7 @@ function Profile({ address, subtitle }: { address: string; subtitle: string }) {
       </AvatarWrapper>
       <div>
         <NameTypography>{ensName || shortenAddress(address)}</NameTypography>
-        <TimeTypography>{subtitle}</TimeTypography>
+        {subtitle && <TimeTypography>{subtitle}</TimeTypography>}
       </div>
     </ProfileContainer>
   );
