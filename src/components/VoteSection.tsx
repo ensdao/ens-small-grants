@@ -184,6 +184,7 @@ function VoteInProgressSection({ round, snapshotProposalId, proposal }: VoteInPr
             />
           )}
         </TopSection>
+
         {address && selectedProps.votes.length > 0 && (
           <Button
             variant={selectedProps.votes.includes(proposal.snapshot?.choiceId || 0) ? 'primary' : 'secondary'}
@@ -194,11 +195,27 @@ function VoteInProgressSection({ round, snapshotProposalId, proposal }: VoteInPr
             Vote for {selectedProps.votes.length} proposal{selectedProps.votes.length > 1 && 's'}
           </Button>
         )}
-        {snapshotGrant.voteSamples.slice(0, 5).map(voter => (
-          <Link href={`/profile/${voter.voter}`} key={voter.voter}>
-            <Profile address={voter.voter} subtitle={`${voteCountFormatter.format(voter.vp)} votes`} />
-          </Link>
-        ))}
+
+        {snapshotGrant.voteSamples.slice(0, 5).map(voter => {
+          if (proposal.snapshot?.choiceId === undefined) {
+            return <Profile key={voter.voter} address={voter.voter} subtitle="Unknown votes" />;
+          }
+
+          const votesForChoice = voter.choice[proposal.snapshot.choiceId + 1];
+
+          // Use voting power for approval voting and votesForChoice for ranked choice voting
+          // This is hardcoded for now with roundId >= 30 because we don't have a way to know which voting method is used
+          // TODO: Add a way to know which voting method is used (also in <VoteModal />)
+          return (
+            <Link href={`/profile/${voter.voter}`} key={voter.voter}>
+              <Profile
+                address={voter.voter}
+                subtitle={`${voteCountFormatter.format(proposal.roundId >= 30 ? votesForChoice : voter.vp)} votes`}
+              />
+            </Link>
+          );
+        })}
+
         {snapshotGrant.voteSamples.length > 5 && (
           <ExtraVotersContainer onClick={() => setVotersModalOpen(true)}>
             <VoterAmountTypography $voteCount={snapshotGrant.voteSamples.length}>others</VoterAmountTypography>
@@ -206,7 +223,12 @@ function VoteInProgressSection({ round, snapshotProposalId, proposal }: VoteInPr
         )}
       </Container>
 
-      <VotersModal isOpen={votersModalOpen} setIsOpen={setVotersModalOpen} voters={snapshotGrant.voteSamples} />
+      <VotersModal
+        isOpen={votersModalOpen}
+        setIsOpen={setVotersModalOpen}
+        voters={snapshotGrant.voteSamples}
+        proposal={proposal}
+      />
 
       {address && round.snapshotProposalId && (
         <VoteModal
@@ -254,19 +276,32 @@ function VotersModal({
   isOpen,
   setIsOpen,
   voters,
+  proposal,
 }: {
   isOpen: boolean;
   setIsOpen: (props: boolean) => void;
   voters: SnapshotVote[];
+  proposal: Grant;
 }) {
   return (
     <Dialog open={isOpen} variant="blank" onDismiss={() => setIsOpen(false)}>
       <VotersModalContent>
-        {voters.map(voter => (
-          <Link href={`/profile/${voter.voter}`} key={voter.voter}>
-            <Profile address={voter.voter} subtitle={`${voteCountFormatter.format(voter.vp)} votes`} />
-          </Link>
-        ))}
+        {voters.map(voter => {
+          if (proposal.snapshot?.choiceId === undefined) {
+            return <Profile key={voter.voter} address={voter.voter} subtitle="Unknown votes" />;
+          }
+
+          const votesForChoice = voter.choice[proposal.snapshot.choiceId + 1];
+
+          return (
+            <Link href={`/profile/${voter.voter}`} key={voter.voter}>
+              <Profile
+                address={voter.voter}
+                subtitle={`${voteCountFormatter.format(proposal.id >= 30 ? votesForChoice : voter.vp)} votes`}
+              />
+            </Link>
+          );
+        })}
       </VotersModalContent>
     </Dialog>
   );
