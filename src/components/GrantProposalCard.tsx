@@ -1,7 +1,7 @@
 import { Checkbox, mq, Typography } from '@ensdomains/thorin';
+import Image from 'next/image';
 import Link from 'next/link';
 import styled, { css, DefaultTheme } from 'styled-components';
-import { useEnsAddress, useEnsAvatar } from 'wagmi';
 
 import { useStorage } from '../hooks';
 import type { Grant, Round } from '../kysely/db';
@@ -210,7 +210,6 @@ function GrantProposalCard({
   inProgress,
   highlighted,
 }: GrantProposalCardProps) {
-  const { data: ensAvatar } = useEnsAvatar({ name: ensName || undefined });
   const { removeItem } = useStorage();
   const to = `/rounds/${round.id}/proposals/${proposal.id}`;
 
@@ -221,7 +220,7 @@ function GrantProposalCard({
           <ProfileWrapper>
             <StaticProfile
               name={ensName}
-              avatar={ensAvatar}
+              avatar={ensName ? `https://metadata.ens.domains/mainnet/avatar/${ensName}` : undefined}
               address={proposal.proposer}
               subtitle={`${getTimeDifferenceString(proposal.createdAt, new Date())} ago`}
             />
@@ -241,7 +240,9 @@ function GrantProposalCard({
       {round.scholarship && (
         <ScholarshipCardWrapper href={to}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <AvatarWrapper>{ensAvatar && <img src={ensAvatar} alt="" />}</AvatarWrapper>
+          <AvatarWrapper>
+            {ensName && <Image src={`https://metadata.ens.domains/mainnet/avatar/${ensName}`} alt="" />}
+          </AvatarWrapper>
           <NameVotes>
             <Title>{proposal.title}</Title>
             {votingStarted && (

@@ -13,6 +13,9 @@ const nextConfig = {
       },
     ];
   },
+  images: {
+    domains: ['metadata.ens.domains'],
+  },
 };
 
 module.exports = nextConfig;

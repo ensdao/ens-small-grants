@@ -1,6 +1,6 @@
 import { Typography } from '@ensdomains/thorin';
 import styled, { css } from 'styled-components';
-import { useEnsAvatar, useEnsName } from 'wagmi';
+import { useEnsName } from 'wagmi';
 
 import { shortenAddress } from '../utils';
 import { Avatar } from './Avatar';
@@ -40,15 +40,14 @@ function Profile({ address, subtitle }: { address: string; subtitle?: string }) 
     address: address as `0x${string}`,
     chainId: 1,
   });
-  const { data: ensAvatar } = useEnsAvatar({
-    name: ensName,
-    chainId: 1,
-  });
 
   return (
     <ProfileContainer className="profile">
       <AvatarWrapper>
-        <Avatar src={ensAvatar || undefined} label={ensName || shortenAddress(address)} />
+        <Avatar
+          src={ensName ? `https://metadata.ens.domains/mainnet/avatar/${ensName}` : undefined}
+          label={ensName || shortenAddress(address)}
+        />
       </AvatarWrapper>
       <div>
         <NameTypography>{ensName || shortenAddress(address)}</NameTypography>

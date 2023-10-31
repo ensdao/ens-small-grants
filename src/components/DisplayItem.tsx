@@ -1,7 +1,7 @@
 import { Typography } from '@ensdomains/thorin';
 import { useMemo } from 'react';
 import styled, { css } from 'styled-components';
-import { useEnsAvatar, useEnsName } from 'wagmi';
+import { useEnsName } from 'wagmi';
 
 import { Avatar } from '../components/Avatar';
 import { shortenAddress } from '../utils';
@@ -83,7 +83,6 @@ const AddressSubtitle = styled(Typography)(
 
 const AddressValue = ({ value }: { value: string }) => {
   const { data: primary } = useEnsName({ address: value as `0x${string}`, chainId: 1 });
-  const { data: avatar } = useEnsAvatar({ name: primary, chainId: 1 });
 
   const AddressTypography = useMemo(
     () =>
@@ -102,7 +101,7 @@ const AddressValue = ({ value }: { value: string }) => {
         {AddressTypography}
       </InnerValueWrapper>
       <AvatarWrapper>
-        <Avatar src={avatar || undefined} label={value} />
+        <Avatar src={primary ? `https://metadata.ens.domains/mainnet/avatar/${primary}` : undefined} label={value} />
       </AvatarWrapper>
     </ValueWithAvatarContainer>
   );
