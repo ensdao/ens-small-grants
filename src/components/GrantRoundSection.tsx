@@ -81,9 +81,17 @@ function GrantRoundSection({ round, createProposalHref }: GrantRoundSectionProps
         setGrants(sortedGrants);
       }
     }
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filter, round.grants]);
+
+  // Handle first load after round is finished
+  useEffect(() => {
+    const now = new Date();
+
+    if (now > new Date(round.votingEnd)) {
+      setFilter('votes');
+    }
+  }, [round.votingEnd]);
 
   // Keep track of the selected prop ids for approval voting
   const [selectedProps, setSelectedProps] = useState<SelectedPropVotes>(
