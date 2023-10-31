@@ -1,6 +1,6 @@
 import { Button, Typography } from '@ensdomains/thorin';
 import { useConnectModal } from '@rainbow-me/rainbowkit';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import styled, { css } from 'styled-components';
 import { useAccount } from 'wagmi';
 
@@ -51,35 +51,39 @@ export type GrantRoundSectionProps = {
   createProposalHref?: string;
 };
 
-export type GrantsFilterOptions = 'random' | 'votes';
+export type GrantsFilterOptions = 'time' | 'votes';
 
 function GrantRoundSection({ round, createProposalHref }: GrantRoundSectionProps) {
   const { address } = useAccount();
   const { getItem, setItem } = useStorage();
   const { openConnectModal } = useConnectModal();
-  // const [filter, setFilter] = useState<GrantsFilterOptions | null>(null);
-  const grants = round.grants;
+  const [filter, setFilter] = useState<GrantsFilterOptions>('time');
+  const [grants, setGrants] = useState(round.grants);
 
   const roundStatus = getRoundStatus(round);
   const isPropsOpen = roundStatus === 'proposals';
   const randomiseGrants = roundStatus === 'voting';
 
   // Handle filter
-  // useEffect(() => {
-  //   if (_grants && filter) {
-  //     if (filter === 'votes') {
-  //       setGrants(_grants);
-  //     } else {
-  //       const shuffledGrants = _grants.sort(() => 0.5 - Math.random());
-  //       setItem(`round-${round.id}-grants`, JSON.stringify(shuffledGrants), 'session');
-  //       setGrants(shuffledGrants);
-  //       setFilter(null);
-  //     }
-  //   }
+  useMemo(() => {
+    if (filter) {
+      if (filter === 'time') {
+        const sortedGrants = round.grants?.sort((a: Grant, b: Grant) => {
+          return a.id - b.id; // ids are in order of submission so it's the same as sorting by time
+        });
 
-  //   setItem('grants-filter', filter || 'random', 'session');
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [filter]);
+        setGrants(sortedGrants);
+      } else if (filter === 'votes') {
+        const sortedGrants = round.grants?.sort((a: Grant, b: Grant) => {
+          return (b.snapshot?.score || 0) - (a.snapshot?.score || 0);
+        });
+
+        setGrants(sortedGrants);
+      }
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filter, round.grants]);
 
   // Keep track of the selected prop ids for approval voting
   const [selectedProps, setSelectedProps] = useState<SelectedPropVotes>(
@@ -123,20 +127,19 @@ function GrantRoundSection({ round, createProposalHref }: GrantRoundSectionProps
 
   return (
     <GrantsContainer>
-      {/* {randomiseGrants && (
+      {randomiseGrants && (
         <FilterButton
-          tone="blue"
           variant="secondary"
           size="extraSmall"
           shadowless={true}
           suffix={<b>↓</b>}
           onClick={() => {
-            setFilter(filter !== 'votes' ? 'votes' : 'random');
+            setFilter(filter !== 'votes' ? 'votes' : 'time');
           }}
         >
-          {filter !== 'votes' ? 'Sort by votes' : 'Shuffle order'}
+          {filter !== 'votes' ? 'Sort by votes' : 'Sort by time submitted'}
         </FilterButton>
-      )} */}
+      )}
 
       {isPropsOpen && (
         <Button as="a" href={createProposalHref}>

@@ -18,6 +18,7 @@ export async function getRound(id: number) {
       .selectAll()
       .where('roundId', '=', id)
       .where('deleted', '=', false)
+      .orderBy('id', 'asc')
       .execute()
       .then(res =>
         res.map(grant => {
