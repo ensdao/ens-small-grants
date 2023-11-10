@@ -127,18 +127,57 @@ const content: Content[] = [
     title: 'How It Works',
     content: [
       {
-        question: 'Is this off-chain or on-chain?',
+        question: 'Understanding the Voting Process',
         answer:
-          'The submissions are signed with your wallet, and voting takes place off-chain using snapshot. Your voting weight is determined by the amount of ENS you hold or are delegated on-chain.',
+          'In Rounds 1 through 9, voters participated using ENS Governance Tokens where 1 $ENS token = 1 vote. In Round 10, voting is following a Voter Card system. See more in the Voter Card section below.',
       },
       {
-        question: 'When does voting close?',
-        answer: 'The end of the voting period is displayed on each round’s page.',
+        question: 'Are proposals submitted onchain?',
+        answer:
+          'No. The submissions are signed and stored in an offchain database, then later uploaded to Arweave. Voting takes place on Snapshot.',
+      },
+      {
+        question: 'Are there other front ends to view or vote for small grants?',
+        answer: 'Yes. Head over to [Snapshot](https://snapshot.org/#/small-grants.eth).',
       },
       {
         question: 'When is the next round?',
         answer:
           'The intention of both the Ecosystem and Public Goods Working Groups is to run one round per quarter. The exact dates will be announced on [discuss.ens.domains](https://discuss.ens.domains/).',
+      },
+    ],
+  },
+  {
+    title: 'Voter Cards',
+    content: [
+      {
+        question: 'What is a Voter Card?',
+        answer:
+          'The voter card system employs an NFT ‘card’, where 1 Card = 1 Vote. Cardholders may cast their vote for a single proposal, or split their vote on multiple proposals. [ensgrants.xyz](https://ensgrants.xyz/) supports equally distributed votes, while [snapshot.org](https://snapshot.org/#/small-grants.eth) allows for weighted voting.',
+      },
+      {
+        question: 'Who was eligible for voter cards?',
+        answer:
+          'Eligibility for voter cards was extended to individuals who had previously engaged in small grants rounds, submitted projects, top delegates, or who had made a specific request.',
+      },
+      {
+        question: 'Can voter cards be transferred between participants?',
+        answer:
+          'No. Voter cards are ERC1155 tokens on the Optimism network and are non-transferable. The contract can be viewed [here]( https://optimistic.etherscan.io/address/0xfb03372a30E173A8998f732dDfeA0138144B468e#code).',
+      },
+      {
+        question: 'How can I see if I have a voter card?',
+        answer:
+          'You can view the list of owners [on OpenSea](https://opensea.io/assets/optimism/0xfb03372a30e173a8998f732ddfea0138144b468e/1).',
+      },
+      {
+        question: 'Is it possible to receive a voter card during a round?',
+        answer: 'Once voting starts, no new voter cards can be issued.',
+      },
+      {
+        question: 'How can I apply for a voter card for upcoming rounds?',
+        answer:
+          'Information about applying for voter cards in future rounds will be provided in our [community forum](https://discuss.ens.domains/), so we encourage you to follow the updates there closely.',
       },
     ],
   },
@@ -161,10 +200,31 @@ const content: Content[] = [
       },
       {
         question: 'Can I submit the same project in multiple rounds?',
-        answer: 'Yes, you may submit the same project again in subsequent rounds.',
+        answer:
+          'Yes, you may submit the same project again in subsequent rounds, but not two rounds happening at the same time.',
+      },
+      {
+        question: 'My submission was removed or relocated to a different Working Group Round.',
+        answer:
+          'Submissions may be removed if they do not fit eligibility, or relocated to their appropriate ‘Ecosystem’ or ‘Public Goods’ round. If you have concerns reach out to the respective [Working Group stewards](https://basics.ensdao.org/working-groups#ca018f3e6c944825b0e58985d060e29c).',
       },
     ],
   },
+  {
+    title: 'Find Out More',
+    content: [
+      {
+        question: 'Where else can I participate?',
+        answer:
+          'Learn more about the Working Groups by visiting [basics.ensdao.org/working-groups](https://basics.ensdao.org/working-groups), and the ENS DAO Forum at [discuss.ens.domains](https://discuss.ens.domains/).',
+      },
+      {
+        question: 'Is this website open source?',
+        answer: 'Yes, you can [find the GitHub repo here](https://github.com/ensdao/ens-small-grants).',
+      },
+    ],
+  },
+
   {
     title: 'Feedback',
     content: [
