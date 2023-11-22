@@ -11,6 +11,7 @@ import BackButton from '../components/BackButton';
 import DisplayItem from '../components/DisplayItem';
 import { Card, InnerModal, DisplayItems } from '../components/atoms';
 import { useCreateGrant, useFetch } from '../hooks';
+import { ProposalBody } from './proposals/[id]';
 
 type FormInput = {
   title: string;
@@ -116,6 +117,7 @@ export default function CreateProposal() {
 
   const { createGrant } = useCreateGrant();
 
+  const [isPreview, setIsPreview] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogData, setDialogData] = useState({
     title: '',
@@ -128,6 +130,11 @@ export default function CreateProposal() {
   const onSubmit: SubmitHandler<FormInput> = useCallback(data => {
     setDialogOpen(true);
     setDialogData(data);
+  }, []);
+
+  const onPreview: SubmitHandler<FormInput> = useCallback(data => {
+    setDialogData(data);
+    setIsPreview(true);
   }, []);
 
   const [publishError, setPublishError] = useState<string | undefined | null>(null);
@@ -237,87 +244,113 @@ export default function CreateProposal() {
             You must connect your wallet to submit a proposal.
           </Helper>
         )}
+
         <form style={{ width: '100%' }} onSubmit={handleSubmit(onSubmit)}>
           <FieldSet legend="Submit a Proposal" disabled={isFormDisabled}>
-            <Input
-              label="Title"
-              showDot
-              id="title"
-              description={<InputDescription>The title of your proposal</InputDescription>}
-              validated={getFieldState('title', formState).isDirty}
-              required
-              placeholder="ENS Spaceship"
-              {...register('title', {
-                required: true,
-                validate: value => (value.length <= 50 ? undefined : 'Please keep your title under 50 characters'),
-              })}
-              error={getFieldState('title', formState).error?.message}
-            />
-            <Input
-              label="Tagline"
-              showDot
-              id="shortDescription"
-              required
-              description={<InputDescription>Your project in 100 characters or less</InputDescription>}
-              placeholder="Taking ENS users to Mars and back"
-              validated={getFieldState('shortDescription', formState).isDirty}
-              {...register('shortDescription', {
-                required: true,
-                validate: value => (value.length <= 100 ? undefined : 'Please keep your tagline under 100 characters'),
-              })}
-              error={getFieldState('shortDescription', formState).error?.message}
-            />
-            <Input
-              label="Website"
-              showDot
-              id="twitter"
-              description={<InputDescription>Your project’s website or Twitter profile</InputDescription>}
-              validated={getFieldState('twitter', formState).isDirty}
-              required
-              placeholder="https://ens.domains/"
-              {...register('twitter', { required: true })}
-            />
-            <Input
-              label="Payout Address"
-              showDot
-              id="payoutAddress"
-              description={
-                <InputDescription>
-                  The address or ENS name where the funds will be sent if you win. This will not be public.
-                </InputDescription>
+            {(() => {
+              if (isPreview) {
+                return <ProposalBody fullText={dialogData.fullText} />;
               }
-              validated={getFieldState('payoutAddress', formState).isDirty}
-              placeholder="ens.eth"
-              {...register('payoutAddress', { required: false })}
-            />
-            <Textarea
-              label="Description"
-              id="fullText"
-              required
-              showDot
-              placeholder={`## Why ENS needs a Spaceship\n\nWe need a spaceship to...`}
-              description={
-                <InputDescription>
-                  This should be a full description of what you are proposing, with a minimum of at least 300
-                  characters. You can use{' '}
-                  <a href="https://www.markdownguide.org/cheat-sheet/" target="_blank" rel="noreferrer">
-                    markdown for formatting
-                  </a>{' '}
-                  (extended syntax is supported).
-                </InputDescription>
-              }
-              validated={getFieldState('fullText', formState).isDirty}
-              {...register('fullText', {
-                required: true,
-                validate: value => (value.length >= 300 ? undefined : 'Please enter at least 300 characters'),
-              })}
-              error={getFieldState('fullText', formState).error?.message}
-            />
+
+              return (
+                <>
+                  <Input
+                    label="Title"
+                    showDot
+                    id="title"
+                    description={<InputDescription>The title of your proposal</InputDescription>}
+                    validated={getFieldState('title', formState).isDirty}
+                    required
+                    placeholder="ENS Spaceship"
+                    {...register('title', {
+                      required: true,
+                      validate: value =>
+                        value.length <= 50 ? undefined : 'Please keep your title under 50 characters',
+                    })}
+                    error={getFieldState('title', formState).error?.message}
+                  />
+                  <Input
+                    label="Tagline"
+                    showDot
+                    id="shortDescription"
+                    required
+                    description={<InputDescription>Your project in 100 characters or less</InputDescription>}
+                    placeholder="Taking ENS users to Mars and back"
+                    validated={getFieldState('shortDescription', formState).isDirty}
+                    {...register('shortDescription', {
+                      required: true,
+                      validate: value =>
+                        value.length <= 100 ? undefined : 'Please keep your tagline under 100 characters',
+                    })}
+                    error={getFieldState('shortDescription', formState).error?.message}
+                  />
+                  <Input
+                    label="Website"
+                    showDot
+                    id="twitter"
+                    description={<InputDescription>Your project’s website or Twitter profile</InputDescription>}
+                    validated={getFieldState('twitter', formState).isDirty}
+                    required
+                    placeholder="https://ens.domains/"
+                    {...register('twitter', { required: true })}
+                  />
+                  <Input
+                    label="Payout Address"
+                    showDot
+                    id="payoutAddress"
+                    description={
+                      <InputDescription>
+                        The address or ENS name where the funds will be sent if you win. This will not be public.
+                      </InputDescription>
+                    }
+                    validated={getFieldState('payoutAddress', formState).isDirty}
+                    placeholder="ens.eth"
+                    {...register('payoutAddress', { required: false })}
+                  />
+                  <Textarea
+                    label="Description"
+                    id="fullText"
+                    required
+                    showDot
+                    placeholder={`## Why ENS needs a Spaceship\n\nWe need a spaceship to...`}
+                    description={
+                      <InputDescription>
+                        This should be a full description of what you are proposing, with a minimum of at least 300
+                        characters. You can use{' '}
+                        <a href="https://www.markdownguide.org/cheat-sheet/" target="_blank" rel="noreferrer">
+                          markdown for formatting
+                        </a>{' '}
+                        (extended syntax is supported).
+                      </InputDescription>
+                    }
+                    validated={getFieldState('fullText', formState).isDirty}
+                    {...register('fullText', {
+                      required: true,
+                      validate: value => (value.length >= 300 ? undefined : 'Please enter at least 300 characters'),
+                    })}
+                    error={getFieldState('fullText', formState).error?.message}
+                  />
+                </>
+              );
+            })()}
+
             <ButtonContainer>
-              <Button onClick={onCancel} disabled={isFormDisabled} variant="secondary" shadowless>
-                Cancel
-              </Button>
-              <Button type="submit" disabled={isFormDisabled || !formState.isValid} shadowless>
+              {isPreview ? (
+                <Button
+                  onClick={() => setIsPreview(false)}
+                  disabled={!formState.isValid}
+                  variant="secondary"
+                  shadowless
+                >
+                  Back to Editing
+                </Button>
+              ) : (
+                <Button onClick={handleSubmit(onPreview)} disabled={!formState.isValid} shadowless>
+                  Preview
+                </Button>
+              )}
+
+              <Button type="submit" disabled={isFormDisabled || !formState.isValid || !isPreview} shadowless>
                 Publish
               </Button>
             </ButtonContainer>
