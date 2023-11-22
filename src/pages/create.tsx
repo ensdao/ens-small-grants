@@ -107,8 +107,8 @@ export default function CreateProposal() {
 
   const { address } = useAccount();
   const isFormDisabled = !address;
-  const { data: round } = useFetch<Round>(roundId ? `/api/round/${roundId}` : undefined);
-  const isLoading = !round;
+  const { data: round, error: roundError } = useFetch<Round>(roundId ? `/api/round/${roundId}` : undefined);
+  const isLoading = !round && !roundError;
 
   const { handleSubmit, register, getFieldState, formState } = useForm<FormInput>({
     mode: 'onBlur',
@@ -146,10 +146,12 @@ export default function CreateProposal() {
         twitter: dialogData.twitter,
         payoutAddress: dialogData.payoutAddress,
       })
-        .then(res => {
-          if (!res.ok) {
+        .then(async res => {
+          if (!res.ok || res.status !== 201) {
             console.error(res);
-            setPublishError(`Error ${res.status}. ${res.statusText}`);
+
+            const resBody = (await res.json()) as { error?: string };
+            setPublishError(resBody.error || `Error ${res.status}. ${res.statusText}`);
           } else {
             router.push({ pathname: to, query: { success: true } });
           }
@@ -177,13 +179,13 @@ export default function CreateProposal() {
   }
 
   if (!round) {
-    return <Spinner />;
+    return <p>Invalid round ID in the URL</p>;
   }
 
   // Redirect to round page if it is not accepting proposals
-  const isPropRound = round.proposalStart < new Date() && round.proposalEnd > new Date();
+  const isPropRound = new Date(round.proposalStart) < new Date() && new Date(round.proposalEnd) > new Date();
   if (!isPropRound) {
-    return router.push(to);
+    return <p>This round is not accepting proposals</p>;
   }
 
   const _description = dialogData.shortDescription;
@@ -219,14 +221,16 @@ export default function CreateProposal() {
           }
         />
       </Dialog>
+
       <BackButton
         href={`/rounds/${roundId}`}
         title={
           <Title>
-            <b>{round.title.split('Round')[0]}</b> Round ${round.title.split('Round')[1]}
+            <b>{round.title.split('Round')[0]}</b> Round {round.title.split('Round')[1]}
           </Title>
         }
       />
+
       <Container hasPadding={true}>
         {isFormDisabled && (
           <Helper alignment="horizontal" type="warning">
@@ -320,6 +324,7 @@ export default function CreateProposal() {
           </FieldSet>
         </form>
       </Container>
+
       <div style={{ flexGrow: 1 }} />
     </>
   );

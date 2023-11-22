@@ -1,13 +1,14 @@
 import { useCallback, useState } from 'react';
 import { useAccount, useWalletClient } from 'wagmi';
+import z from 'zod';
 
-const domain = {
+export const eip712Domain = {
   name: 'ENS Grants',
   version: '1',
   chainId: 1,
 };
 
-const types = {
+export const eip712Types = {
   Grant: [
     { name: 'address', type: 'address' },
     { name: 'roundId', type: 'uint256' },
@@ -19,14 +20,17 @@ const types = {
   ],
 };
 
-export type CreateGrantArgs = {
-  roundId: number;
-  title: string;
-  description: string;
-  fullText: string;
-  twitter: string;
-  payoutAddress: string;
-};
+export const createGrantSchema = z.object({
+  roundId: z.number(),
+  address: z.string(),
+  title: z.string(),
+  description: z.string(),
+  fullText: z.string(),
+  twitter: z.string(),
+  payoutAddress: z.string(),
+});
+
+export type CreateGrantArgs = z.infer<typeof createGrantSchema>;
 
 export function useCreateGrant() {
   const { data: signer } = useWalletClient();
@@ -34,7 +38,7 @@ export function useCreateGrant() {
   const [loading, setLoading] = useState(false);
 
   const createGrant = useCallback(
-    async (args: CreateGrantArgs) => {
+    async (args: Omit<CreateGrantArgs, 'address'>) => {
       if (signer && address) {
         const grantData = {
           roundId: args.roundId,
@@ -49,16 +53,21 @@ export function useCreateGrant() {
         try {
           setLoading(true);
 
-          // const signature = await signer._signTypedData(domain, types, grantData);
-          const signature = await signer.signTypedData({ domain, types, message: grantData, primaryType: 'Grant' });
+          const signature = await signer.signTypedData({
+            domain: eip712Domain,
+            types: eip712Types,
+            message: grantData,
+            primaryType: 'Grant',
+          });
 
-          // TODO: write API to save a proposal to the database instead of relying on Supabase functions
-          return new Response();
+          console.log(signature);
 
-          // return functionRequest('create_grant', {
-          //   grantData,
-          //   signature,
-          // });
+          const res = await fetch('api/create/grant', {
+            method: 'POST',
+            body: JSON.stringify({ grantData, signature }),
+          });
+
+          return res;
         } finally {
           setLoading(false);
         }
