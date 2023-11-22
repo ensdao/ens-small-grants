@@ -1,40 +1,48 @@
 # ENS Small Grants
 
-This is a semi-autonomous grant application designed to help ENS DAO distribute small grants to a wider range of projects at a regular rate.
+This is a platforms designed to help ENS DAO Working Groups distribute grants to a wider range of projects at a regular rate.
 
-- [ENS Public Goods Working Group grant proposal](https://discuss.ens.domains/t/pg-wg-proposal-ens-small-grants/12843)
-- [Metaphor Product Spec](https://metaphorxyz.notion.site/ENS-Small-Grants-3d75af5ba7a64954b81eed23191fbfd4)
+- [Original grant proposal](https://discuss.ens.domains/t/pg-wg-proposal-ens-small-grants/12843)
+- [Original product spec](https://metaphorxyz.notion.site/ENS-Small-Grants-3d75af5ba7a64954b81eed23191fbfd4)
 
-## Setup
+## Run locally
 
-Pre-requisites:
+Install dependencies:
 
-- [Docker](https://www.docker.com/products/docker-desktop/)
-- [supabase cli](https://github.com/supabase/cli#install-the-cli)
+```bash
+yarn install
+```
 
-Running the project:
+Set the environment variables:
 
-1. Open docker
-2. Start a local instance of Supabase from the config file with `supabase start`
-3. Rename `.env.example` to `.env` and enter the Supabase credentials from the previous step
-4. Install dependencies with `yarn install`
-5. Run the project with `yarn dev`
-6. In another terminal, run `supabase functions serve rpc` to serve our edge function
+```bash
+cp .env.example .env.local
+```
+
+Run the development server:
+
+```bash
+yarn dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 ## Creating a Round
 
-1. Go to the Supabase Studio UI
-2. Go to Tables -> `rounds`
-3. Create a new row in the `rounds` table
-4. Fill out the information needed, using integers in wei for token amounts and hex addresses for addresses (use 0x00 for `allocation_token_address` for ETH)
-5. Use the ENS name for the snapshot space as the `snapshot_space_id` (eg. small-grants.eth)
-6. Save the new row
+There is no UI for creating a new round, so you will need to do this manually via the `rounds` table in the database.
+
+Some things to keep in mind:
+
+- `allocation_token_amount` is in wei
+- To distribute ETH, set `allocation_token_address` to `0x00`
+- `snapshot_space_id` is the ENS name of the Snapshot space to use for voting (eg. small-grants.eth)
+- `snapshot_proposal_id` is the ID of the Snapshot proposal that will be created between `proposal_end` and `voting_start`. It should be empty when creating the round.
 
 ## Setting up Snapshot
 
-When the proposal period is done, you need to set up the Snapshot Space for voting. This can be done with one click in the UI by going to /rounds/{round_id}/snapshot and clicking the button on that page. It will ask you to sign a message and that should create the compatible Snapshot space with all the proposals as options. 
+When the proposal period is done (after `proposal_end` and before `voting_start`), you'll need to set up the Snapshot Space for voting. This can be done with one click in the UI by going to /rounds/{round_id}/snapshot. It will ask you to sign a message and that should create the compatible Snapshot space with all the proposals as options.
 
-Your wallet address must be an admin on the Snapshot space specified in `snapshot_space_id` during the setup of the round. Your address should also be added to the `adminAddressList` array in the [Supabase RPC function](/supabase/funcions/rpc/index.ts) for the proposal id to get updated in the database.
+Your wallet address must be an admin on the Snapshot space specified in `snapshot_space_id` during the setup of the round.
 
 You will also need the [ArConnect Chrome Extension](https://chrome.google.com/webstore/detail/arconnect/einnioafmpimabjcddiinlhmijaionap) installed to upload the proposals to Arweave for Snapshot.
 
