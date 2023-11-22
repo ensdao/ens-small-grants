@@ -1,6 +1,6 @@
 import { createGrantSchema, eip712Domain, eip712Types } from '@/hooks';
-import { Database, kysely } from '@/kysely/db';
-import { Insertable } from 'kysely';
+import { kysely } from '@/kysely/db';
+import { getRoundStatus } from '@/utils';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { verifyTypedData, Address, Hex } from 'viem';
 import z from 'zod';
@@ -35,20 +35,33 @@ export default async function createGrant(req: NextApiRequest, res: NextApiRespo
   }
 
   try {
-    await kysely
-      .insertInto('grants')
-      .values({
-        roundId: grantData.roundId,
-        proposer: grantData.address,
-        title: grantData.title,
-        description: grantData.description,
-        fullText: grantData.fullText,
-        deleted: false,
-        updatedAt: new Date(),
-        twitter: grantData.twitter,
-        payoutAddress: grantData.payoutAddress,
-      })
-      .execute();
+    await kysely.transaction().execute(async tx => {
+      // Get latest grant id
+      const round = await tx
+        .selectFrom('rounds')
+        .selectAll()
+        .where('id', '=', grantData.roundId)
+        .executeTakeFirstOrThrow();
+
+      if (getRoundStatus(round) !== 'proposals') {
+        return res.status(400).json({ error: 'Round is not accepting new proposals' });
+      }
+
+      await tx
+        .insertInto('grants')
+        .values({
+          roundId: grantData.roundId,
+          proposer: grantData.address,
+          title: grantData.title,
+          description: grantData.description,
+          fullText: grantData.fullText,
+          deleted: false,
+          updatedAt: new Date(),
+          twitter: grantData.twitter,
+          payoutAddress: grantData.payoutAddress,
+        })
+        .execute();
+    });
 
     return res.status(201).json({ success: true });
   } catch (error) {
