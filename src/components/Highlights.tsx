@@ -19,8 +19,8 @@ const HighlightsContainer = styled.div(
 export function Highlights() {
   return (
     <HighlightsContainer>
-      <Stat number="100+" label="ETH funded" />
-      <Stat number="600+" label="Proposals" />
+      <Stat number="130+" label="ETH funded" />
+      <Stat number="680+" label="Proposals" />
       <Stat number="500+" label="Voters" />
     </HighlightsContainer>
   );
