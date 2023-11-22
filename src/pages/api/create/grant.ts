@@ -35,31 +35,20 @@ export default async function createGrant(req: NextApiRequest, res: NextApiRespo
   }
 
   try {
-    await kysely.transaction().execute(async tx => {
-      // Get latest grant id
-      const latestGrant = await tx
-        .selectFrom('grants')
-        .select(['id'])
-        .orderBy('id', 'desc')
-        .limit(1)
-        .executeTakeFirstOrThrow();
-
-      await tx
-        .insertInto('grants')
-        .values({
-          id: latestGrant.id + 1,
-          roundId: grantData.roundId,
-          proposer: grantData.address,
-          title: grantData.title,
-          description: grantData.description,
-          fullText: grantData.fullText,
-          deleted: false,
-          updatedAt: new Date(),
-          twitter: grantData.twitter,
-          payoutAddress: grantData.payoutAddress,
-        })
-        .execute();
-    });
+    await kysely
+      .insertInto('grants')
+      .values({
+        roundId: grantData.roundId,
+        proposer: grantData.address,
+        title: grantData.title,
+        description: grantData.description,
+        fullText: grantData.fullText,
+        deleted: false,
+        updatedAt: new Date(),
+        twitter: grantData.twitter,
+        payoutAddress: grantData.payoutAddress,
+      })
+      .execute();
 
     return res.status(201).json({ success: true });
   } catch (error) {
