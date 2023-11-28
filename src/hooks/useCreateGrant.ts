@@ -47,7 +47,7 @@ export function useCreateGrant() {
           description: args.description,
           fullText: args.fullText,
           twitter: args.twitter,
-          payoutAddress: args.payoutAddress,
+          payoutAddress: args.payoutAddress.toLowerCase(),
         };
 
         try {
