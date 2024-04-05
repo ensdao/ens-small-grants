@@ -129,7 +129,7 @@ const content: Content[] = [
       {
         question: 'Understanding the Voting Process',
         answer:
-          'In Rounds 1 through 9, voters participated using ENS Governance Tokens where 1 $ENS token = 1 vote. In Round 10, voting is following a Voter Card system. See more in the Voter Card section below.',
+          'In Rounds 1 through 9, voters participated using ENS Governance Tokens where 1 $ENS token = 1 vote. In Round 10, voting was following a Voter Card system. The $ENS governance token voting process has resumed for Round 12.',
       },
       {
         question: 'Are proposals submitted onchain?',
@@ -144,40 +144,6 @@ const content: Content[] = [
         question: 'When is the next round?',
         answer:
           'The intention of both the Ecosystem and Public Goods Working Groups is to run one round per quarter. The exact dates will be announced on [discuss.ens.domains](https://discuss.ens.domains/).',
-      },
-    ],
-  },
-  {
-    title: 'Voter Cards',
-    content: [
-      {
-        question: 'What is a Voter Card?',
-        answer:
-          'The voter card system employs an NFT ‘card’, where 1 Card = 1 Vote. Cardholders may vote for one or many proposals on [ensgrants.xyz](https://ensgrants.xyz/) or [snapshot.org](https://snapshot.org/#/small-grants.eth).',
-      },
-      {
-        question: 'Who was eligible for voter cards?',
-        answer:
-          'Eligibility for voter cards was extended to individuals who had previously engaged in small grants rounds, submitted projects, top delegates, or who had made a specific request.',
-      },
-      {
-        question: 'Can voter cards be transferred between participants?',
-        answer:
-          'No. Voter cards are ERC1155 tokens on the Optimism network and are non-transferable. The contract can be viewed [here]( https://optimistic.etherscan.io/address/0xfb03372a30E173A8998f732dDfeA0138144B468e#code).',
-      },
-      {
-        question: 'How can I see if I have a voter card?',
-        answer:
-          'You can view the list of owners [on OpenSea](https://opensea.io/assets/optimism/0xfb03372a30e173a8998f732ddfea0138144b468e/1).',
-      },
-      {
-        question: 'Is it possible to receive a voter card during a round?',
-        answer: 'Once voting starts, no new voter cards can be issued.',
-      },
-      {
-        question: 'How can I apply for a voter card for upcoming rounds?',
-        answer:
-          'Information about applying for voter cards in future rounds will be provided in our [community forum](https://discuss.ens.domains/), so we encourage you to follow the updates there closely.',
       },
     ],
   },
