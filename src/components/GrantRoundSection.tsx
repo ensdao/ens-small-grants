@@ -155,6 +155,7 @@ function GrantRoundSection({ round, createProposalHref }: GrantRoundSectionProps
         </Button>
       )}
 
+
       {!address && randomiseGrants && (
         <Button variant="secondary" onClick={openConnectModal}>
           Connect wallet to vote
@@ -169,6 +170,7 @@ function GrantRoundSection({ round, createProposalHref }: GrantRoundSectionProps
         <Button onClick={() => setVotingModalOpen(true)}>
           Vote for {selectedProps.votes.length} proposal{selectedProps.votes.length > 1 && 's'}
         </Button>
+
       )}
 
       <ProposalWrapper scholarship={round.scholarship || false}>
