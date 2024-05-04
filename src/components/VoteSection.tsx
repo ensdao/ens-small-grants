@@ -150,6 +150,7 @@ function VoteInProgressSection({ round, snapshotProposalId, proposal }: VoteInPr
     return <Typography>Voting has not started</Typography>;
   }
 
+  console.log(" selectedProps.votes.includes(proposal.snapshot?.choiceId!)", selectedProps.votes.includes(proposal.snapshot?.choiceId!) )
   return (
     <>
       <Container>
@@ -166,7 +167,7 @@ function VoteInProgressSection({ round, snapshotProposalId, proposal }: VoteInPr
               label=""
               variant="regular"
               checked={
-                proposal.snapshot?.choiceId ? selectedProps.votes.includes(proposal.snapshot.choiceId) : undefined
+                proposal.snapshot?.choiceId !== undefined ? selectedProps.votes.includes(proposal.snapshot.choiceId) : undefined
               }
               onChange={e => {
                 // if target is checked, push the proposal id to the array
@@ -194,7 +195,7 @@ function VoteInProgressSection({ round, snapshotProposalId, proposal }: VoteInPr
         {address && selectedProps.votes.length > 0 && (
           <Button
             variant={selectedProps.votes.includes(proposal.snapshot?.choiceId || 0) ? 'primary' : 'secondary'}
-            disabled={proposal.snapshot?.choiceId === undefined || votingOver}
+            disabled={!selectedProps.votes.includes(proposal.snapshot?.choiceId!) || votingOver}
             size="small"
             onClick={() => setVotingModalOpen(true)}
           >

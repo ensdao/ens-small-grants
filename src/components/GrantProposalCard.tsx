@@ -279,7 +279,7 @@ function GrantProposalCard({
                   // if target is checked, push the proposal id to the array
                   if (e.target.checked) {
                     // Clear session storage and refresh page if the Snapshot ID is not available
-                    if (!proposal.snapshot?.choiceId && proposal.snapshot?.choiceId !== 0) {
+                    if (proposal.snapshot?.choiceId === undefined) {
                       removeItem(`round-${round.id}-grants`, 'session');
                       window.location.reload();
                     }
