@@ -150,7 +150,6 @@ function VoteInProgressSection({ round, snapshotProposalId, proposal }: VoteInPr
     return <Typography>Voting has not started</Typography>;
   }
 
-  console.log(" selectedProps.votes.includes(proposal.snapshot?.choiceId!)", selectedProps.votes.includes(proposal.snapshot?.choiceId!) )
   return (
     <>
       <Container>
