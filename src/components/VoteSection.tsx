@@ -171,14 +171,14 @@ function VoteInProgressSection({ round, snapshotProposalId, proposal }: VoteInPr
               onChange={e => {
                 // if target is checked, push the proposal id to the array
                 if (e.target.checked) {
-                  if (!proposal.snapshot?.choiceId) return alert('Proposal choice id not found');
+                  if (proposal.snapshot?.choiceId === undefined) return alert('Proposal choice id not found');
 
                   setSelectedProps({
                     round: Number(round.id),
                     votes: [...(selectedProps.votes || []), proposal.snapshot.choiceId],
                   });
                 } else {
-                  if (!proposal.snapshot?.choiceId) return alert('Proposal choice id not found');
+                  if (proposal.snapshot?.choiceId === undefined) return alert('Proposal choice id not found');
 
                   // if target is unchecked, remove the proposal id from the array
                   setSelectedProps({
@@ -194,7 +194,7 @@ function VoteInProgressSection({ round, snapshotProposalId, proposal }: VoteInPr
         {address && selectedProps.votes.length > 0 && (
           <Button
             variant={selectedProps.votes.includes(proposal.snapshot?.choiceId || 0) ? 'primary' : 'secondary'}
-            disabled={!proposal.snapshot?.choiceId || votingOver}
+            disabled={proposal.snapshot?.choiceId === undefined || votingOver}
             size="small"
             onClick={() => setVotingModalOpen(true)}
           >
