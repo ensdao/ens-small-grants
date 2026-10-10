@@ -1,59 +1,20 @@
 # ENS Small Grants
 
-This is a platforms designed to help ENS DAO Working Groups distribute grants to a wider range of projects at a regular rate.
+ENS Small Grants has been **shut down**. Rounds ran from July 2022 through June 2024.
 
-- [Original grant proposal](https://discuss.ens.domains/t/pg-wg-proposal-ens-small-grants/12843)
-- [Original product spec](https://metaphorxyz.notion.site/ENS-Small-Grants-3d75af5ba7a64954b81eed23191fbfd4)
+This repository is now a static archive for [ensgrants.xyz](https://ensgrants.xyz). There is no application, no wallet connection, and no backend.
 
-## Run locally
+## Archive
 
-Install dependencies:
+The public API was exported before the app was removed:
 
-```bash
-yarn install
-```
+- [`data/ens-small-grants.json`](data/ens-small-grants.json) — 24 rounds, 879 proposals, Snapshot vote results from `hub.snapshot.org` (space `small-grants.eth`), **170+ ETH** allocated across 23 ETH prize pools, and a **6,000 USDC** Public Goods Scholarships pool
+- [`data/ens-small-grants.csv`](data/ens-small-grants.csv) — one row per proposal
 
-Set the environment variables:
+Verification: every round’s exported grant list length matches that round’s `grantsCount`. Allocation totals are summed from each round’s `allocationTokenAmount` (ETH at 18 decimals for `0x000`; USDC at 6 decimals). Payouts are not recorded in the public API and are not in these files.
 
-```bash
-cp .env.example .env.local
-```
-
-Run the development server:
-
-```bash
-yarn dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-## Creating a Round
-
-There is no UI for creating a new round, so you will need to do this manually via the `rounds` table in the database.
-
-Some things to keep in mind:
-
-- `allocation_token_amount` is in wei
-- To distribute ETH, set `allocation_token_address` to `0x00`
-- `snapshot_space_id` is the ENS name of the Snapshot space to use for voting (eg. small-grants.eth)
-- `snapshot_proposal_id` is the ID of the Snapshot proposal that will be created between `proposal_end` and `voting_start`. It should be empty when creating the round.
-
-## Setting up Snapshot
-
-When the proposal period is done (after `proposal_end` and before `voting_start`), you'll need to set up the Snapshot Space for voting. This can be done with one click in the UI by going to /rounds/{round_id}/snapshot. It will ask you to sign a message and that should create the compatible Snapshot space with all the proposals as options.
-
-Your wallet address must be an admin on the Snapshot space specified in `snapshot_space_id` during the setup of the round.
-
-You will also need the [ArConnect Chrome Extension](https://chrome.google.com/webstore/detail/arconnect/einnioafmpimabjcddiinlhmijaionap) installed to upload the proposals to Arweave for Snapshot.
-
-## Architecture
-
-For the initial implementation, the focus is on speed of deployment, while retaining independent vote audit-ability.
-
-- During the Proposal Stage, proposal text is stored in a Supabase database.
-- Once Proposal Stage is complete, an admin must create a Snapshot Proposal where each Grant Proposal is a "choice".
-- Once on Voting Stage, the app uses Snapshot as the source of truth for counting votes and applying different voting strategies.
+Historical votes: [snapshot.org/#/small-grants.eth](https://snapshot.org/#/small-grants.eth)
 
 ## License
 
-This project is licensed under both MIT and Apache 2.0
+This project is licensed under both MIT and Apache 2.0.

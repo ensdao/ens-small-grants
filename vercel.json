@@ -1,0 +1,13 @@
+{
+  "cleanUrls": true,
+  "redirects": [
+    { "source": "/rounds", "destination": "/", "permanent": true },
+    { "source": "/rounds/:path*", "destination": "/", "permanent": true },
+    { "source": "/faq", "destination": "/", "permanent": true },
+    { "source": "/create", "destination": "/", "permanent": true },
+    { "source": "/CreateSnapshot", "destination": "/", "permanent": true },
+    { "source": "/proposals/:path*", "destination": "/", "permanent": true },
+    { "source": "/profile/:path*", "destination": "/", "permanent": true },
+    { "source": "/api/:path*", "destination": "/", "permanent": true }
+  ]
+}
