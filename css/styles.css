@@ -67,7 +67,6 @@ a {
 img,
 svg {
   display: block;
-  max-width: 100%;
 }
 
 .page {
@@ -101,24 +100,33 @@ svg {
   display: flex;
   flex-direction: row;
   align-items: center;
+  justify-content: center;
 }
 
 .logo-full {
-  width: 8rem;
   display: none;
+  width: 8rem;
+  height: auto;
+  flex-shrink: 0;
+  aspect-ratio: 936 / 500;
 }
 
 .logo-mark {
-  width: 2.75rem;
+  width: 4rem;
+  height: auto;
+  flex-shrink: 0;
+  aspect-ratio: 1 / 1;
 }
 
 .brand-title {
   display: none;
   font-size: 1.25rem;
   font-weight: 700;
+  line-height: 1;
 }
 
 .brand-title i {
+  display: none;
   font-style: normal;
 }
 
@@ -366,7 +374,13 @@ footer a:hover {
 
   .brand-title {
     font-size: 1.625rem;
+    white-space: nowrap;
     transform: translateY(0.0625rem);
+    margin-bottom: 0.25rem;
+  }
+
+  .brand-title i {
+    display: inline-block;
   }
 
   .hero {
